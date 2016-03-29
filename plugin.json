@@ -10,8 +10,16 @@
       "url": "http://raintank.io"
     },
     "keywords": ["clock", "panel"],
-    "version": "1.0.0",
-    "updated": "2015-03-24"
+    "links": [
+      {"name": "Project site", "url": "https://github.com/grafana/clock-panel"},
+      {"name": "MIT License", "url": "https://github.com/grafana/clock-panel/blob/master/LICENSE"}
+    ],
+    "screenshots": [
+      {"name": "Two clocks and a countdown", "path": "src/img/screenshot-clocks.png"},
+      {"name": "Options", "path": "src/img/screenshot-clock-options.png"}
+    ],
+    "version": "0.0.1",
+    "updated": "2015-03-29"
   },
 
   "dependencies": {

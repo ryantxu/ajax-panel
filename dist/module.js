@@ -1,12 +1,9 @@
 'use strict';
 
-System.register(['lodash', './clock_ctrl'], function (_export, _context) {
-  var _, ClockCtrl;
-
+System.register(['./clock_ctrl'], function (_export, _context) {
+  var ClockCtrl;
   return {
-    setters: [function (_lodash) {
-      _ = _lodash.default;
-    }, function (_clock_ctrl) {
+    setters: [function (_clock_ctrl) {
       ClockCtrl = _clock_ctrl.ClockCtrl;
     }],
     execute: function () {

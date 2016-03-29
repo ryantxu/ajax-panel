@@ -1,5 +1,6 @@
 import {PanelCtrl} from 'app/plugins/sdk';
 import moment from 'moment';
+import './css/clock-panel.css!';
 
 export class ClockCtrl extends PanelCtrl {
   constructor($scope, $injector) {

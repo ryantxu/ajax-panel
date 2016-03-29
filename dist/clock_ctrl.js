@@ -1,7 +1,7 @@
 'use strict';
 
-System.register(['app/plugins/sdk', 'lodash', 'moment'], function (_export, _context) {
-  var PanelCtrl, _, moment, _createClass, ClockCtrl;
+System.register(['app/plugins/sdk', 'moment', './css/clock-panel.css!'], function (_export, _context) {
+  var PanelCtrl, moment, _createClass, ClockCtrl;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -36,11 +36,9 @@ System.register(['app/plugins/sdk', 'lodash', 'moment'], function (_export, _con
   return {
     setters: [function (_appPluginsSdk) {
       PanelCtrl = _appPluginsSdk.PanelCtrl;
-    }, function (_lodash) {
-      _ = _lodash.default;
     }, function (_moment) {
       moment = _moment.default;
-    }],
+    }, function (_cssClockPanelCss) {}],
     execute: function () {
       _createClass = function () {
         function defineProperties(target, props) {
@@ -79,7 +77,6 @@ System.register(['app/plugins/sdk', 'lodash', 'moment'], function (_export, _con
             var _this2 = this;
 
             this.time = moment().format('hh:mm:ss');
-            // this.$scope.$digest();
             this.$timeout(function () {
               _this2.updateClock();
             }, 1000);

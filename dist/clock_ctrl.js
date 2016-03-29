@@ -1,7 +1,7 @@
 'use strict';
 
-System.register(['app/plugins/sdk', 'moment', './css/clock-panel.css!'], function (_export, _context) {
-  var PanelCtrl, moment, _createClass, ClockCtrl;
+System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'], function (_export, _context) {
+  var PanelCtrl, moment, _, _createClass, _get, panelDefaults, ClockCtrl;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -38,6 +38,8 @@ System.register(['app/plugins/sdk', 'moment', './css/clock-panel.css!'], functio
       PanelCtrl = _appPluginsSdk.PanelCtrl;
     }, function (_moment) {
       moment = _moment.default;
+    }, function (_lodash) {
+      _ = _lodash.default;
     }, function (_cssClockPanelCss) {}],
     execute: function () {
       _createClass = function () {
@@ -58,6 +60,38 @@ System.register(['app/plugins/sdk', 'moment', './css/clock-panel.css!'], functio
         };
       }();
 
+      _get = function get(object, property, receiver) {
+        if (object === null) object = Function.prototype;
+        var desc = Object.getOwnPropertyDescriptor(object, property);
+
+        if (desc === undefined) {
+          var parent = Object.getPrototypeOf(object);
+
+          if (parent === null) {
+            return undefined;
+          } else {
+            return get(parent, property, receiver);
+          }
+        } else if ("value" in desc) {
+          return desc.value;
+        } else {
+          var getter = desc.get;
+
+          if (getter === undefined) {
+            return undefined;
+          }
+
+          return getter.call(receiver);
+        }
+      };
+
+      panelDefaults = {
+        clockType: '24 hour',
+        fontSize: '60px',
+        fontWeight: 'normal',
+        bgColor: null
+      };
+
       _export('ClockCtrl', ClockCtrl = function (_PanelCtrl) {
         _inherits(ClockCtrl, _PanelCtrl);
 
@@ -66,7 +100,8 @@ System.register(['app/plugins/sdk', 'moment', './css/clock-panel.css!'], functio
 
           var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ClockCtrl).call(this, $scope, $injector));
 
-          _this.$scope = $scope;
+          _.defaults(_this.panel, panelDefaults);
+
           _this.updateClock();
           return _this;
         }
@@ -76,10 +111,16 @@ System.register(['app/plugins/sdk', 'moment', './css/clock-panel.css!'], functio
           value: function updateClock() {
             var _this2 = this;
 
-            this.time = moment().format('hh:mm:ss');
+            this.time = this.panel.clockType === '24 hour' ? moment().format('HH:mm:ss') : moment().format('hh:mm:ss A');
             this.$timeout(function () {
               _this2.updateClock();
             }, 1000);
+          }
+        }, {
+          key: 'initEditMode',
+          value: function initEditMode() {
+            _get(Object.getPrototypeOf(ClockCtrl.prototype), 'initEditMode', this).call(this);
+            this.addEditorTab('Options', 'public/plugins/grafana-clock-panel/editor.html', 2);
           }
         }]);
 

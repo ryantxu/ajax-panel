@@ -4,7 +4,7 @@ The Clock Panel can show the current time or a countdown and updates every secon
 
 Show the time in another office or show a countdown to an important event.
 
-![Two clocks and a countdown](src/img/screenshot-clocks.png)
+![Two clocks and a countdown](https://raw.githubusercontent.com/grafana/clock-panel/06ecf59c191db642127c6153bc3145e93a1df1f8/src/img/screenshot-clocks.png)
 
 ## Options
 

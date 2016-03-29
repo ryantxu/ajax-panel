@@ -134,7 +134,13 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
         }, {
           key: 'renderTime',
           value: function renderTime() {
-            var now = moment();
+            var now = void 0;
+            if (this.panel.offsetFromUtc) {
+              now = moment().utcOffset(parseInt(this.panel.offsetFromUtc, 10));
+            } else {
+              now = moment();
+            }
+
             if (this.panel.dateSettings.showDate) {
               this.date = now.format(this.panel.dateSettings.dateFormat);
             }

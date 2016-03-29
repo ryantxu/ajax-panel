@@ -39,7 +39,13 @@ export class ClockCtrl extends PanelCtrl {
   }
 
   renderTime() {
-    const now = moment();
+    let now;
+    if (this.panel.offsetFromUtc) {
+      now = moment().utcOffset(parseInt(this.panel.offsetFromUtc, 10));
+    } else {
+      now = moment();
+    }
+
     if (this.panel.dateSettings.showDate) {
       this.date = now.format(this.panel.dateSettings.dateFormat);
     }

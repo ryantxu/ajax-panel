@@ -1,15 +1,28 @@
 <div class="editor-row">
-  <div class="section"style="margin-bottom: 20px">
+  <div class="section" style="margin-bottom: 20px">
     <div class="tight-form">
       <ul class="tight-form-list">
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
+          <strong>Clock Mode</strong>
+        </li>
+        <li>
+          <select class="input-medium tight-form-input" ng-model="ctrl.panel.mode"
+            ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
+        </li>
+        <li class="tight-form-item width-8">
           <strong>12 or 24 hour</strong>
         </li>
         <li>
-          <select class="input-small tight-form-input last" ng-model="ctrl.panel.clockType"
+          <select class="input-small tight-form-input" ng-model="ctrl.panel.clockType"
             ng-options="t for t in ['12 hour', '24 hour']" ng-change="ctrl.render()"></select>
         </li>
-        
+        <li class="tight-form-item width-8">
+          <strong>Offset from UTC</strong>
+        </li>
+        <li class="last">
+          <input type="text" class="input-small tight-form-input" placeholder="+/- hours"
+            ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
+        </li>
       </ul>
       <div class="clearfix"></div>
     </div>
@@ -19,30 +32,47 @@
 	<div class="section" style="margin-bottom: 20px">
     <div class="tight-form">
       <ul class="tight-form-list">
-        <li class="tight-form-item" style="width: 100px;">
+        
+        <li class="tight-form-item width-11">
+          <strong>Countdown Deadline</strong>
+        </li>
+        <li class="tight-form-item last width-15">
+          <input type="datetime-local" class="input-large tight-form-input"
+					 ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
+<div class="editor-row">
+	<div class="section" style="margin-bottom: 20px">
+    <div class="tight-form">
+      <ul class="tight-form-list">
+        <li class="tight-form-item width-8">
           <strong>Date</strong>
         </li>
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Show Date&nbsp;</strong>
           <input class="cr1" id="ctrl.panel.dateSettings.showDate" type="checkbox"
-					 ng-model="ctrl.panel.dateSettings.showDate" ng-checked="ctrl.panel.dateSettings.showDate" ng-change="ctrl.render()">
+					   ng-model="ctrl.panel.dateSettings.showDate" ng-checked="ctrl.panel.dateSettings.showDate" ng-change="ctrl.render()">
           <label for="ctrl.panel.dateSettings.showDate" class="cr1"></label>
         </li>
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Date Format</strong>
         </li>
         <li>
-          <input type="text" class="input-medium tight-form-input last"
-					 ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
+          <input type="text" class="input-medium tight-form-input"
+					   ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
         </li>
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Font Size</strong>
         </li>
         <li>
-          <input type="text" class="input-small tight-form-input last"
-					 ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
+          <input type="text" class="input-small tight-form-input"
+					   ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
         </li>
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Font Weight</strong>
         </li>
         <li>
@@ -58,17 +88,17 @@
 	<div class="section" style="margin-bottom: 20px">
     <div class="tight-form">
       <ul class="tight-form-list">
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Time</strong>
         </li>
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Font Size</strong>
         </li>
         <li>
           <input type="text" class="input-small tight-form-input last"
-					ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
+					   ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
         </li>
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Font Weight</strong>
         </li>
         <li>
@@ -84,35 +114,11 @@
 	<div class="section" style="margin-bottom: 20px">
     <div class="tight-form last">
       <ul class="tight-form-list">
-        <li class="tight-form-item" style="width: 100px;">
+        <li class="tight-form-item width-8">
           <strong>Bg Color</strong>
         </li>
         <li class="tight-form-item last">
           <spectrum-picker ng-model="ctrl.panel.bgColor" ng-change="ctrl.render()" ></spectrum-picker>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</div>
-
-<div class="editor-row">
-	<div class="section" style="margin-bottom: 20px">
-    <div class="tight-form last">
-      <ul class="tight-form-list">
-        <li class="tight-form-item" style="width: 100px;">
-          <strong>Clock Mode</strong>
-        </li>
-        <li class="">
-          <select class="input-medium tight-form-input last" ng-model="ctrl.panel.mode"
-            ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
-        </li>
-        <li class="tight-form-item" style="width: 140px;">
-          <strong>Countdown Deadline</strong>
-        </li>
-        <li class="tight-form-item last" style="width: 210px;">
-          <input type="datetime-local" class="input-large tight-form-input last"
-					ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
         </li>
       </ul>
       <div class="clearfix"></div>

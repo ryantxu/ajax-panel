@@ -24,6 +24,11 @@ Show the time in another office or show a countdown to an important event.
 
 - Bg Color
   Choose a background color for the clock with the color picker.
+  
+## Screenshots
+
+- [Screenshot of two clocks and a countdown](https://raw.githubusercontent.com/grafana/clock-panel/06ecf59c191db642127c6153bc3145e93a1df1f8/src/img/screenshot-clocks.png)
+- [Screenshot of the options screen](https://raw.githubusercontent.com/grafana/clock-panel/06ecf59c191db642127c6153bc3145e93a1df1f8/src/img/screenshot-clock-options.png)
 
 ## Installation
 

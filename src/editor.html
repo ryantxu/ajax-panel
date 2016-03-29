@@ -52,3 +52,27 @@
     </div>
   </div>
 </div>
+
+<div class="editor-row">
+	<div class="section" style="margin-bottom: 20px">
+    <div class="tight-form last">
+      <ul class="tight-form-list">
+        <li class="tight-form-item" style="width: 100px;">
+          <strong>Clock Mode</strong>
+        </li>
+        <li class="">
+          <select class="input-medium tight-form-input last" ng-model="ctrl.panel.mode"
+            ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
+        </li>
+        <li class="tight-form-item" style="width: 140px;">
+          <strong>Countdown Deadline</strong>
+        </li>
+        <li class="tight-form-item last" style="width: 210px;">
+          <input type="datetime-local" class="input-large tight-form-input last"
+					ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>

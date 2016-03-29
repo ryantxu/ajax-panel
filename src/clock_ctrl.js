@@ -4,10 +4,12 @@ import _ from 'lodash';
 import './css/clock-panel.css!';
 
 const panelDefaults = {
+  mode: 'time',
   clockType: '24 hour',
   fontSize: '60px',
   fontWeight: 'normal',
-  bgColor: null
+  bgColor: null,
+  endCountdownTime: null
 };
 
 export class ClockCtrl extends PanelCtrl {
@@ -19,8 +21,30 @@ export class ClockCtrl extends PanelCtrl {
   }
 
   updateClock() {
-    this.time = this.panel.clockType === '24 hour' ? moment().format('HH:mm:ss') : moment().format('hh:mm:ss A');
+    if (this.panel.mode === 'time') {
+      this.time = this.panel.clockType === '24 hour' ? moment().format('HH:mm:ss') : moment().format('hh:mm:ss A');
+    } else {
+      this.renderCountdown();
+    }
     this.$timeout(() => { this.updateClock(); }, 1000);
+  }
+
+  renderCountdown() {
+    if (!this.panel.endCountdownTime) {
+      this.time = '00:00:00';
+    }
+
+    const now = moment();
+    const timeLeft = moment.duration(moment(this.panel.endCountdownTime).diff(now));
+    const formattedTimeLeft = moment.utc(timeLeft.asMilliseconds()).format('HH:mm:ss');
+
+    if (timeLeft.asDays() > 1) {
+      this.time = timeLeft.days() + ' days ' + formattedTimeLeft;
+    } else if (timeLeft.asSeconds() > 0) {
+      this.time = formattedTimeLeft;
+    } else {
+      this.time = '00:00:00';
+    }
   }
 
   initEditMode() {

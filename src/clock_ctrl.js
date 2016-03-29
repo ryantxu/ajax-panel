@@ -6,10 +6,19 @@ import './css/clock-panel.css!';
 const panelDefaults = {
   mode: 'time',
   clockType: '24 hour',
-  fontSize: '60px',
-  fontWeight: 'normal',
+  offsetFromUtc: null,
   bgColor: null,
-  endCountdownTime: null
+  endCountdownTime: null,
+  dateSettings: {
+    showDate: true,
+    dateFormat: 'YYYY-MM-DD',
+    fontSize: '20px',
+    fontWeight: 'normal'
+  },
+  timeSettings: {
+    fontSize: '60px',
+    fontWeight: 'normal'
+  }
 };
 
 export class ClockCtrl extends PanelCtrl {
@@ -22,11 +31,19 @@ export class ClockCtrl extends PanelCtrl {
 
   updateClock() {
     if (this.panel.mode === 'time') {
-      this.time = this.panel.clockType === '24 hour' ? moment().format('HH:mm:ss') : moment().format('hh:mm:ss A');
+      this.renderTime();
     } else {
       this.renderCountdown();
     }
     this.$timeout(() => { this.updateClock(); }, 1000);
+  }
+
+  renderTime() {
+    const now = moment();
+    if (this.panel.dateSettings.showDate) {
+      this.date = now.format(this.panel.dateSettings.dateFormat);
+    }
+    this.time = this.panel.clockType === '24 hour' ? now.format('HH:mm:ss') : now.format('hh:mm:ss A');
   }
 
   renderCountdown() {

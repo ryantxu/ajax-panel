@@ -88,10 +88,19 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
       panelDefaults = {
         mode: 'time',
         clockType: '24 hour',
-        fontSize: '60px',
-        fontWeight: 'normal',
+        offsetFromUtc: null,
         bgColor: null,
-        endCountdownTime: null
+        endCountdownTime: null,
+        dateSettings: {
+          showDate: true,
+          dateFormat: 'YYYY-MM-DD',
+          fontSize: '20px',
+          fontWeight: 'normal'
+        },
+        timeSettings: {
+          fontSize: '60px',
+          fontWeight: 'normal'
+        }
       };
 
       _export('ClockCtrl', ClockCtrl = function (_PanelCtrl) {
@@ -114,13 +123,22 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
             var _this2 = this;
 
             if (this.panel.mode === 'time') {
-              this.time = this.panel.clockType === '24 hour' ? moment().format('HH:mm:ss') : moment().format('hh:mm:ss A');
+              this.renderTime();
             } else {
               this.renderCountdown();
             }
             this.$timeout(function () {
               _this2.updateClock();
             }, 1000);
+          }
+        }, {
+          key: 'renderTime',
+          value: function renderTime() {
+            var now = moment();
+            if (this.panel.dateSettings.showDate) {
+              this.date = now.format(this.panel.dateSettings.dateFormat);
+            }
+            this.time = this.panel.clockType === '24 hour' ? now.format('HH:mm:ss') : now.format('hh:mm:ss A');
           }
         }, {
           key: 'renderCountdown',

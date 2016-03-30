@@ -35,7 +35,7 @@ Show the time in another office or show a countdown to an important event.
 Use the new grafana-cli tool to install clock-panel from the commandline:
 
 ```
-grafana-cli plugins install clock-panel
+grafana-cli plugins install grafana-clock-panel
 ```
 
 The plugin will be installed into your grafana plugins directory; the default is /var/lib/grafana/plugins if you installed the grafana package.

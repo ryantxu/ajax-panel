@@ -1,10 +1,10 @@
-# Clock Panel Plugin for Grafana
+## Clock Panel Plugin for Grafana
 
 The Clock Panel can show the current time or a countdown and updates every second.
 
 Show the time in another office or show a countdown to an important event.
 
-## Options
+### Options
 
 - Mode:
 
@@ -25,22 +25,7 @@ Show the time in another office or show a countdown to an important event.
 - Bg Color
   Choose a background color for the clock with the color picker.
   
-## Screenshots
+### Screenshots
 
 - [Screenshot of two clocks and a countdown](https://raw.githubusercontent.com/grafana/clock-panel/06ecf59c191db642127c6153bc3145e93a1df1f8/src/img/screenshot-clocks.png)
 - [Screenshot of the options screen](https://raw.githubusercontent.com/grafana/clock-panel/06ecf59c191db642127c6153bc3145e93a1df1f8/src/img/screenshot-clock-options.png)
-
-## Installation
-
-Use the new grafana-cli tool to install clock-panel from the commandline:
-
-```
-grafana-cli plugins install grafana-clock-panel
-```
-
-The plugin will be installed into your grafana plugins directory; the default is /var/lib/grafana/plugins if you installed the grafana package.
-
-More instructions on the cli tool can be found [here](http://docs.grafana.org/v3.0/plugins/installation/).
-
-You need the lastest grafana build for Grafana 3.0 to enable plugin support. You can get it here : http://grafana.org/download/builds.html
-

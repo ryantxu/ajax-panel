@@ -1,127 +1,127 @@
-<div class="editor-row">
-  <div class="section" style="margin-bottom: 20px">
-    <div class="tight-form">
-      <ul class="tight-form-list">
-        <li class="tight-form-item width-8">
-          <strong>Clock Mode</strong>
-        </li>
-        <li>
-          <select class="input-medium tight-form-input" ng-model="ctrl.panel.mode"
-            ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>12 or 24 hour</strong>
-        </li>
-        <li>
-          <select class="input-small tight-form-input" ng-model="ctrl.panel.clockType"
-            ng-options="t for t in ['12 hour', '24 hour']" ng-change="ctrl.render()"></select>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Offset from UTC</strong>
-        </li>
-        <li class="last">
-          <input type="text" class="input-small tight-form-input" placeholder="+/- hours"
-            ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
-        </li>
-      </ul>
-      <div class="clearfix"></div>
+<!-- Responsive layout that wraps around when screen is narrower. Uses the gf-form class to group label and input together. -->
+<!-- First row on options tab --> 
+<div class="gf-form-group">
+  <div class="gf-form-inline">
+    <div class="gf-form">
+      <span class="gf-form-label max-width-9">
+        <strong>Clock Mode</strong>
+      </span>
+      <div class="gf-form-select-wrapper max-width-10">
+        <select class="input-medium gf-form-input" ng-model="ctrl.panel.mode"
+          ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
+      </div>
+    </div>
+    <div class="gf-form">
+      <span class="gf-form-label width-9">
+        <strong>12 or 24 hour</strong>
+      </span>
+      <div class="gf-form-select-wrapper max-width-8">
+        <select class="input-small gf-form-input" ng-model="ctrl.panel.clockType"
+          ng-options="t for t in ['12 hour', '24 hour']" ng-change="ctrl.render()"></select>
+      </div>
+    </div>
+    <div class="gf-form">
+      <span class="gf-form-label width-9">
+        <strong>Offset from UTC</strong>
+      </span>
+      <span class="last max-width-6">
+        <input type="text" class="input-small gf-form-input" placeholder="+/- hours"
+          ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
+      </span>
     </div>
   </div>
 </div>
-<div class="editor-row">
-	<div class="section" style="margin-bottom: 20px">
-    <div class="tight-form">
-      <ul class="tight-form-list">
-        
-        <li class="tight-form-item width-11">
-          <strong>Countdown Deadline</strong>
-        </li>
-        <li class="tight-form-item last width-15">
-          <input type="datetime-local" class="input-large tight-form-input"
-					 ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
+<!-- Second row on options tab--> 
+<div class="gf-form-group">
+  <div class="gf-form-inline">
+    <span class="gf-form-label width-11">
+      <strong>Countdown Deadline</strong>
+    </span>
+    <span class="last width-15">
+      <input type="datetime-local" class="input-large gf-form-input"
+          ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
+    </span>
+  </div>
+</div>
+<!-- Third row on options tab --> 
+<div class="gf-form-group">
+  <div class="gf-form-inline">
+    <div class="gf-form"> 
+      <span class="gf-form-label width-8">
+        <strong>Date</strong>
+      </span>
+      <span class="gf-form-label width-10">
+        <strong>Show Date&nbsp;</strong>
+        <input class="cr1" id="ctrl.panel.dateSettings.showDate" type="checkbox"
+            ng-model="ctrl.panel.dateSettings.showDate" ng-checked="ctrl.panel.dateSettings.showDate" ng-change="ctrl.render()">
+        <label for="ctrl.panel.dateSettings.showDate" class="cr1"></label>
+      </span>
+    </div>
+    <div class="gf-form">
+      <span class="gf-form-label width-8">
+        <strong>Date Format</strong>
+      </span>
+      <span class="width-10">
+      <input type="text" class="input-medium gf-form-input"
+          ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
+      </span>
+    </div>
+    <div class="gf-form">
+      <span class="gf-form-label width-8">
+        <strong>Font Size</strong>
+      </span>
+      <span class="width-4">
+        <input type="text" class="input-small gf-form-input"
+          ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
+      </span>
+    </div>
+    <div class="gf-form">
+      <span class="gf-form-label width-8">
+        <strong>Font Weight</strong>
+      </span>
+      <span class="gf-form-select-wrapper max-width-8">
+        <select class="input-small gf-form-input last" ng-model="ctrl.panel.dateSettings.fontWeight"
+          ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+      </span>
     </div>
   </div>
 </div>
-<div class="editor-row">
-	<div class="section" style="margin-bottom: 20px">
-    <div class="tight-form">
-      <ul class="tight-form-list">
-        <li class="tight-form-item width-8">
-          <strong>Date</strong>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Show Date&nbsp;</strong>
-          <input class="cr1" id="ctrl.panel.dateSettings.showDate" type="checkbox"
-					   ng-model="ctrl.panel.dateSettings.showDate" ng-checked="ctrl.panel.dateSettings.showDate" ng-change="ctrl.render()">
-          <label for="ctrl.panel.dateSettings.showDate" class="cr1"></label>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Date Format</strong>
-        </li>
-        <li>
-          <input type="text" class="input-medium tight-form-input"
-					   ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Font Size</strong>
-        </li>
-        <li>
-          <input type="text" class="input-small tight-form-input"
-					   ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Font Weight</strong>
-        </li>
-        <li>
-          <select class="input-small tight-form-input last" ng-model="ctrl.panel.dateSettings.fontWeight"
-            ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
+<!-- Fourth row on options tab --> 
+<div class="gf-form-group">
+  <div class="gf-form-inline">
+    <span class="gf-form-label width-8">
+      <strong>Time</strong>
+    </span>
+    <div class="gf-form">   
+      <span class="gf-form-label width-8">
+        <strong>Font Size</strong>
+      </span>
+      <span class="width-4">
+        <input type="text" class="input-small gf-form-input last"
+            ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
+      </span>
+    </div>
+    <div class="gf-form">
+      <span class="gf-form-label width-8">
+        <strong>Font Weight</strong>
+      </span>
+      <span class="gf-form-select-wrapper max-width-8">
+        <select class="input-small gf-form-input last" ng-model="ctrl.panel.timeSettings.fontWeight"
+          ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+      </span>
     </div>
   </div>
 </div>
-<div class="editor-row">
-	<div class="section" style="margin-bottom: 20px">
-    <div class="tight-form">
-      <ul class="tight-form-list">
-        <li class="tight-form-item width-8">
-          <strong>Time</strong>
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Font Size</strong>
-        </li>
-        <li>
-          <input type="text" class="input-small tight-form-input last"
-					   ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
-        </li>
-        <li class="tight-form-item width-8">
-          <strong>Font Weight</strong>
-        </li>
-        <li>
-          <select class="input-small tight-form-input last" ng-model="ctrl.panel.timeSettings.fontWeight"
-            ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</div>
-<div class="editor-row">
-	<div class="section" style="margin-bottom: 20px">
-    <div class="tight-form last">
-      <ul class="tight-form-list">
-        <li class="tight-form-item width-8">
-          <strong>Bg Color</strong>
-        </li>
-        <li class="tight-form-item last">
-          <spectrum-picker ng-model="ctrl.panel.bgColor" ng-change="ctrl.render()" ></spectrum-picker>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
+<!-- Fifth row on options tab --> 
+<div class="gf-form-group">
+  <div class="gf-form-inline">
+    <div class="gf-form">
+      <span class="gf-form-label width-8">
+        <strong>Bg Color</strong>
+      </span>
+      <span class="max-width-8 last">
+        <spectrum-picker class="gf-form-input" ng-model="ctrl.panel.bgColor" ng-change="ctrl.render()" ></spectrum-picker>
+      </span>
     </div>
   </div>
 </div>

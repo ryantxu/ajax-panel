@@ -6,26 +6,32 @@ Show the time in another office or show a countdown to an important event.
 
 ### Options
 
-- Mode:
+- **Mode**:
 
   Default is time. If countdown is chosen then set the Countdown Deadline to start the countdown.
 
-- 12 or 24 hour:
+- **12 or 24 hour**:
+
   Show time in the 12/24 hour format.
   
-- Offset from UTC:
+- **Offset from UTC**:
+
   This is a simple way to get the time for different time zones. Default is empty and that means local time (whatever that is on your computer). -5 would be UTC -5 (New York or central US)
 
-- Countdown Deadline:
+- **Countdown Deadline**:
+
   Used in conjuction with the mode being set to countdown. Choose a date and time to count down to.
 
-- Countdown End Text:
+- **Countdown End Text**:
+
   The text to show when the countdown ends. E.g. LIFTOFF
   
-- Date/Time formatting options
+- **Date/Time formatting options**:
+
   The font size, weight and date/time formatting can be customized here. If the seconds ticking annoys you then change the time format to HH:mm for the 24 hour clock or h:mm A for the 12 hour clock.
 
-- Bg Color
+- **Bg Color**:
+
   Choose a background color for the clock with the color picker.
   
 ### Screenshots

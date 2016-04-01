@@ -33,8 +33,12 @@ export class ClockCtrl extends PanelCtrl {
     if (!(this.panel.countdownSettings.endCountdownTime instanceof Date)) {
       this.panel.countdownSettings.endCountdownTime = moment(this.panel.countdownSettings.endCountdownTime).toDate();
     }
-
+    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.updateClock();
+  }
+
+  onInitEditMode() {
+    this.addEditorTab('Options', 'public/plugins/grafana-clock-panel/editor.html', 2);
   }
 
   updateClock() {
@@ -87,11 +91,6 @@ export class ClockCtrl extends PanelCtrl {
     formattedTimeLeft += moment.utc(timeLeft.asMilliseconds()).format('HH:mm:ss');
 
     this.time = formattedTimeLeft;
-  }
-
-  initEditMode() {
-    super.initEditMode();
-    this.addEditorTab('Options', 'public/plugins/grafana-clock-panel/editor.html', 2);
   }
 }
 

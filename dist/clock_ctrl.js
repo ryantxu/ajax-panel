@@ -90,7 +90,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
         clockType: '24 hour',
         offsetFromUtc: null,
         bgColor: null,
-        endCountdownTime: null,
+        endCountdownTime: moment().seconds(0).milliseconds(0).add(1, 'day').toDate(),
         dateSettings: {
           showDate: true,
           dateFormat: 'YYYY-MM-DD',
@@ -98,6 +98,8 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
           fontWeight: 'normal'
         },
         timeSettings: {
+          timeFormat24hr: 'HH:mm:ss',
+          timeFormat12hr: 'h:mm:ss A',
           fontSize: '60px',
           fontWeight: 'normal'
         }
@@ -144,7 +146,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
             if (this.panel.dateSettings.showDate) {
               this.date = now.format(this.panel.dateSettings.dateFormat);
             }
-            this.time = this.panel.clockType === '24 hour' ? now.format('HH:mm:ss') : now.format('hh:mm:ss A');
+            this.time = this.panel.clockType === '24 hour' ? now.format(this.panel.timeSettings.timeFormat24hr) : now.format(this.panel.timeSettings.timeFormat12hr);
           }
         }, {
           key: 'renderCountdown',

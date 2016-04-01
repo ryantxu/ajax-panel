@@ -37,7 +37,7 @@
     <span class="gf-form-label width-11">
       <strong>Countdown Deadline</strong>
     </span>
-    <span class="last width-15">
+    <span class="last width-16">
       <input type="datetime-local" class="input-large gf-form-input"
           ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
     </span>
@@ -92,6 +92,24 @@
     <span class="gf-form-label width-8">
       <strong>Time</strong>
     </span>
+    <div class="gf-form">   
+      <span class="gf-form-label width-10">
+        <strong>Time Format 12hr</strong>
+      </span>
+      <span class="width-9">
+        <input type="text" class="input-small gf-form-input last"
+            ng-model="ctrl.panel.timeSettings.timeFormat12hr" ng-change="ctrl.render()" ng-model-onblur />
+      </span>
+    </div>
+    <div class="gf-form">   
+      <span class="gf-form-label width-10">
+        <strong>Time Format 24hr</strong>
+      </span>
+      <span class="width-9">
+        <input type="text" class="input-small gf-form-input last"
+            ng-model="ctrl.panel.timeSettings.timeFormat24hr" ng-change="ctrl.render()" ng-model-onblur />
+      </span>
+    </div>
     <div class="gf-form">   
       <span class="gf-form-label width-8">
         <strong>Font Size</strong>

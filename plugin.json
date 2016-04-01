@@ -1,6 +1,6 @@
 {
   "type": "panel",
-  "name": "Clock",
+  "name": "Clock Panel",
   "id": "grafana-clock-panel",
 
   "info": {
@@ -18,8 +18,8 @@
       {"name": "Two clocks and a countdown", "path": "src/img/screenshot-clocks.png"},
       {"name": "Options", "path": "src/img/screenshot-clock-options.png"}
     ],
-    "version": "0.0.1",
-    "updated": "2015-03-29"
+    "version": "0.0.2",
+    "updated": "2015-04-01"
   },
 
   "dependencies": {

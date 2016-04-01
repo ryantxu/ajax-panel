@@ -18,9 +18,12 @@ Show the time in another office or show a countdown to an important event.
 
 - Countdown Deadline:
   Used in conjuction with the mode being set to countdown. Choose a date and time to count down to.
+
+- Countdown End Text:
+  The text to show when the countdown ends. E.g. LIFTOFF
   
 - Date/Time formatting options
-  The font size, weight and date formatting can be customized here.
+  The font size, weight and date/time formatting can be customized here. If the seconds ticking annoys you then change the time format to HH:mm for the 24 hour clock or h:mm A for the 12 hour clock.
 
 - Bg Color
   Choose a background color for the clock with the color picker.

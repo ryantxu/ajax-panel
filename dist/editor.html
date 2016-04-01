@@ -39,14 +39,23 @@
     </span>
     <span class="last width-16">
       <input type="datetime-local" class="input-large gf-form-input"
-          ng-model="ctrl.panel.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
+          ng-model="ctrl.panel.countdownSettings.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
     </span>
+    <div class="gf-form"> 
+      <span class="gf-form-label width-11">
+        <strong>Countdown End Text</strong>
+      </span>
+      <span class="last width-10">
+        <input type="text" class="input-large gf-form-input"
+            ng-model="ctrl.panel.countdownSettings.endText" ng-change="ctrl.render()" ng-model-onblur>
+      </span>
+    </div>
   </div>
 </div>
 <!-- Third row on options tab --> 
 <div class="gf-form-group">
   <div class="gf-form-inline">
-    <div class="gf-form"> 
+    <div class="gf-form">
       <span class="gf-form-label width-8">
         <strong>Date</strong>
       </span>

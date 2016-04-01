@@ -8,7 +8,10 @@ const panelDefaults = {
   clockType: '24 hour',
   offsetFromUtc: null,
   bgColor: null,
-  endCountdownTime: moment().seconds(0).milliseconds(0).add(1, 'day').toDate(),
+  countdownSettings: {
+    endCountdownTime: moment().seconds(0).milliseconds(0).add(1, 'day').toDate(),
+    endText: '00:00:00'
+  },
   dateSettings: {
     showDate: true,
     dateFormat: 'YYYY-MM-DD',
@@ -27,6 +30,9 @@ export class ClockCtrl extends PanelCtrl {
   constructor($scope, $injector) {
     super($scope, $injector);
     _.defaults(this.panel, panelDefaults);
+    if (!(this.panel.countdownSettings.endCountdownTime instanceof Date)) {
+      this.panel.countdownSettings.endCountdownTime = moment(this.panel.countdownSettings.endCountdownTime).toDate();
+    }
 
     this.updateClock();
   }
@@ -55,21 +61,32 @@ export class ClockCtrl extends PanelCtrl {
   }
 
   renderCountdown() {
-    if (!this.panel.endCountdownTime) {
-      this.time = '00:00:00';
+    if (!this.panel.countdownSettings.endCountdownTime) {
+      this.time = this.panel.countdownSettings.endText;
     }
 
     const now = moment();
-    const timeLeft = moment.duration(moment(this.panel.endCountdownTime).diff(now));
-    const formattedTimeLeft = moment.utc(timeLeft.asMilliseconds()).format('HH:mm:ss');
+    const timeLeft = moment.duration(moment(this.panel.countdownSettings.endCountdownTime).diff(now));
+    let formattedTimeLeft = '';
 
-    if (timeLeft.asDays() > 1) {
-      this.time = timeLeft.days() + ' days ' + formattedTimeLeft;
-    } else if (timeLeft.asSeconds() > 0) {
-      this.time = formattedTimeLeft;
-    } else {
-      this.time = '00:00:00';
+    if (timeLeft.asSeconds() <= 0) {
+      this.time = this.panel.countdownSettings.endText;
+      return;
     }
+
+    if (timeLeft.years() > 0) {
+      formattedTimeLeft = timeLeft.years() === 1 ? '1 year ' : timeLeft.years() + ' years ';
+    }
+    if (timeLeft.months() > 0) {
+      formattedTimeLeft += timeLeft.months() === 1 ? '1 month ' : timeLeft.months() + ' months ';
+    }
+    if (timeLeft.days() > 0) {
+      formattedTimeLeft += timeLeft.days() === 1 ? '1 day ' : timeLeft.days() + ' days ';
+    }
+
+    formattedTimeLeft += moment.utc(timeLeft.asMilliseconds()).format('HH:mm:ss');
+
+    this.time = formattedTimeLeft;
   }
 
   initEditMode() {

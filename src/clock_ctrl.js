@@ -13,7 +13,7 @@ const panelDefaults = {
     endText: '00:00:00'
   },
   dateSettings: {
-    showDate: true,
+    showDate: false,
     dateFormat: 'YYYY-MM-DD',
     fontSize: '20px',
     fontWeight: 'normal'
@@ -100,16 +100,23 @@ export class ClockCtrl extends PanelCtrl {
     }
 
     if (timeLeft.years() > 0) {
-      formattedTimeLeft = timeLeft.years() === 1 ? '1 year ' : timeLeft.years() + ' years ';
+      formattedTimeLeft = timeLeft.years() === 1 ? '1 year, ' : timeLeft.years() + ' years, ';
     }
     if (timeLeft.months() > 0) {
-      formattedTimeLeft += timeLeft.months() === 1 ? '1 month ' : timeLeft.months() + ' months ';
+      formattedTimeLeft += timeLeft.months() === 1 ? '1 month, ' : timeLeft.months() + ' months, ';
     }
     if (timeLeft.days() > 0) {
-      formattedTimeLeft += timeLeft.days() === 1 ? '1 day ' : timeLeft.days() + ' days ';
+      formattedTimeLeft += timeLeft.days() === 1 ? '1 day, ' : timeLeft.days() + ' days, ';
     }
-
-    formattedTimeLeft += moment.utc(timeLeft.asMilliseconds()).format('HH:mm:ss');
+    if (timeLeft.hours() > 0) {
+      formattedTimeLeft += timeLeft.hours() === 1 ? '1 hour, ' : timeLeft.hours() + ' hours, ';
+    }
+    if (timeLeft.minutes() > 0) {
+      formattedTimeLeft += timeLeft.minutes() === 1 ? '1 minute, ' : timeLeft.minutes() + ' minutes, ';
+    }
+    if (timeLeft.seconds() > 0) {
+      formattedTimeLeft += timeLeft.seconds() === 1 ? '1 second, ' : timeLeft.seconds() + ' seconds';
+    }
 
     this.time = formattedTimeLeft;
   }

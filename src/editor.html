@@ -1,138 +1,86 @@
-<!-- Responsive layout that wraps around when screen is narrower. Uses the gf-form class to group label and input together. -->
-<!-- First row on options tab --> 
-<div class="gf-form-group gf-form-inline">
-  <div class="gf-form">
-    <span class="gf-form-label max-width-9">
-      <strong>Clock Mode</strong>
-    </span>
-    <div class="gf-form-select-wrapper max-width-10">
-      <select class="input-medium gf-form-input" ng-model="ctrl.panel.mode"
-        ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
-    </div>
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-label width-9">
-      <strong>12 or 24 hour</strong>
-    </span>
-    <div class="gf-form-select-wrapper max-width-8">
-      <select class="input-small gf-form-input" ng-model="ctrl.panel.clockType"
-        ng-options="t for t in ['12 hour', '24 hour']" ng-change="ctrl.render()"></select>
-    </div>
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-label width-9">
-      <strong>Offset from UTC</strong>
-    </span>
-    <input type="text" class="input-small gf-form-input max-width-6" placeholder="+/- hours"
-      ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
-  </div>
-</div>
-<!-- Second row on options tab--> 
-<div class="gf-form-group gf-form-inline">
-  <div class="gf-form">
-    <span class="gf-form-label width-11">
-      <strong>Countdown Deadline</strong>
-    </span>
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-select-wrapper width-16">
-      <input type="datetime-local" class="input-large gf-form-input"
-        ng-model="ctrl.panel.countdownSettings.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
-    </span>
-  </div>
-  <div class="gf-form"> 
-    <span class="gf-form-label width-11">
-      <strong>Countdown End Text</strong>
-    </span>
-    <span class=" width-10">
-      <input type="text" class="input-large gf-form-input"
-        ng-model="ctrl.panel.countdownSettings.endText" ng-change="ctrl.render()" ng-model-onblur>
-    </span>
-  </div>
-</div>
-<!-- Third row on options tab --> 
-<div class="gf-form-group gf-form-inline">
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Date</strong>
-    </span>
-    <span class="gf-form-label width-10">
-      <strong>Show Date&nbsp;</strong>
-      <input class="cr1" id="ctrl.panel.dateSettings.showDate" type="checkbox"
-          ng-model="ctrl.panel.dateSettings.showDate" ng-checked="ctrl.panel.dateSettings.showDate" ng-change="ctrl.render()">
-      <label for="ctrl.panel.dateSettings.showDate" class="cr1"></label>
-    </span>
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Date Format</strong>
-    </span>
-    <input type="text" class="input-medium gf-form-input width-10"
-        ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Font Size</strong>
-    </span>
-    <input type="text" class="input-small gf-form-input width-4"
-      ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Font Weight</strong>
-    </span>
-    <span class="gf-form-select-wrapper max-width-8">
-      <select class="input-small gf-form-input " ng-model="ctrl.panel.dateSettings.fontWeight"
-        ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
-    </span>
-  </div>
-</div>
-<!-- Fourth row on options tab --> 
-<div class="gf-form-group gf-form-inline">
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Time</strong>
-    </span>
-  </div>
-  <div class="gf-form">   
-    <span class="gf-form-label width-10">
-      <strong>Time Format 12hr</strong>
-    </span>
-      <input type="text" class="input-small gf-form-input width-9"
-        ng-model="ctrl.panel.timeSettings.timeFormat12hr" ng-change="ctrl.render()" ng-model-onblur />
-  </div>
-  <div class="gf-form">   
-    <span class="gf-form-label width-10">
-      <strong>Time Format 24hr</strong>
-    </span>
-    <input type="text" class="input-small gf-form-input width-9"
-      ng-model="ctrl.panel.timeSettings.timeFormat24hr" ng-change="ctrl.render()" ng-model-onblur />
-  </div>
-  <div class="gf-form">   
-    <span class="gf-form-label width-8">
-      <strong>Font Size</strong>
-    </span>
-    <input type="text" class="input-small gf-form-input width-4"
-        ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
-  </div>
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Font Weight</strong>
-    </span>
-    <span class="gf-form-select-wrapper max-width-8">
-      <select class="input-small gf-form-input " ng-model="ctrl.panel.timeSettings.fontWeight"
-        ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
-    </span>
-  </div>
-</div>
-<!-- Fifth row on options tab --> 
-<div class="gf-form-group gf-form-inline">
-  <div class="gf-form">
-    <span class="gf-form-label width-8">
-      <strong>Bg Color</strong>
-    </span>
-    <span class="max-width-8 ">
-      <spectrum-picker class="gf-form-input" ng-model="ctrl.panel.bgColor" ng-change="ctrl.render()" ></spectrum-picker>
-    </span>
-  </div>
+<div class="editor-row">
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Clock options</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Clock Mode</label>
+			<div class="gf-form-select-wrapper max-width-10">
+				<select class="input-medium gf-form-input" ng-model="ctrl.panel.mode" ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
+			</div>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Bg Color</label>
+			<span class="max-width-10">
+				<spectrum-picker class="gf-form-input" ng-model="ctrl.panel.bgColor" ng-change="ctrl.render()" ></spectrum-picker>
+			</span>
+		</div>
+	</div>
+
+	<div class="section gf-form-group" ng-if="ctrl.panel.mode === 'time'">
+		<h5 class="section-heading">Time format</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">12 or 24 hour</label>
+			<div class="gf-form-select-wrapper max-width-9">
+				<select class="input-small gf-form-input" ng-model="ctrl.panel.clockType"
+																							ng-options="t for t in ['12 hour', '24 hour']" ng-change="ctrl.render()"></select>
+			</div>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Offset from UTC</label>
+			<input type="text" class="input-small gf-form-input max-width-9" placeholder="+/- hours" ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Format 12hr</label>
+			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.timeFormat12hr" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Format 24hr</label>
+			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.timeFormat24hr" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Font Size</label>
+			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Font Weight</label>
+			<span class="gf-form-select-wrapper max-width-9">
+				<select class="input-small gf-form-input " ng-model="ctrl.panel.timeSettings.fontWeight"
+																							 ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+			</span>
+		</div>
+
+	</div>
+
+	<div class="section gf-form-group" ng-if="ctrl.panel.mode === 'countdown'">
+		<h5 class="section-heading">Countdown options</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Deadline</label>
+			<span class="gf-form-select-wrapper width-16">
+				<input type="datetime-local" class="input-large gf-form-input" ng-model="ctrl.panel.countdownSettings.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
+			</span>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">End Text</label>
+			<input type="text" class="gf-form-input max-width-16" ng-model="ctrl.panel.countdownSettings.endText" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+	</div>
+
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Date options</h5>
+
+		<gf-form-switch class="gf-form" label="Show" label-class="width-8" checked="ctrl.panel.dateSettings.showDate" on-change="ctrl.render()"></gf-form-switch>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Format</label>
+			<input type="text" class="input-medium gf-form-input max-width-10" ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Font Size</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Font Weight</label>
+			<span class="gf-form-select-wrapper max-width-10">
+				<select class="input-small gf-form-input " ng-model="ctrl.panel.dateSettings.fontWeight" ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+			</span>
+		</div>
+	</div>
 </div>

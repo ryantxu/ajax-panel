@@ -19,8 +19,7 @@ const panelDefaults = {
     fontWeight: 'normal'
   },
   timeSettings: {
-    timeFormat24hr: 'HH:mm:ss',
-    timeFormat12hr: 'h:mm:ss A',
+    customFormat: 'HH:mm:ss',
     fontSize: '60px',
     fontWeight: 'normal'
   }
@@ -30,15 +29,24 @@ export class ClockCtrl extends PanelCtrl {
   constructor($scope, $injector) {
     super($scope, $injector);
     _.defaults(this.panel, panelDefaults);
+    _.defaults(this.panel.timeSettings, panelDefaults.timeSettings);
+
     if (!(this.panel.countdownSettings.endCountdownTime instanceof Date)) {
       this.panel.countdownSettings.endCountdownTime = moment(this.panel.countdownSettings.endCountdownTime).toDate();
     }
+    console.log('#ctor', this.panel.clockType);
+
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
+    this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.updateClock();
   }
 
   onInitEditMode() {
     this.addEditorTab('Options', 'public/plugins/grafana-clock-panel/editor.html', 2);
+  }
+
+  onPanelTeardown() {
+    this.$timeout.cancel(this.nextTickPromise);
   }
 
   updateClock() {
@@ -47,11 +55,13 @@ export class ClockCtrl extends PanelCtrl {
     } else {
       this.renderCountdown();
     }
-    this.$timeout(() => { this.updateClock(); }, 1000);
+
+    this.nextTickPromise = this.$timeout(this.updateClock.bind(this), 1000);
   }
 
   renderTime() {
     let now;
+
     if (this.panel.offsetFromUtc) {
       now = moment().utcOffset(parseInt(this.panel.offsetFromUtc, 10));
     } else {
@@ -61,7 +71,18 @@ export class ClockCtrl extends PanelCtrl {
     if (this.panel.dateSettings.showDate) {
       this.date = now.format(this.panel.dateSettings.dateFormat);
     }
-    this.time = this.panel.clockType === '24 hour' ? now.format(this.panel.timeSettings.timeFormat24hr) : now.format(this.panel.timeSettings.timeFormat12hr);
+
+    this.time = now.format(this.getTimeFormat());
+  }
+
+  getTimeFormat() {
+    if (this.panel.clockType === '24 hour') {
+      return "HH:mm:ss";
+    } else if (this.panel.clockType === '12 hour') {
+      return "h:mm:ss A";
+    } else {
+      return this.panel.timeSettings.customFormat;
+    }
   }
 
   renderCountdown() {

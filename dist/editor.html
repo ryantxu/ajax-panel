@@ -20,21 +20,16 @@
 		<div class="gf-form">
 			<label class="gf-form-label width-9">12 or 24 hour</label>
 			<div class="gf-form-select-wrapper max-width-9">
-				<select class="input-small gf-form-input" ng-model="ctrl.panel.clockType"
-																							ng-options="t for t in ['12 hour', '24 hour']" ng-change="ctrl.render()"></select>
+				<select class="input-small gf-form-input" ng-model="ctrl.panel.clockType" ng-options="t for t in ['12 hour', '24 hour', 'custom']" ng-change="ctrl.render()"></select>
 			</div>
+		</div>
+    <div class="gf-form" ng-show="ctrl.panel.clockType === 'custom'">
+			<label class="gf-form-label width-9">Custom format</label>
+			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.customFormat" ng-change="ctrl.render()" ng-model-onblur />
 		</div>
 		<div class="gf-form">
 			<label class="gf-form-label width-9">Offset from UTC</label>
 			<input type="text" class="input-small gf-form-input max-width-9" placeholder="+/- hours" ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
-		</div>
-		<div class="gf-form">
-			<label class="gf-form-label width-9">Format 12hr</label>
-			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.timeFormat12hr" ng-change="ctrl.render()" ng-model-onblur />
-		</div>
-		<div class="gf-form">
-			<label class="gf-form-label width-9">Format 24hr</label>
-			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.timeFormat24hr" ng-change="ctrl.render()" ng-model-onblur />
 		</div>
 		<div class="gf-form">
 			<label class="gf-form-label width-9">Font Size</label>

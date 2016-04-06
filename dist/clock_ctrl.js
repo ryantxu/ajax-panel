@@ -76,8 +76,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
           fontWeight: 'normal'
         },
         timeSettings: {
-          timeFormat24hr: 'HH:mm:ss',
-          timeFormat12hr: 'h:mm:ss A',
+          customFormat: 'HH:mm:ss',
           fontSize: '60px',
           fontWeight: 'normal'
         }
@@ -92,10 +91,15 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
           var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ClockCtrl).call(this, $scope, $injector));
 
           _.defaults(_this.panel, panelDefaults);
+          _.defaults(_this.panel.timeSettings, panelDefaults.timeSettings);
+
           if (!(_this.panel.countdownSettings.endCountdownTime instanceof Date)) {
             _this.panel.countdownSettings.endCountdownTime = moment(_this.panel.countdownSettings.endCountdownTime).toDate();
           }
+          console.log('#ctor', _this.panel.clockType);
+
           _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
+          _this.events.on('panel-teardown', _this.onPanelTeardown.bind(_this));
           _this.updateClock();
           return _this;
         }
@@ -106,23 +110,26 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
             this.addEditorTab('Options', 'public/plugins/grafana-clock-panel/editor.html', 2);
           }
         }, {
+          key: 'onPanelTeardown',
+          value: function onPanelTeardown() {
+            this.$timeout.cancel(this.nextTickPromise);
+          }
+        }, {
           key: 'updateClock',
           value: function updateClock() {
-            var _this2 = this;
-
             if (this.panel.mode === 'time') {
               this.renderTime();
             } else {
               this.renderCountdown();
             }
-            this.$timeout(function () {
-              _this2.updateClock();
-            }, 1000);
+
+            this.nextTickPromise = this.$timeout(this.updateClock.bind(this), 1000);
           }
         }, {
           key: 'renderTime',
           value: function renderTime() {
             var now = void 0;
+
             if (this.panel.offsetFromUtc) {
               now = moment().utcOffset(parseInt(this.panel.offsetFromUtc, 10));
             } else {
@@ -132,7 +139,19 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
             if (this.panel.dateSettings.showDate) {
               this.date = now.format(this.panel.dateSettings.dateFormat);
             }
-            this.time = this.panel.clockType === '24 hour' ? now.format(this.panel.timeSettings.timeFormat24hr) : now.format(this.panel.timeSettings.timeFormat12hr);
+
+            this.time = now.format(this.getTimeFormat());
+          }
+        }, {
+          key: 'getTimeFormat',
+          value: function getTimeFormat() {
+            if (this.panel.clockType === '24 hour') {
+              return "HH:mm:ss";
+            } else if (this.panel.clockType === '12 hour') {
+              return "h:mm:ss A";
+            } else {
+              return this.panel.timeSettings.customFormat;
+            }
           }
         }, {
           key: 'renderCountdown',

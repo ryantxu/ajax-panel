@@ -73,6 +73,7 @@ export class ClockCtrl extends PanelCtrl {
     }
 
     this.time = now.format(this.getTimeFormat());
+    this.render();
   }
 
   getTimeFormat() {
@@ -119,6 +120,18 @@ export class ClockCtrl extends PanelCtrl {
     }
 
     this.time = formattedTimeLeft;
+  }
+
+  link(scope, elem) {
+    this.events.on('render', () => {
+      var $panelContainer = elem.find('.panel-container');
+
+      if (this.panel.bgColor) {
+        $panelContainer.css('background-color', this.panel.bgColor);
+      } else {
+        $panelContainer.css('background-color', '');
+      }
+    });
   }
 }
 

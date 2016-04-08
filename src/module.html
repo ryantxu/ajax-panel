@@ -1,4 +1,4 @@
-<div class="clock-panel" style="height: {{ctrl.height}}px; background-color: {{ctrl.panel.bgColor}};">
+<div class="clock-panel" ng-style="{height: ctrl.height}">
   <span ng-if="ctrl.panel.dateSettings.showDate && ctrl.panel.mode === 'time'"
     <h3 style="font-size: {{ctrl.panel.dateSettings.fontSize}}; font-weight: {{ctrl.panel.dateSettings.fontWeight}};">{{ctrl.date}}</h3>
   </span>

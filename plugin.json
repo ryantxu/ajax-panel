@@ -19,7 +19,7 @@
       {"name": "MIT License", "url": "https://github.com/grafana/clock-panel/blob/master/LICENSE"}
     ],
     "screenshots": [
-      {"name": "Two clocks and a countdown", "path": "src/img/screenshot-clocks.png"},
+      {"name": "Showcase", "path": "src/img/screenshot-showcase.png"},
       {"name": "Options", "path": "src/img/screenshot-clock-options.png"}
     ],
     "version": "0.0.3",

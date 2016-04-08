@@ -11,15 +11,15 @@
     },
     "keywords": ["clock", "panel"],
     "logos": {
-      "small": "/src/img/clock_panel_logo.svg",
-      "large": "/src/img/clock_panel_logo.svg"
+      "small": "src/img/clock_panel_logo.svg",
+      "large": "src/img/clock_panel_logo.svg"
     },
     "links": [
       {"name": "Project site", "url": "https://github.com/grafana/clock-panel"},
       {"name": "MIT License", "url": "https://github.com/grafana/clock-panel/blob/master/LICENSE"}
     ],
     "screenshots": [
-      {"name": "Two clocks and a countdown", "path": "src/img/screenshot-clocks.png"},
+      {"name": "Showcase", "path": "src/img/screenshot-showcase.png"},
       {"name": "Options", "path": "src/img/screenshot-clock-options.png"}
     ],
     "version": "0.0.3",

@@ -22,7 +22,7 @@
       {"name": "Two clocks and a countdown", "path": "src/img/screenshot-clocks.png"},
       {"name": "Options", "path": "src/img/screenshot-clock-options.png"}
     ],
-    "version": "0.0.2",
+    "version": "0.0.3",
     "updated": "2015-04-01"
   },
 

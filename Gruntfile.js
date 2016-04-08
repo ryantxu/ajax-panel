@@ -12,14 +12,20 @@ module.exports = (grunt) => {
       src_to_dist: {
         cwd: 'src',
         expand: true,
-        src: ['**/*', '!**/*.js', '!**/*.scss'],
+        src: ['**/*', '!**/*.js', '!**/*.scss', '!img/**/*'],
         dest: 'dist'
       },
       pluginDef: {
         expand: true,
-        src: [ 'plugin.json', 'README.md' ],
+        src: ['plugin.json', 'README.md'],
         dest: 'dist',
-      }
+      },
+      img_to_dist: {
+        cwd: 'src',
+        expand: true,
+        src: ['img/**/*'],
+        dest: 'dist/src/'
+      },
     },
 
     watch: {
@@ -49,5 +55,5 @@ module.exports = (grunt) => {
 
   });
 
-  grunt.registerTask('default', ['clean', 'copy:src_to_dist', 'copy:pluginDef', 'babel']);
+  grunt.registerTask('default', ['clean', 'copy:src_to_dist', 'copy:pluginDef', 'copy:img_to_dist', 'babel']);
 };

@@ -28,8 +28,12 @@
 			<input type="text" class="input-small gf-form-input width-9" ng-model="ctrl.panel.timeSettings.customFormat" ng-change="ctrl.render()" ng-model-onblur />
 		</div>
 		<div class="gf-form">
-			<label class="gf-form-label width-9">Offset from UTC</label>
+			<label class="gf-form-label width-9">Offset from UTC (hours)</label>
 			<input type="text" class="input-small gf-form-input max-width-9" placeholder="+/- hours" ng-model="ctrl.panel.offsetFromUtc" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+    <div class="gf-form">
+			<label class="gf-form-label width-9">Offset from UTC (mins)</label>
+			<input type="text" class="input-small gf-form-input max-width-9" placeholder="+/- minutes" ng-model="ctrl.panel.offsetFromUtcMinutes" ng-change="ctrl.render()" ng-model-onblur />
 		</div>
 		<div class="gf-form">
 			<label class="gf-form-label width-9">Font Size</label>

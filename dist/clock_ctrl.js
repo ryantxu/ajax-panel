@@ -64,6 +64,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
         mode: 'time',
         clockType: '24 hour',
         offsetFromUtc: null,
+        offsetFromUtcMinutes: null,
         bgColor: null,
         countdownSettings: {
           endCountdownTime: moment().seconds(0).milliseconds(0).add(1, 'day').toDate(),
@@ -96,7 +97,6 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
           if (!(_this.panel.countdownSettings.endCountdownTime instanceof Date)) {
             _this.panel.countdownSettings.endCountdownTime = moment(_this.panel.countdownSettings.endCountdownTime).toDate();
           }
-          console.log('#ctor', _this.panel.clockType);
 
           _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
           _this.events.on('panel-teardown', _this.onPanelTeardown.bind(_this));
@@ -130,7 +130,10 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
           value: function renderTime() {
             var now = void 0;
 
-            if (this.panel.offsetFromUtc) {
+            if (this.panel.offsetFromUtc && this.panel.offsetFromUtcMinutes) {
+              var offsetInMinutes = parseInt(this.panel.offsetFromUtc, 10) * 60 + parseInt(this.panel.offsetFromUtcMinutes, 10);
+              now = moment().utcOffset(offsetInMinutes);
+            } else if (this.panel.offsetFromUtc && !this.panel.offsetFromUtcMinutes) {
               now = moment().utcOffset(parseInt(this.panel.offsetFromUtc, 10));
             } else {
               now = moment();
@@ -147,12 +150,14 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
           key: 'getTimeFormat',
           value: function getTimeFormat() {
             if (this.panel.clockType === '24 hour') {
-              return "HH:mm:ss";
-            } else if (this.panel.clockType === '12 hour') {
-              return "h:mm:ss A";
-            } else {
-              return this.panel.timeSettings.customFormat;
+              return 'HH:mm:ss';
             }
+
+            if (this.panel.clockType === '12 hour') {
+              return 'h:mm:ss A';
+            }
+
+            return this.panel.timeSettings.customFormat;
           }
         }, {
           key: 'renderCountdown',

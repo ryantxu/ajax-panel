@@ -7,6 +7,7 @@ const panelDefaults = {
   mode: 'time',
   clockType: '24 hour',
   offsetFromUtc: null,
+  offsetFromUtcMinutes: null,
   bgColor: null,
   countdownSettings: {
     endCountdownTime: moment().seconds(0).milliseconds(0).add(1, 'day').toDate(),
@@ -34,7 +35,6 @@ export class ClockCtrl extends PanelCtrl {
     if (!(this.panel.countdownSettings.endCountdownTime instanceof Date)) {
       this.panel.countdownSettings.endCountdownTime = moment(this.panel.countdownSettings.endCountdownTime).toDate();
     }
-    console.log('#ctor', this.panel.clockType);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
@@ -62,7 +62,10 @@ export class ClockCtrl extends PanelCtrl {
   renderTime() {
     let now;
 
-    if (this.panel.offsetFromUtc) {
+    if (this.panel.offsetFromUtc && this.panel.offsetFromUtcMinutes) {
+      const offsetInMinutes = (parseInt(this.panel.offsetFromUtc, 10) * 60) + parseInt(this.panel.offsetFromUtcMinutes, 10);
+      now = moment().utcOffset(offsetInMinutes);
+    } else if (this.panel.offsetFromUtc && !this.panel.offsetFromUtcMinutes) {
       now = moment().utcOffset(parseInt(this.panel.offsetFromUtc, 10));
     } else {
       now = moment();
@@ -78,12 +81,14 @@ export class ClockCtrl extends PanelCtrl {
 
   getTimeFormat() {
     if (this.panel.clockType === '24 hour') {
-      return "HH:mm:ss";
-    } else if (this.panel.clockType === '12 hour') {
-      return "h:mm:ss A";
-    } else {
-      return this.panel.timeSettings.customFormat;
+      return 'HH:mm:ss';
     }
+
+    if (this.panel.clockType === '12 hour') {
+      return 'h:mm:ss A';
+    }
+
+    return this.panel.timeSettings.customFormat;
   }
 
   renderCountdown() {
@@ -124,7 +129,7 @@ export class ClockCtrl extends PanelCtrl {
 
   link(scope, elem) {
     this.events.on('render', () => {
-      var $panelContainer = elem.find('.panel-container');
+      const $panelContainer = elem.find('.panel-container');
 
       if (this.panel.bgColor) {
         $panelContainer.css('background-color', this.panel.bgColor);

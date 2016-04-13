@@ -67,7 +67,7 @@
 		</div>
 	</div>
 
-	<div class="section gf-form-group">
+	<div class="section gf-form-group" ng-if="ctrl.panel.mode === 'time'">
 		<h5 class="section-heading">Date options</h5>
 
 		<gf-form-switch class="gf-form" label="Show" label-class="width-8" checked="ctrl.panel.dateSettings.showDate" on-change="ctrl.render()"></gf-form-switch>

@@ -38,6 +38,8 @@ export class ClockCtrl extends PanelCtrl {
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
+    this.events.on('panel-initialized', this.render.bind(this));
+
     this.updateClock();
   }
 
@@ -76,7 +78,6 @@ export class ClockCtrl extends PanelCtrl {
     }
 
     this.time = now.format(this.getTimeFormat());
-    this.render();
   }
 
   getTimeFormat() {
@@ -105,25 +106,30 @@ export class ClockCtrl extends PanelCtrl {
       return;
     }
 
+    var previous = '';
+
     if (timeLeft.years() > 0) {
       formattedTimeLeft = timeLeft.years() === 1 ? '1 year, ' : timeLeft.years() + ' years, ';
+      previous = 'years';
     }
-    if (timeLeft.months() > 0) {
+    if (timeLeft.months() > 0 || previous === 'years') {
       formattedTimeLeft += timeLeft.months() === 1 ? '1 month, ' : timeLeft.months() + ' months, ';
+      previous = 'month';
     }
-    if (timeLeft.days() > 0) {
+    if (timeLeft.days() > 0 || previous === 'months') {
       formattedTimeLeft += timeLeft.days() === 1 ? '1 day, ' : timeLeft.days() + ' days, ';
+      previous = 'days';
     }
-    if (timeLeft.hours() > 0) {
+    if (timeLeft.hours() > 0 || previous === 'days') {
       formattedTimeLeft += timeLeft.hours() === 1 ? '1 hour, ' : timeLeft.hours() + ' hours, ';
-    }
-    if (timeLeft.minutes() > 0) {
-      formattedTimeLeft += timeLeft.minutes() === 1 ? '1 minute, ' : timeLeft.minutes() + ' minutes, ';
-    }
-    if (timeLeft.seconds() > 0) {
-      formattedTimeLeft += timeLeft.seconds() === 1 ? '1 second, ' : timeLeft.seconds() + ' seconds';
+      previous = 'hours';
     }
 
+    if (timeLeft.minutes() > 0 || previous === 'hours') {
+      formattedTimeLeft += timeLeft.minutes() === 1 ? '1 minute, ' : timeLeft.minutes() + ' minutes, ';
+    }
+
+    formattedTimeLeft += timeLeft.seconds() === 1 ? '1 second, ' : timeLeft.seconds() + ' seconds';
     this.time = formattedTimeLeft;
   }
 

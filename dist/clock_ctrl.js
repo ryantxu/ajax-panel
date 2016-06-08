@@ -199,7 +199,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', './css/clock-panel.css!'
               formattedTimeLeft += timeLeft.minutes() === 1 ? '1 minute, ' : timeLeft.minutes() + ' minutes, ';
             }
 
-            formattedTimeLeft += timeLeft.seconds() === 1 ? '1 second, ' : timeLeft.seconds() + ' seconds';
+            formattedTimeLeft += timeLeft.seconds() === 1 ? '1 second ' : timeLeft.seconds() + ' seconds';
             this.time = formattedTimeLeft;
           }
         }, {

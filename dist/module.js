@@ -1,6 +1,8 @@
 'use strict';
 
 System.register(['./clock_ctrl'], function (_export, _context) {
+  "use strict";
+
   var ClockCtrl;
   return {
     setters: [function (_clock_ctrl) {

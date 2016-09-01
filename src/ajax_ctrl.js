@@ -13,7 +13,7 @@ export class AjaxCtrl extends PanelCtrl {
  // constructor($scope, $injector, private templateSrv, private $sce) { 
   constructor($scope, $injector, templateSrv, $sce, $http) {
     super($scope, $injector);
-    this.sce = $sce;
+    this.$sce = $sce;
     this.$http = $http;
     this.templateSrv = templateSrv;
 
@@ -45,9 +45,11 @@ export class AjaxCtrl extends PanelCtrl {
       method: 'GET',
       url: this.panel.source
     }).then(function successCallback(response) {
-      console.log('success', responsse);
+      console.log('success', response);
+
+      
     }, function errorCallback(response) {
-      console.log('error', responsse);
+      console.log('error', response);
     });
   }
 

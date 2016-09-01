@@ -1,15 +1,15 @@
 'use strict';
 
-System.register(['./clock_ctrl'], function (_export, _context) {
+System.register(['./ajax_ctrl'], function (_export, _context) {
   "use strict";
 
-  var ClockCtrl;
+  var AjaxCtrl;
   return {
-    setters: [function (_clock_ctrl) {
-      ClockCtrl = _clock_ctrl.ClockCtrl;
+    setters: [function (_ajax_ctrl) {
+      AjaxCtrl = _ajax_ctrl.AjaxCtrl;
     }],
     execute: function () {
-      _export('PanelCtrl', ClockCtrl);
+      _export('PanelCtrl', AjaxCtrl);
     }
   };
 });

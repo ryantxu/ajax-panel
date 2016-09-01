@@ -4,12 +4,13 @@ import _ from 'lodash';
 import './css/ajax-panel.css!';
 
 const panelDefaults = {
-  url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
-  content : "HELLO!"
+  mode: 'url',
+  source: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
+  body : "HELLO!"
 };
 
 export class AjaxCtrl extends PanelCtrl {
-  constructor($scope, $injector) {
+  constructor($scope, $injector, private templateSrv, private $sce) {
     super($scope, $injector);
     _.defaults(this.panel, panelDefaults);
     _.defaults(this.panel.timeSettings, panelDefaults.timeSettings);
@@ -30,11 +31,20 @@ export class AjaxCtrl extends PanelCtrl {
 
 
   onRender() {
-    var content = this.panel.content;
+    var content = this.panel.body;
     content += " :: " + this + " :: " + new Date()
 
-    console.log( "onRender", this, content);
+    console.log( "onRender", this, content, this.panel.scopedVars);
     this.updateContent(content);
+
+    $http({
+      method: 'GET',
+      url: source
+    }).then(function successCallback(response) {
+      console.log('success', responsse);
+    }, function errorCallback(response) {
+      console.log('error', responsse);
+    });
   }
 
   updateContent(html) {

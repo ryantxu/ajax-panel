@@ -10,8 +10,8 @@
     },
     "keywords": ["ajax", "panel"],
     "logos": {
-      "small": "src/img/clock_panel_logo.svg",
-      "large": "src/img/clock_panel_logo.svg"
+      "small": "src/img/ajax_panel_logo.svg",
+      "large": "src/img/ajax_panel_logo.svg"
     },
     "links": [
       {"name": "Project site", "url": "https://github.com/ryantxu/ajax-panel"},

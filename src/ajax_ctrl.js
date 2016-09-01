@@ -10,8 +10,13 @@ const panelDefaults = {
 };
 
 export class AjaxCtrl extends PanelCtrl {
-  constructor($scope, $injector, private templateSrv, private $sce) {
+ // constructor($scope, $injector, private templateSrv, private $sce) { 
+  constructor($scope, $injector, templateSrv, $sce, $http) {
     super($scope, $injector);
+    this.sce = $sce;
+    this.$http = $http;
+    this.templateSrv = templateSrv;
+
     _.defaults(this.panel, panelDefaults);
     _.defaults(this.panel.timeSettings, panelDefaults.timeSettings);
 
@@ -29,7 +34,6 @@ export class AjaxCtrl extends PanelCtrl {
    // this.$timeout.cancel(this.nextTickPromise);
   }
 
-
   onRender() {
     var content = this.panel.body;
     content += " :: " + this + " :: " + new Date()
@@ -37,9 +41,9 @@ export class AjaxCtrl extends PanelCtrl {
     console.log( "onRender", this, content, this.panel.scopedVars);
     this.updateContent(content);
 
-    $http({
+    this.$http({
       method: 'GET',
-      url: source
+      url: this.panel.source
     }).then(function successCallback(response) {
       console.log('success', responsse);
     }, function errorCallback(response) {

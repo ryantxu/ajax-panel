@@ -1,5 +1,5 @@
-import {ClockCtrl} from './clock_ctrl';
+import {AjaxCtrl} from './ajax_ctrl';
 
 export {
-  ClockCtrl as PanelCtrl
+  AjaxCtrl as PanelCtrl
 };

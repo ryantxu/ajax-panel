@@ -1,6 +1,7 @@
 ## AJAX Panel for Grafana
 
-The AJAX Panel can load external content into the dashboard.  
+The AJAX Panel can load external content into the dashboard.  This is a more powerful and flexible solution than
+using an <iframe 
 
 
 ### Options
@@ -36,7 +37,7 @@ The AJAX Panel can load external content into the dashboard.
 
 ##### v0.0.1
 
-- Quick and Dirty, but seems to work :)
+- Quick and Dirty, but it works!
 
 
 
@@ -44,6 +45,7 @@ The AJAX Panel can load external content into the dashboard.
  - Toggle the 'spinner' for panel
  - Get the panel width?
  - Error handling
+ - avoid the 'Data source query result invalid, missing data field: undefined' error message
 
 
 ### Wishlist... if you are looking for a project :)

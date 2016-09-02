@@ -1,12 +1,6 @@
 ## AJAX Panel for Grafana
 
-The AJAX Panel will load external content into a dashboard.  
-
-
-### TODO... help please :)
- - Toggle the 'spinner' for panel?
- - Get the panel width?
- - Error handling
+The AJAX Panel can load external content into the dashboard.  
 
 
 ### Options
@@ -22,7 +16,7 @@ The AJAX Panel will load external content into a dashboard.
 - **Parameters**:
 
   The parameters that will be passed in the request.  This is a javascript object with access to the variables:
-  	- 'ctrl' = The control object.
+  	- `ctrl` The control object.
   
   Sample Parameters:
 	```
@@ -34,10 +28,9 @@ The AJAX Panel will load external content into a dashboard.
 	```
 
 
-
 ### Screenshots
 
-- TODO
+- [Screenshot of the options screen](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
 
 #### Changelog
 
@@ -47,8 +40,15 @@ The AJAX Panel will load external content into a dashboard.
 
 
 
-### Wishlist... possible features
+### Roadmap... hopefully soon
+ - Toggle the 'spinner' for panel
+ - Get the panel width?
+ - Error handling
+
+
+### Wishlist... if you are looking for a project :)
  - Add authentication info to the sub-request?
  - Configure timer to refresh
  - Load CSS file?
- - drop in javascript for display?
+ - configure javascript for display
+ - why does the `Time range` > `Override relative time` not work?

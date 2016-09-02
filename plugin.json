@@ -18,11 +18,10 @@
       {"name": "MIT License",  "url": "https://github.com/ryantxu/ajax-panel/blob/master/LICENSE"}
     ],
     "screenshots": [
-      {"name": "Showcase", "path": "src/img/screenshot-showcase.png"},
-      {"name": "Options", "path": "src/img/screenshot-clock-options.png"}
+      {"name": "Options", "path": "src/img/screenshot-ajax-options.png"}
     ],
     "version": "0.0.1",
-    "updated": "2016-09-01"
+    "updated": "2016-09-02"
   },
 
   "dependencies": {

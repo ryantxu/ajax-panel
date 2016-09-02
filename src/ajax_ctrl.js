@@ -9,10 +9,10 @@ const panelDefaults = {
   method: 'GET',
   url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
   errorMode: 'show',
-  params_js: "{\n"+
-             " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n"+
-             " to:ctrl.range.to.format('x'), \n"+
-             " height:ctrl.height\n"
+  params_js: "{\n" +
+             " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
+             " to:ctrl.range.to.format('x'), \n" +
+             " height:ctrl.height\n" +
              "}",
   display_js: null
 };

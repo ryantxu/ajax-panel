@@ -1,4 +1,5 @@
 <div class="editor-row">
+
 	<div class="section gf-form-group" style="width:100%;">
 		<h5 class="section-heading">HTTP Request</h5>
 		<div class="gf-form">
@@ -11,26 +12,22 @@
 		</div>
 	</div>
 
-<br/>
+	<div style="margin-top:10px;">
+		<h5 class="section-heading">Parameters (via javascript)</h5>
+		<textarea class="gf-form-input" autocorrect="off" spellcheck="false" autocapitalize="off"
+		  ng-model="ctrl.panel.params_js" rows="5" style="width:100%" 
+		  ng-change="ctrl.updateFN()" 
+		  ng-model-onblur>
+		</textarea>
+	</div>
 
-
-<div class="editor-row">
-<h5 class="section-heading">Parameters (via javascript)</h5>
-<textarea class="gf-form-input" autocorrect="off" spellcheck="false" autocapitalize="off"
-  ng-model="ctrl.panel.params_js" rows="5" style="width:100%" 
-  ng-change="ctrl.updateFN()" 
-  ng-model-onblur>
-</textarea>
-</div>
-
-<div class="editor-row">
-<h5 class="section-heading">Display (via javascript)</h5>
-<textarea class="gf-form-input" autocorrect="off" spellcheck="false" autocapitalize="off"
-  ng-model="ctrl.panel.display_js" rows="8" style="width:100%" 
-  ng-change="ctrl.updateFN()" 
-  ng-model-onblur>
-</textarea>
-</div>
-
+	<div style="margin-top:10px;">
+		<h5 class="section-heading">Display (via javascript)</h5>
+		<textarea class="gf-form-input" autocorrect="off" spellcheck="false" autocapitalize="off"
+		  ng-model="ctrl.panel.display_js" rows="8" style="width:100%" 
+		  ng-change="ctrl.updateFN()" 
+		  ng-model-onblur>
+		</textarea>
+	</div>
 
 </div>

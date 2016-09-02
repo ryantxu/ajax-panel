@@ -1,15 +1,14 @@
 ## AJAX Panel Plugin for Grafana
 
-The AJAX Panel will load its contents when the time query changes.
+The AJAX Panel will load external content when the time query changes.
 
 
 ### Wishlist... help please :)
 
-	- Get the current time window?
-	- what events cause the double render?
-	- Add the standard 'Time range' Tab to the editor
 	- Get the logged in user info
 	- Toggle the 'spinner' for panel?
+	- Get the panel width?
+	- Error handling
 
 
 ### Options
@@ -22,10 +21,20 @@ The AJAX Panel will load its contents when the time query changes.
 
   The URL to request
 
+- **Parameters**:
 
-- **ErrorMode**:
+  The parameters that will be passed in the request.  This is a javascript object with access to the variables:
+  	- 'ctrl' = The control object.
+  
+  Sample Parameters:
+```
+{
+ from:ctrl.range.from.format('x'),  // x is unix ms timestamp
+ to:ctrl.range.to.format('x'), 
+ height:ctrl.height
+}
+```
 
-  SHOW / HIDE -- should we see the error?
 
 
 ### Screenshots
@@ -36,4 +45,4 @@ The AJAX Panel will load its contents when the time query changes.
 
 ##### v0.0.1
 
-- Copied from clock panel
+- Quick and Dirty, but seems to work :)

@@ -6,8 +6,10 @@ The AJAX Panel will load its contents when the time query changes.
 ### Wishlist... help please :)
 
 	- Get the current time window?
-	- Add the standard 'Time range' panel to the editor
+	- what events cause the double render?
+	- Add the standard 'Time range' Tab to the editor
 	- Get the logged in user info
+	- Toggle the 'spinner' for panel?
 
 
 ### Options
@@ -19,6 +21,11 @@ The AJAX Panel will load its contents when the time query changes.
 - **URL**:
 
   The URL to request
+
+
+- **ErrorMode**:
+
+  SHOW / HIDE -- should we see the error?
 
 
 ### Screenshots

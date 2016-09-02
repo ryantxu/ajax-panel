@@ -1,15 +1,19 @@
-import {PanelCtrl} from 'app/plugins/sdk';
-import moment from 'moment';
+import {MetricsPanelCtrl} from 'app/plugins/sdk';
 import _ from 'lodash';
+import kbn from 'app/core/utils/kbn';
+import TimeSeries from 'app/core/time_series';
+import moment from 'moment';
 import './css/ajax-panel.css!';
 
 const panelDefaults = {
   method: 'GET',
   url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
-  errorMode: 'show'
+  errorMode: 'show',
+  params_js:"{\nfrom:ctrl.range.from.format('x'),   // x is unix ms timestamp\nto:ctrl.range.to.format('x'),\nheight:ctrl.height\n}",
+  display_js: null
 };
 
-export class AjaxCtrl extends PanelCtrl {
+export class AjaxCtrl extends MetricsPanelCtrl {
  // constructor($scope, $injector, private templateSrv, private $sce) { 
   constructor($scope, $injector, templateSrv, $sce, $http) {
     super($scope, $injector);
@@ -21,31 +25,86 @@ export class AjaxCtrl extends PanelCtrl {
     _.defaults(this.panel.timeSettings, panelDefaults.timeSettings);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
-    this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
+    this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
     this.events.on('refresh', this.onRender.bind(this));
     this.events.on('render', this.onRender.bind(this));
   }
 
+
+  issueQueries(datasource) {
+    this.updateTimeRange();
+
+    console.log('block issueQueries', datasource);
+  }
+
+
+  onPanelInitalized() {
+    this.updateFN();
+  }
+
   onInitEditMode() {
-    this.addEditorTab('Options', 'public/plugins/grafana-ajax-panel/editor.html', 2);
+    this.editorTabs.splice(1,1); // remove the 'Metrics Tab'
+    this.addEditorTab('Options', 'public/plugins/grafana-ajax-panel/editor.html',1);
     this.editorTabIndex = 1;
+  
+    this.updateFN();
   }
 
   onPanelTeardown() {
    // this.$timeout.cancel(this.nextTickPromise);
   }
 
+  updateFN() {
+    this.params_fn = null;
+    this.display_fn = null;
+
+    if(this.panel.params_js) {
+    try {
+      this.params_fn = new Function('ctrl', 'return ' + this.panel.params_js);
+    }
+    catch( ex ) {
+      console.log('error parsing params_js', this.panel.params_js, ex );
+      this.params_fn = null;
+    }
+}
+if(this.panel.display_js) {
+    try {
+      this.display_fn = new Function('ctrl', 'response', this.panel.display_js);
+    }
+    catch( ex ) {
+      console.log('error parsing display_js', this.panel.display_js, ex );
+      this.display_fn = null;
+    }
+}
+    this.render();
+  }
+
   onRender() {
-    console.log( "onRender", this );
-    // TODO, get the time query and user
+
+console.log('render', this);
+  this.updateTimeRange();
+
 
 (function(wrap){ // need access to 'this' later :(
+    var params;
+    if(wrap.params_fn) {
+      params = wrap.params_fn( wrap );
+    }
+    console.log( "onRender", wrap, params );
+    
     wrap.$http({
       method: wrap.panel.method,
-      url: wrap.panel.url
+      url: wrap.panel.url,
+      params: params
     }).then(function successCallback(response) {
       console.log('success', response, wrap);
-      wrap.updateContent(response.data  + "<br/>" +new Date() );
+      var html = response.data;
+      if(wrap.display_fn) {
+	console.log('before display xform', response, wrap.display_fn);
+        html = wrap.display_fn(wrap, response);
+	console.log('after display xform', html);
+      }
+      wrap.updateContent( html );
     }, function errorCallback(response) {
       console.log('error', response);
       var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";

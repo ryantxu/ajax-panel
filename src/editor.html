@@ -2,15 +2,15 @@
 	<div class="section gf-form-group">
 		<!-- <h5 class="section-heading">AJAX Options</h5> -->
 		<div class="gf-form">
-			<label class="gf-form-label width-9">Source Mode</label>
+			<label class="gf-form-label width-9">HTTP</label>
 			<div class="gf-form-select-wrapper max-width-10">
-				<select class="input-medium gf-form-input" ng-model="ctrl.panel.mode" ng-options="t for t in ['url', 'javascript']" ng-change="ctrl.render()"></select>
+				<select class="input-medium gf-form-input" ng-model="ctrl.panel.method" placeholder="Method" ng-options="t for t in ['GET', 'POST']" ng-change="ctrl.render()"></select>
 			</div>
 		</div>
 		<div class="gf-form">
-			<label class="gf-form-label width-9">Source</label>
-			<div class="gf-form-select-wrapper max-width-10">
-				<input type="text" class="input-small gf-form-input max-width-9" placeholder="URL or Javascript" ng-model="ctrl.panel.source" ng-change="ctrl.render()" ng-model-onblur />
+			<label class="gf-form-label ">Source</label>
+			<div class="gf-form-input-wrapper">
+				<input type="text" class="input-small gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.render()" ng-model-onblur />
 			</div>
 		</div>
 	</div>

@@ -4,9 +4,8 @@ import _ from 'lodash';
 import './css/ajax-panel.css!';
 
 const panelDefaults = {
-  mode: 'url',
-  source: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
-  body : "HELLO!"
+  method: 'GET',
+  url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt'
 };
 
 export class AjaxCtrl extends PanelCtrl {
@@ -35,19 +34,15 @@ export class AjaxCtrl extends PanelCtrl {
   }
 
   onRender() {
-    var content = this.panel.body;
-    content += " :: " + this + " :: " + new Date()
-
-    console.log( "onRender", this, content, this.panel.scopedVars);
-    this.updateContent(content);
+    console.log( "onRender", this );
+    // TODO, get the time query and user
 
     this.$http({
-      method: 'GET',
-      url: this.panel.source
+      method: this.panel.method,
+      url: this.panel.url
     }).then(function successCallback(response) {
       console.log('success', response);
-
-      
+      this.updateContent(response.data  + "<br/>" +new Date() );
     }, function errorCallback(response) {
       console.log('error', response);
     });

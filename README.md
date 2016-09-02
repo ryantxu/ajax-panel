@@ -3,7 +3,18 @@
 The AJAX Panel will load its contents when the time query changes.
 
 
+### Wishlist... help please :)
+
+	- Get the current time window?
+	- Add the standard 'Time range' panel to the editor
+	- Get the logged in user info
+
+
 ### Options
+
+- **Method**:
+
+  GET or POST
 
 - **URL**:
 
@@ -12,8 +23,7 @@ The AJAX Panel will load its contents when the time query changes.
 
 ### Screenshots
 
-- [Screenshot of two clocks and a countdown](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-clocks.png)
-- [Screenshot of the options screen](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-clock-options.png)
+- TODO
 
 #### Changelog
 

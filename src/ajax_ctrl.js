@@ -70,6 +70,8 @@ export class AjaxCtrl extends MetricsPanelCtrl {
         this.params_fn = null;
       }
     }
+
+    // NOTE, this is not exposed yet
     if(this.panel.display_js) {
       try {
         this.display_fn = new Function('ctrl', 'response', this.panel.display_js);
@@ -84,8 +86,8 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   onRefresh() {
-    console.log('refresh', this);
-    this.updateTimeRange();
+    //console.log('refresh', this);
+    this.updateTimeRange();  // needed for the first call
 
 
     (function(wrap){ // Must be a better way!  maybe the http callbacks as function in this class?
@@ -93,21 +95,21 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       if(wrap.params_fn) {
         params = wrap.params_fn( wrap );
       }
-      console.log( "onRender", wrap, params );
+      //console.log( "onRender", wrap, params );
       
       wrap.$http({
         method: wrap.panel.method,
         url: wrap.panel.url,
         params: params
       }).then(function successCallback(response) {
-        console.log('success', response, wrap);
+        //console.log('success', response, wrap);
         var html = response.data;
         if(wrap.display_fn) {
           html = wrap.display_fn(wrap, response);
         }
         wrap.updateContent( html );
       }, function errorCallback(response) {
-        console.log('error', response);
+        console.warn('error', response);
         var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
         wrap.updateContent(body);
       });
@@ -125,7 +127,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   onRender() {
-    console.log('render', this);
+    //console.log('render', this);
   }
 }
 

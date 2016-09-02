@@ -1,14 +1,7 @@
-## AJAX Panel Plugin for Grafana
+## AJAX Panel for Grafana
 
-The AJAX Panel will load external content when the time query changes.
-
-
-### Wishlist... help please :)
-
-	- Get the logged in user info
-	- Toggle the 'spinner' for panel?
-	- Get the panel width?
-	- Error handling
+The AJAX Panel can load external content into the dashboard.  This is a more powerful and flexible solution than
+using an <iframe 
 
 
 ### Options
@@ -24,25 +17,42 @@ The AJAX Panel will load external content when the time query changes.
 - **Parameters**:
 
   The parameters that will be passed in the request.  This is a javascript object with access to the variables:
-  	- 'ctrl' = The control object.
+  	- `ctrl` The control object.
   
   Sample Parameters:
-```
-{
- from:ctrl.range.from.format('x'),  // x is unix ms timestamp
- to:ctrl.range.to.format('x'), 
- height:ctrl.height
-}
-```
-
+	```
+	{
+	 from:ctrl.range.from.format('x'),  // x is unix ms timestamp
+	 to:ctrl.range.to.format('x'), 
+	 height:ctrl.height
+	}
+	```
 
 
 ### Screenshots
 
-- TODO
+- [Screenshot of the options screen](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
 
 #### Changelog
 
 ##### v0.0.1
 
-- Quick and Dirty, but seems to work :)
+- Quick and Dirty, but it works!
+
+
+
+### Roadmap... hopefully soon
+ - code cleanup... i'm still learning angular
+ - Toggle the 'spinner' for panel
+ - Get the panel width?
+ - Error handling
+ - avoid the 'Data source query result invalid, missing data field: undefined' error message
+
+
+### Wishlist... if you are looking for a project :)
+ - Add authentication info to the sub-request?
+ - Configure timer to refresh
+ - Load CSS file?
+ - configure javascript for display
+ - why does the `Time range` > `Override relative time` not work?
+ - Check that parameters have changed before sending a new request

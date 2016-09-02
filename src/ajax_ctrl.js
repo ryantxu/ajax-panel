@@ -5,7 +5,8 @@ import './css/ajax-panel.css!';
 
 const panelDefaults = {
   method: 'GET',
-  url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt'
+  url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
+  errorMode: 'show'
 };
 
 export class AjaxCtrl extends PanelCtrl {
@@ -27,6 +28,7 @@ export class AjaxCtrl extends PanelCtrl {
 
   onInitEditMode() {
     this.addEditorTab('Options', 'public/plugins/grafana-ajax-panel/editor.html', 2);
+    this.editorTabIndex = 1;
   }
 
   onPanelTeardown() {
@@ -37,15 +39,21 @@ export class AjaxCtrl extends PanelCtrl {
     console.log( "onRender", this );
     // TODO, get the time query and user
 
-    this.$http({
-      method: this.panel.method,
-      url: this.panel.url
+(function(wrap){ // need access to 'this' later :(
+    wrap.$http({
+      method: wrap.panel.method,
+      url: wrap.panel.url
     }).then(function successCallback(response) {
-      console.log('success', response);
-      this.updateContent(response.data  + "<br/>" +new Date() );
+      console.log('success', response, wrap);
+      wrap.updateContent(response.data  + "<br/>" +new Date() );
     }, function errorCallback(response) {
       console.log('error', response);
+      var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
+      wrap.updateContent(body);
     });
+
+}(this));
+
   }
 
   updateContent(html) {

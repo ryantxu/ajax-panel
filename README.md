@@ -42,6 +42,7 @@ using an <iframe
 
 
 ### Roadmap... hopefully soon
+ - code cleanup... i'm still learning angular
  - Toggle the 'spinner' for panel
  - Get the panel width?
  - Error handling
@@ -54,3 +55,4 @@ using an <iframe
  - Load CSS file?
  - configure javascript for display
  - why does the `Time range` > `Override relative time` not work?
+ - Check that parameters have changed before sending a new request

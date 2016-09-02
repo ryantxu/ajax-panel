@@ -2,5 +2,9 @@
   display: block;
   margin:0px;
   padding:0px;
-  overflow: scroll;
+  overflow: auto;
+}
+
+.ajax-panel-body {
+	width:100%;
 }

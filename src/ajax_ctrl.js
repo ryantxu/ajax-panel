@@ -20,6 +20,7 @@ const panelDefaults = {
 export class AjaxCtrl extends MetricsPanelCtrl {
   // constructor($scope, $injector, private templateSrv, private $sce) { 
   constructor($scope, $injector, templateSrv, $sce, $http) {
+
     super($scope, $injector);
     this.$sce = $sce;
     this.$http = $http;
@@ -89,32 +90,31 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     //console.log('refresh', this);
     this.updateTimeRange();  // needed for the first call
 
-
-    (function(wrap){ // Must be a better way!  maybe the http callbacks as function in this class?
-      var params;
-      if(wrap.params_fn) {
-        params = wrap.params_fn( wrap );
+    var self = this;
+    var params;
+    if(this.params_fn) {
+      params = this.params_fn( this );
+    }
+    //console.log( "onRender", this, params );
+    
+    this.$http({
+      method: this.panel.method,
+      url: this.panel.url,
+      params: params
+    }).then(function successCallback(response) {
+      //console.log('success', response, self);
+      var html = response.data;
+      if(self.display_fn) {
+        html = self.display_fn(self, response);
       }
-      //console.log( "onRender", wrap, params );
-      
-      wrap.$http({
-        method: wrap.panel.method,
-        url: wrap.panel.url,
-        params: params
-      }).then(function successCallback(response) {
-        //console.log('success', response, wrap);
-        var html = response.data;
-        if(wrap.display_fn) {
-          html = wrap.display_fn(wrap, response);
-        }
-        wrap.updateContent( html );
-      }, function errorCallback(response) {
-        console.warn('error', response);
-        var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
-        wrap.updateContent(body);
-      });
+      self.updateContent( html );
+    }, function errorCallback(response) {
+      console.warn('error', response);
+      var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
+      self.updateContent(body);
+    });
 
-    }(this));
+    
   }
 
   updateContent(html) {

@@ -1,7 +1,7 @@
 {
   "type": "panel",
   "name": "AJAX",
-  "id": "grafana-ajax-panel",
+  "id": "ryantxu-ajax-panel",
 
   "info": {
     "description": "AJAX panel for grafana",

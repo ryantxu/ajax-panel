@@ -18,7 +18,7 @@ const panelDefaults = {
 };
 
 export class AjaxCtrl extends MetricsPanelCtrl {
-  // constructor($scope, $injector, private templateSrv, private $sce) { 
+  // constructor($scope, $injector, private templateSrv, private $sce) {
   constructor($scope, $injector, templateSrv, $sce, $http) {
 
     super($scope, $injector);
@@ -48,15 +48,15 @@ export class AjaxCtrl extends MetricsPanelCtrl {
 
   onInitEditMode() {
     this.editorTabs.splice(1,1); // remove the 'Metrics Tab'
-    this.addEditorTab('Options', 'public/plugins/grafana-ajax-panel/editor.html',1);
+    this.addEditorTab('Options', 'public/plugins/' + this.pluginId + '/editor.html',1);
     this.editorTabIndex = 1;
-  
+
     this.updateFN();
   }
 
   onPanelTeardown() {
    // this.$timeout.cancel(this.nextTickPromise);
-  } 
+  }
 
   updateFN() {
     this.params_fn = null;
@@ -96,7 +96,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       params = this.params_fn( this );
     }
     //console.log( "onRender", this, params );
-    
+
     this.$http({
       method: this.panel.method,
       url: this.panel.url,
@@ -114,7 +114,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       self.updateContent(body);
     });
 
-    
+
   }
 
   updateContent(html) {

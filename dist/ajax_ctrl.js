@@ -77,7 +77,7 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
       _export('AjaxCtrl', AjaxCtrl = function (_MetricsPanelCtrl) {
         _inherits(AjaxCtrl, _MetricsPanelCtrl);
 
-        // constructor($scope, $injector, private templateSrv, private $sce) { 
+        // constructor($scope, $injector, private templateSrv, private $sce) {
         function AjaxCtrl($scope, $injector, templateSrv, $sce, $http) {
           _classCallCheck(this, AjaxCtrl);
 
@@ -116,7 +116,7 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
           key: 'onInitEditMode',
           value: function onInitEditMode() {
             this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
-            this.addEditorTab('Options', 'public/plugins/grafana-ajax-panel/editor.html', 1);
+            this.addEditorTab('Options', 'public/plugins/' + this.pluginId + '/editor.html', 1);
             this.editorTabIndex = 1;
 
             this.updateFN();

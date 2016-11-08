@@ -35,14 +35,13 @@ using an <iframe
 
 #### Changelog
 
-##### v0.0.1
+##### v0.0.2
 
 - Quick and Dirty, but it works!
 
 
 
 ### Roadmap... hopefully soon
- - code cleanup... i'm still learning angular
  - Toggle the 'spinner' for panel
  - Get the panel width?
  - Error handling

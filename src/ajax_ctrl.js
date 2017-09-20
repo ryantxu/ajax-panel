@@ -1,4 +1,5 @@
 import {MetricsPanelCtrl} from 'app/plugins/sdk';
+import $ from 'jquery'
 import _ from 'lodash';
 import kbn from 'app/core/utils/kbn';
 import TimeSeries from 'app/core/time_series';
@@ -39,7 +40,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   issueQueries(datasource) {
     this.updateTimeRange();
 
-    console.log('block issueQueries', datasource);
+    //console.log('block issueQueries', datasource);
   }
 
   onPanelInitalized() {
@@ -75,7 +76,8 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     // NOTE, this is not exposed yet
     if(this.panel.display_js) {
       try {
-        this.display_fn = new Function('ctrl', 'response', this.panel.display_js);
+        this.params_fn = new Function('ctrl', 'return ' 
+          + this.templateSrv.replace(this.panel.params_js, this.panel.scopedVars));
       }
       catch( ex ) {
         console.warn('error parsing display_js', this.panel.display_js, ex );
@@ -91,30 +93,38 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     this.updateTimeRange();  // needed for the first call
 
     var self = this;
+    var url = this.templateSrv.replace(self.panel.url, this.panel.scopedVars); 
     var params;
     if(this.params_fn) {
       params = this.params_fn( this );
     }
     //console.log( "onRender", this, params );
 
-    this.$http({
-      method: this.panel.method,
-      url: this.panel.url,
-      params: params
-    }).then(function successCallback(response) {
-      //console.log('success', response, self);
-      var html = response.data;
-      if(self.display_fn) {
-        html = self.display_fn(self, response);
-      }
-      self.updateContent( html );
-    }, function errorCallback(response) {
-      console.warn('error', response);
-      var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
-      self.updateContent(body);
-    });
-
-
+    if(self.panel.method === 'iframe') {   
+      var width = self.resolution - 50;   
+      var height = self.height - 10;   
+      var src = encodeURI(url + '&' + $.param(params));   
+      var html = `<iframe width='${width}' height='${height}' frameborder='0' src=${src}><\/iframe>`;   
+      self.updateContent(html);   
+    }   
+    else {   
+      this.$http({
+        method: this.panel.method,
+        url: url,
+        params: params
+      }).then(function successCallback(response) {
+        //console.log('success', response, self);
+        var html = response.data;
+        if(self.display_fn) {
+          html = self.display_fn(self, response);
+        }
+        self.updateContent( html );
+      }, function errorCallback(response) {
+        console.warn('error', response);
+        var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
+        self.updateContent(body);
+      });
+    }
   }
 
   updateContent(html) {

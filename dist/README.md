@@ -8,7 +8,7 @@ using an <iframe
 
 - **Method**:
 
-  GET or POST
+  GET or POST or iframe
 
 - **URL**:
 
@@ -38,8 +38,8 @@ using an <iframe
 
 ##### v0.0.3
 
-- Update xxxx
-
+- Support template variables in url (@linar-jether)
+- Adding iframe method (@linar-jether)
 
 
 ##### v0.0.2

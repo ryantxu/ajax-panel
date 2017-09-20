@@ -4,7 +4,7 @@
 		<h5 class="section-heading">HTTP Request</h5>
 		<div class="gf-form">
 			<div class="gf-form-select-wrapper max-width-10">
-		  	   <select class="input-medium gf-form-input" ng-model="ctrl.panel.method" placeholder="Method" ng-options="t for t in ['GET', 'POST']" ng-change="ctrl.refresh()"></select>
+		  	   <select class="input-medium gf-form-input" ng-model="ctrl.panel.method" placeholder="Method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.refresh()"></select>
 			</div>
 			<div class="gf-form-input-wrapper" style="width:100%;">
 				<input type="text" class="input-large gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.refresh()" ng-model-onblur />

@@ -20,8 +20,8 @@
     "screenshots": [
       {"name": "Options", "path": "src/img/screenshot-ajax-options.png"}
     ],
-    "version": "0.0.2",
-    "updated": "2016-11-08"
+    "version": "0.0.3",
+    "updated": "2017-09-20"
   },
 
   "dependencies": {

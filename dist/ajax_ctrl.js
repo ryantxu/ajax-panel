@@ -72,8 +72,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/utils/kbn', 'a
         method: 'GET',
         url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
         errorMode: 'show',
-        params_js: "{\n" + " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" + " to:ctrl.range.to.format('x'), \n" + " height:ctrl.height\n" + "}",
-        display_js: null
+        params_js: "{\n" + " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" + " to:ctrl.range.to.format('x'), \n" + " height:ctrl.height\n" + "}"
       };
 
       _export('AjaxCtrl', AjaxCtrl = function (_MetricsPanelCtrl) {
@@ -140,16 +139,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/utils/kbn', 'a
               } catch (ex) {
                 console.warn('error parsing params_js', this.panel.params_js, ex);
                 this.params_fn = null;
-              }
-            }
-
-            // NOTE, this is not exposed yet
-            if (this.panel.display_js) {
-              try {
-                this.params_fn = new Function('ctrl', 'return ' + this.templateSrv.replace(this.panel.params_js, this.panel.scopedVars));
-              } catch (ex) {
-                console.warn('error parsing display_js', this.panel.display_js, ex);
-                this.display_fn = null;
               }
             }
 

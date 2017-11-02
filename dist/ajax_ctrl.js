@@ -78,35 +78,81 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/utils/kbn', 'a
       _export('AjaxCtrl', AjaxCtrl = function (_MetricsPanelCtrl) {
         _inherits(AjaxCtrl, _MetricsPanelCtrl);
 
-        // constructor($scope, $injector, private templateSrv, private $sce) {
-        function AjaxCtrl($scope, $injector, templateSrv, $sce, $http) {
+        function AjaxCtrl($scope, $injector, $q, templateSrv, $sce, $http) {
           _classCallCheck(this, AjaxCtrl);
 
           var _this = _possibleConstructorReturn(this, (AjaxCtrl.__proto__ || Object.getPrototypeOf(AjaxCtrl)).call(this, $scope, $injector));
 
           _this.$sce = $sce;
           _this.$http = $http;
+          _this.$q = $q;
           _this.templateSrv = templateSrv;
 
           _.defaults(_this.panel, panelDefaults);
-          _.defaults(_this.panel.timeSettings, panelDefaults.timeSettings);
 
           _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
           _this.events.on('panel-initialized', _this.onPanelInitalized.bind(_this));
-          _this.events.on('refresh', _this.onRefresh.bind(_this));
-          _this.events.on('render', _this.onRender.bind(_this));
+
+          _this.requestCount = 0;
           return _this;
         }
 
-        // This just skips trying to send the actual query.  perhaps there is a better way
+        // Rather than issue a datasource query, we will call our ajax request
 
 
         _createClass(AjaxCtrl, [{
           key: 'issueQueries',
           value: function issueQueries(datasource) {
+            var _this2 = this;
+
             this.updateTimeRange();
 
-            //console.log('block issueQueries', datasource);
+            var url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+            var params;
+            if (this.params_fn) {
+              params = this.params_fn(this);
+            }
+            //console.log( "onRender", this, params );
+
+            if (this.panel.method === 'iframe') {
+              var width = this.resolution - 50;
+              var height = this.height - 10;
+              var src = encodeURI(url + '&' + $.param(params));
+              var html = '<iframe width=\'' + width + '\' height=\'' + height + '\' frameborder=\'0\' src=' + src + '></iframe>';
+              this.updateContent(html);
+            } else {
+              delete this.error;
+              this.requestCount++;
+              this.loading = true;
+              this.$http({
+                method: this.panel.method,
+                url: url,
+                params: params
+              }).then(function (response) {
+                var html = response.data;
+                if (_this2.display_fn) {
+                  html = _this2.display_fn(_this2, response);
+                }
+                _this2.updateContent(html);
+                _this2.loading = false;
+              }, function (err) {
+                _this2.loading = false;
+                _this2.error = err; //.data.error + " ["+err.status+"]";
+                //  this.inspector = {error: err};
+
+                console.warn('error', err);
+                var body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, " ") + "</pre>";
+                _this2.updateContent(body);
+              });
+            }
+
+            // Return empty results
+            return null; //this.$q.when( [] );
+          }
+        }, {
+          key: 'handleQueryResult',
+          value: function handleQueryResult(result) {
+            // Nothing. console.log('handleQueryResult', result);
           }
         }, {
           key: 'onPanelInitalized',
@@ -141,62 +187,22 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/utils/kbn', 'a
                 this.params_fn = null;
               }
             }
-
-            this.onRefresh();
-          }
-        }, {
-          key: 'onRefresh',
-          value: function onRefresh() {
-            //console.log('refresh', this);
-            this.updateTimeRange(); // needed for the first call
-
-            var self = this;
-            var url = this.templateSrv.replace(self.panel.url, this.panel.scopedVars);
-            var params;
-            if (this.params_fn) {
-              params = this.params_fn(this);
-            }
-            //console.log( "onRender", this, params );
-
-            if (self.panel.method === 'iframe') {
-              var width = self.resolution - 50;
-              var height = self.height - 10;
-              var src = encodeURI(url + '&' + $.param(params));
-              var html = '<iframe width=\'' + width + '\' height=\'' + height + '\' frameborder=\'0\' src=' + src + '></iframe>';
-              self.updateContent(html);
-            } else {
-              this.$http({
-                method: this.panel.method,
-                url: url,
-                params: params
-              }).then(function successCallback(response) {
-                //console.log('success', response, self);
-                var html = response.data;
-                if (self.display_fn) {
-                  html = self.display_fn(self, response);
-                }
-                self.updateContent(html);
-              }, function errorCallback(response) {
-                console.warn('error', response);
-                var body = '<h1>Error</h1><pre>' + JSON.stringify(response, null, " ") + "</pre>";
-                self.updateContent(body);
-              });
-            }
+            this.refresh();
           }
         }, {
           key: 'updateContent',
           value: function updateContent(html) {
+            if (_.isNil(html)) {
+              this.content = "";
+              return;
+            }
+
             try {
               this.content = this.$sce.trustAsHtml(this.templateSrv.replace(html, this.panel.scopedVars));
             } catch (e) {
               console.log('Text panel error: ', e);
               this.content = this.$sce.trustAsHtml(html);
             }
-          }
-        }, {
-          key: 'onRender',
-          value: function onRender() {
-            //console.log('render', this);
           }
         }]);
 

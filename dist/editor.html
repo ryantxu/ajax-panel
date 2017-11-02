@@ -14,11 +14,17 @@
 
 	<div style="margin-top:10px;">
 		<h5 class="section-heading">Parameters (via javascript)</h5>
-		<textarea class="gf-form-input" autocorrect="off" spellcheck="false" autocapitalize="off"
+		<textarea class="gf-form-input" 
+		  autocorrect="off" spellcheck="false" autocapitalize="off"
 		  ng-model="ctrl.panel.params_js" rows="5" style="width:100%" 
 		  ng-change="ctrl.updateFN()" 
 		  ng-model-onblur>
 		</textarea>
 	</div>
+
+<br/>
+<span class="small">
+  Request Count: {{ ctrl.requestCount }}<br/>
+</span>
 
 </div>

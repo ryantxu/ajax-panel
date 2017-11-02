@@ -36,6 +36,11 @@ using an <iframe
 #### Changelog
 
 
+##### v0.0.4 (not released yet)
+
+- Support template variables in parameters (@linar-jether)
+
+
 ##### v0.0.3
 
 - Support template variables in url (@linar-jether)

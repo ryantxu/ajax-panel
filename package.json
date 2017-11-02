@@ -1,6 +1,6 @@
 {
   "name": "ryantxu-ajax-panel",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "AJAX Panel Plugin for Grafana",
   "main": "src/module.js",
   "scripts": {

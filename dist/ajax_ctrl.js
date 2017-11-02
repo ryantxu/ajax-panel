@@ -135,7 +135,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/utils/kbn', 'a
 
             if (this.panel.params_js) {
               try {
-                this.params_fn = new Function('ctrl', 'return ' + this.panel.params_js);
+                this.params_fn = new Function('ctrl', 'return ' + this.templateSrv.replace(this.panel.params_js, this.panel.scopedVars));
               } catch (ex) {
                 console.warn('error parsing params_js', this.panel.params_js, ex);
                 this.params_fn = null;

@@ -1,83 +1,118 @@
-module.exports = (grunt) => {
+module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   var pkgJson = require('./package.json');
 
-  grunt.loadNpmTasks('grunt-execute');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-typescript');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-string-replace');
 
   grunt.initConfig({
-
     clean: ['dist'],
 
     copy: {
-      src_to_dist: {
+      dist_js: {
+        expand: true,
         cwd: 'src',
-        expand: true,
-        src: ['**/*', '!**/*.js', '!**/*.scss', '!img/**/*'],
-        dest: 'dist'
-      },
-      pluginDef: {
-        expand: true,
-        src: ['README.md'],
+        src: ['**/*.ts', '**/*.d.ts'],
         dest: 'dist',
       },
-      img_to_dist: {
-        cwd: 'src',
+      dist_html: {
         expand: true,
-        src: ['img/**/*'],
-        dest: 'dist/src/'
+        flatten: true,
+        cwd: 'src/partials',
+        src: ['*.html'],
+        dest: 'dist/partials/',
+      },
+      dist_css: {
+        expand: true,
+        flatten: true,
+        cwd: 'src/css',
+        src: ['*.css'],
+        dest: 'dist/css/',
+      },
+      dist_img: {
+        expand: true,
+        flatten: true,
+        cwd: 'src/img',
+        src: ['*.*'],
+        dest: 'dist/img/',
+      },
+      dist_statics: {
+        expand: true,
+        flatten: true,
+        src: ['src/plugin.json', 'LICENSE', 'README.md'],
+        dest: 'dist/',
       },
     },
 
+    typescript: {
+      build: {
+        src: ['dist/**/*.ts', '!**/*.d.ts'],
+        dest: 'dist',
+        options: {
+          module: 'system',
+          target: 'es5',
+          rootDir: 'dist/',
+          declaration: true,
+          emitDecoratorMetadata: true,
+          experimentalDecorators: true,
+          sourceMap: true,
+          noImplicitAny: false,
+        },
+      },
+    },
 
     'string-replace': {
       dist: {
-        files: [{
-          cwd: 'src',
-          expand: true,
-          src: ["**/plugin.json"],
-          dest: 'dist'
-        }],
+        files: [
+          {
+            cwd: 'src',
+            expand: true,
+            src: ['**/plugin.json'],
+            dest: 'dist',
+          },
+        ],
         options: {
-          replacements: [{
-            pattern: '%VERSION%',
-            replacement: pkgJson.version
-          },{
-            pattern: '%TODAY%',
-            replacement: '<%= grunt.template.today("yyyy-mm-dd") %>'
-          }]
-        }
-      }
+          replacements: [
+            {
+              pattern: '%VERSION%',
+              replacement: pkgJson.version,
+            },
+            {
+              pattern: '%TODAY%',
+              replacement: '<%= grunt.template.today("yyyy-mm-dd") %>',
+            },
+          ],
+        },
+      },
     },
 
     watch: {
-      rebuild_all: {
-        files: ['src/**/*', 'plugin.json'],
-        tasks: ['default'],
-        options: {spawn: false}
-      },
-    },
-
-    babel: {
+      files: [
+        'src/**/*.ts',
+        'src/**/*.html',
+        'src/**/*.css',
+        'src/img/*.*',
+        'src/plugin.json',
+        'README.md',
+      ],
+      tasks: ['default'],
       options: {
-        sourceMap: true,
-        presets: ['es2015'],
-        plugins: ['transform-es2015-modules-systemjs', 'transform-es2015-for-of'],
-      },
-      dist: {
-        files: [{
-          cwd: 'src',
-          expand: true,
-          src: ['*.js'],
-          dest: 'dist',
-          ext: '.js'
-        }]
+        debounceDelay: 250,
       },
     },
-
   });
 
-  grunt.loadNpmTasks('grunt-string-replace');
-  grunt.registerTask('default', ['clean', 'copy:src_to_dist', 'copy:pluginDef', 'copy:img_to_dist', 'string-replace', 'babel']);
+  grunt.registerTask('default', [
+    'clean',
+    'copy:dist_js',
+    'typescript:build',
+    'copy:dist_html',
+    'copy:dist_css',
+    'copy:dist_img',
+    'copy:dist_statics',
+    'string-replace',
+  ]);
 };

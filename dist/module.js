@@ -1,16 +1,14 @@
-'use strict';
-
-System.register(['./ajax_ctrl'], function (_export, _context) {
-  "use strict";
-
-  var AjaxCtrl;
+System.register(['./ajax_ctrl'], function(exports_1) {
+  var ajax_ctrl_1;
   return {
-    setters: [function (_ajax_ctrl) {
-      AjaxCtrl = _ajax_ctrl.AjaxCtrl;
-    }],
-    execute: function () {
-      _export('PanelCtrl', AjaxCtrl);
-    }
+    setters: [
+      function(ajax_ctrl_1_1) {
+        ajax_ctrl_1 = ajax_ctrl_1_1;
+      },
+    ],
+    execute: function() {
+      exports_1('PanelCtrl', ajax_ctrl_1.AjaxCtrl);
+    },
   };
 });
 //# sourceMappingURL=module.js.map

@@ -1,1 +1,1 @@
-{"version":3,"sources":["../src/module.js"],"names":["AjaxCtrl"],"mappings":";;;;;;;;AAAQA,c,cAAAA,Q;;;2BAGNA,Q","file":"module.js","sourcesContent":["import {AjaxCtrl} from './ajax_ctrl';\r\n\r\nexport {\r\n  AjaxCtrl as PanelCtrl\r\n};\r\n"]}
+{"version":3,"file":"module.js","sourceRoot":"","sources":["module.ts"],"names":[],"mappings":";;;;;;;;YAEoB,4CAAS"}

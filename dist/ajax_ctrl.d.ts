@@ -22,6 +22,7 @@ export declare class AjaxCtrl extends MetricsPanelCtrl {
   json: any;
   content: string;
   objectURL: any;
+  jsonholder: any;
   img: any;
   overlay: any;
   requestCount: number;

@@ -39,6 +39,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   json: any = null; // The the json-tree
   content: string = null; // The actual HTML
   objectURL: any = null; // Used for images
+  jsonholder: any = null;
 
   img: any = null; // HTMLElement
   overlay: any = null;
@@ -85,6 +86,16 @@ export class AjaxCtrl extends MetricsPanelCtrl {
         URL.revokeObjectURL(this.objectURL);
       }
     });
+
+    this.jsonholder = {
+      hello: 'world',
+      a: 1,
+      b: false,
+      sub: {
+        a: 1,
+        b: false,
+      },
+    };
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
@@ -165,7 +176,6 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       // Now make the call
       this.requestCount++;
       this.loading = true;
-      console.log('AJAX REQUEST', options);
       this.backendSrv.datasourceRequest(options).then(
         response => {
           this.lastRequestTime = sent;
@@ -291,7 +301,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
 
   update(rsp: any, checkVars: boolean = true) {
     if (!rsp) {
-      this.content = null;
+      this.jsonholder.sub = this.content = null;
       this.json = null;
       return;
     }
@@ -299,6 +309,13 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     let contentType = null;
     if (rsp.hasOwnProperty('headers')) {
       contentType = rsp.headers('Content-Type');
+    }
+
+    let body = null;
+    if (rsp.hasOwnProperty('data')) {
+      body = rsp.data;
+    } else {
+      body = rsp;
     }
 
     if (contentType) {
@@ -313,7 +330,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
           URL.revokeObjectURL(old);
         }
         this.img.css('display', 'block');
-        this.content = null;
+        this.jsonholder.sub = this.content = null;
         this.json = null;
         return;
       }
@@ -326,25 +343,23 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       this.objectURL = null;
     }
 
-    console.log('UPDATE... text', rsp);
-    let html = rsp;
+    if (!_.isString(body)) {
+      body = JSON.stringify(body, null, 2);
 
-    if (!_.isString(html)) {
-      this.json = rsp;
-      this.content = null;
-      return;
-      //html = JSON.stringify(html, null, 2);
+      this.json = null;
+      this.jsonholder.sub = null;
     }
 
     try {
       if (checkVars) {
-        html = this.templateSrv.replace(html, this.panel.scopedVars);
+        body = this.templateSrv.replace(body, this.panel.scopedVars);
       }
-      this.content = this.$sce.trustAsHtml(html);
+      this.content = this.$sce.trustAsHtml(body);
     } catch (e) {
-      console.log('trustAsHtml error: ', e, html);
+      console.log('trustAsHtml error: ', e, body);
       this.content = null;
       this.json = null;
+      this.jsonholder.sub = null;
       this.error = 'Error trusint HTML: ' + e;
     }
   }

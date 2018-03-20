@@ -74,6 +74,7 @@ System.register(
             this.json = null; // The the json-tree
             this.content = null; // The actual HTML
             this.objectURL = null; // Used for images
+            this.jsonholder = null;
             this.img = null; // HTMLElement
             this.overlay = null;
             this.requestCount = 0;
@@ -88,6 +89,15 @@ System.register(
                 URL.revokeObjectURL(_this.objectURL);
               }
             });
+            this.jsonholder = {
+              hello: 'world',
+              a: 1,
+              b: false,
+              sub: {
+                a: 1,
+                b: false,
+              },
+            };
             this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
             this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
           }
@@ -167,7 +177,6 @@ System.register(
               // Now make the call
               this.requestCount++;
               this.loading = true;
-              console.log('AJAX REQUEST', options);
               this.backendSrv.datasourceRequest(options).then(
                 function(response) {
                   _this.lastRequestTime = sent;
@@ -282,13 +291,19 @@ System.register(
               checkVars = true;
             }
             if (!rsp) {
-              this.content = null;
+              this.jsonholder.sub = this.content = null;
               this.json = null;
               return;
             }
             var contentType = null;
             if (rsp.hasOwnProperty('headers')) {
               contentType = rsp.headers('Content-Type');
+            }
+            var body = null;
+            if (rsp.hasOwnProperty('data')) {
+              body = rsp.data;
+            } else {
+              body = rsp;
             }
             if (contentType) {
               if (contentType.startsWith('image/')) {
@@ -302,7 +317,7 @@ System.register(
                   URL.revokeObjectURL(old);
                 }
                 this.img.css('display', 'block');
-                this.content = null;
+                this.jsonholder.sub = this.content = null;
                 this.json = null;
                 return;
               }
@@ -313,22 +328,21 @@ System.register(
               URL.revokeObjectURL(this.objectURL);
               this.objectURL = null;
             }
-            console.log('UPDATE... text', rsp);
-            var html = rsp;
-            if (!lodash_1.default.isString(html)) {
-              this.json = rsp;
-              this.content = null;
-              return;
+            if (!lodash_1.default.isString(body)) {
+              body = JSON.stringify(body, null, 2);
+              this.json = null;
+              this.jsonholder.sub = null;
             }
             try {
               if (checkVars) {
-                html = this.templateSrv.replace(html, this.panel.scopedVars);
+                body = this.templateSrv.replace(body, this.panel.scopedVars);
               }
-              this.content = this.$sce.trustAsHtml(html);
+              this.content = this.$sce.trustAsHtml(body);
             } catch (e) {
-              console.log('trustAsHtml error: ', e, html);
+              console.log('trustAsHtml error: ', e, body);
               this.content = null;
               this.json = null;
+              this.jsonholder.sub = null;
               this.error = 'Error trusint HTML: ' + e;
             }
           };

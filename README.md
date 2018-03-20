@@ -36,6 +36,7 @@ using an <iframe
 * Use datasources for complex authentication
 * Support loading images
 * Support header configuration
+* Support showing time info
 
 ##### v0.0.3
 

@@ -65,6 +65,10 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       '}',
     header_js: '{\n\n}',
     responseType: 'text',
+
+    showTime: false,
+    showTimeFormat: 'LTS',
+    showTimeValue: 'request',
   };
 
   constructor(
@@ -221,11 +225,11 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       'public/plugins/' + this.pluginId + '/partials/editor.request.html',
       1
     );
-    // this.addEditorTab(
-    //   'Display',
-    //   'public/plugins/' + this.pluginId + '/partials/editor.display.html',
-    //   2
-    // );
+    this.addEditorTab(
+      'Display',
+      'public/plugins/' + this.pluginId + '/partials/editor.display.html',
+      2
+    );
     this.editorTabIndex = 1;
     this.updateFN();
   }
@@ -300,6 +304,20 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   update(rsp: any, checkVars: boolean = true) {
+    if (this.panel.showTime) {
+      let when = null;
+      if ('request' === this.panel.showTimeValue) {
+        when = this.lastRequestTime;
+      }
+      if (when) {
+        this.timeInfo = moment(when).format(this.panel.showTimeFormat);
+      } else {
+        this.timeInfo = this.lastRequestTime + '?';
+      }
+    } else {
+      this.timeInfo = null;
+    }
+
     if (!rsp) {
       this.jsonholder.sub = this.content = null;
       this.json = null;

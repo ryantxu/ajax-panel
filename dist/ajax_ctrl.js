@@ -1,11 +1,11 @@
 ///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
-System.register(['app/plugins/sdk', 'jquery', 'lodash', './css/ajax-panel.css!'], function(exports_1) {
+System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-panel.css!'], function(exports_1) {
     var __extends = (this && this.__extends) || function (d, b) {
         for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-    var sdk_1, jquery_1, lodash_1;
+    var sdk_1, jquery_1, lodash_1, moment_1;
     var DSInfo, AjaxCtrl;
     return {
         setters:[
@@ -17,6 +17,9 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', './css/ajax-panel.css!']
             },
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
+            },
+            function (moment_1_1) {
+                moment_1 = moment_1_1;
             },
             function (_1) {}],
         execute: function() {
@@ -186,11 +189,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', './css/ajax-panel.css!']
                 AjaxCtrl.prototype.onInitEditMode = function () {
                     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
                     this.addEditorTab('Request', 'public/plugins/' + this.pluginId + '/partials/editor.request.html', 1);
-                    // this.addEditorTab(
-                    //   'Display',
-                    //   'public/plugins/' + this.pluginId + '/partials/editor.display.html',
-                    //   2
-                    // );
+                    this.addEditorTab('Display', 'public/plugins/' + this.pluginId + '/partials/editor.display.html', 2);
                     this.editorTabIndex = 1;
                     this.updateFN();
                 };
@@ -252,6 +251,21 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', './css/ajax-panel.css!']
                 };
                 AjaxCtrl.prototype.update = function (rsp, checkVars) {
                     if (checkVars === void 0) { checkVars = true; }
+                    if (this.panel.showTime) {
+                        var when = null;
+                        if ('request' === this.panel.showTimeValue) {
+                            when = this.lastRequestTime;
+                        }
+                        if (when) {
+                            this.timeInfo = moment_1.default(when).format(this.panel.showTimeFormat);
+                        }
+                        else {
+                            this.timeInfo = this.lastRequestTime + '?';
+                        }
+                    }
+                    else {
+                        this.timeInfo = null;
+                    }
                     if (!rsp) {
                         this.jsonholder.sub = this.content = null;
                         this.json = null;
@@ -340,6 +354,9 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', './css/ajax-panel.css!']
                         '}',
                     header_js: '{\n\n}',
                     responseType: 'text',
+                    showTime: false,
+                    showTimeFormat: 'LTS',
+                    showTimeValue: 'request',
                 };
                 return AjaxCtrl;
             })(sdk_1.MetricsPanelCtrl);

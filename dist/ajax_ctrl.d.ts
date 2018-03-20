@@ -36,6 +36,9 @@ export declare class AjaxCtrl extends MetricsPanelCtrl {
         params_js: string;
         header_js: string;
         responseType: string;
+        showTime: boolean;
+        showTimeFormat: string;
+        showTimeValue: string;
     };
     constructor($scope: any, $injector: any, $q: any, $http: any, templateSrv: any, datasourceSrv: any, backendSrv: any, $sce: any);
     getCurrentParams(): any;

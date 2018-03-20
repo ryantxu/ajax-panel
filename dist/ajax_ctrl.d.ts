@@ -3,26 +3,44 @@ import {MetricsPanelCtrl} from 'app/plugins/sdk';
 export declare class AjaxCtrl extends MetricsPanelCtrl {
   $q: any;
   templateSrv: any;
+  datasourceSrv: any;
+  backendSrv: any;
   $sce: any;
-  $http: any;
   static templateUrl: string;
-  requestCount: number;
+  static scrollable: boolean;
   params_fn: Function;
-  display_fn: Function;
   content: string;
+  objectURL: any;
+  img: any;
+  overlay: any;
+  requestCount: number;
+  lastRequestTime: number;
+  fn_error: any;
+  theURL: string;
+  static panelDefaults: {
+    method: string;
+    url: string;
+    params_js: string;
+  };
   constructor(
     $scope: any,
     $injector: any,
     $q: any,
     templateSrv: any,
-    $sce: any,
-    $http: any
+    datasourceSrv: any,
+    backendSrv: any,
+    $sce: any
   );
+  getCurrentParams(): any;
+  _getURL(ds: any): any;
   issueQueries(datasource: any): any;
   handleQueryResult(result: any): void;
   onPanelInitalized(): void;
   onInitEditMode(): void;
-  onPanelTeardown(): void;
+  getDatasourceOptions(): Promise<any>;
+  datasourceChanged(option: any): void;
   updateFN(): void;
-  updateContent(html: any): void;
+  update(rsp: any, checkVars?: boolean): void;
+  openFullscreen(): void;
+  link(scope: any, elem: any, attrs: any, ctrl: any): void;
 }

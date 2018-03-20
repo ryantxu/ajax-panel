@@ -1,10 +1,17 @@
-.ajax-panel {
-  display: block;
-  margin:0px;
-  padding:0px;
-  overflow: auto;
+.imgwrap img {
+  width: 100%;
+  height: 100%;
+}
+.imgwrap img:hover {
+  border: 3px solid #00729b;
+  cursor: pointer;
 }
 
-.ajax-panel-body {
-	width:100%;
+.center-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  cursor: pointer;
 }

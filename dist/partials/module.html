@@ -1,4 +1,37 @@
-<div class="ajax-panel" ng-style="{height: ctrl.height}">
-  <div class="ajax-panel-body" ng-bind-html="ctrl.content" ng-show="ctrl.content">
+
+<!--
+*********** TREE ********************
+<div class="gf-form-group">
+  <json-tree root-name="XXXXX" object="ctrl.json" start-expanded="true"></json-tree>
+</div>
+*********** CODE ********************
+
+<div class="gf-form-inline">
+  <div class="gf-form gf-form--grow">
+    <code-editor content="ctrl.panel.params_js" data-mode="json">
+    </code-editor>
   </div>
 </div>
+
+*********** BIND ********************
+-->
+
+<div class="imgwrap" ng-click="ctrl.openFullscreen();">
+  <img src="" />
+</div>
+
+<p 
+  class="markdown-html panel-text-content" 
+  ng-bind-html="ctrl.content" 
+  ng-show="ctrl.content"></p>
+
+  
+<div class="mymodal">
+  <div class="center-popup">
+    <div class="center-wrap">
+      <img src="public/plugins/ryantxu-ajax-panel/img/loading.gif" />
+    </div>
+  </div>
+  <div class="modal-backdrop"></div>
+</div>
+

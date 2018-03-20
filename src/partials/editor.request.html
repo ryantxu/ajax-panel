@@ -1,0 +1,65 @@
+<div class="editor-row">
+
+	<div class="section gf-form-group" style="width:100%;">
+		<h5 class="section-heading">HTTP Request</h5>
+		<div class="gf-form">
+			<span class="gf-form-label width-7">Method</span>
+			<div class="gf-form-select-wrapper width-8">
+		    <select class="input-medium gf-form-input" ng-model="ctrl.panel.method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.refresh()"></select>
+			</div>
+		</div>
+		<div class="gf-form">
+			<gf-form-switch class="gf-form-inline" label="Data Source" label-class="width-7" checked="ctrl.panel.useDatasource" on-change="ctrl.refresh()"></gf-form-switch>
+			<div class="gf-form">
+				<gf-form-dropdown 
+					ng-show="ctrl.panel.useDatasource"
+					model="ctrl.panel.datasource" 
+					css-class="gf-size-auto"
+					lookup-text="true"
+					get-options="ctrl.getDatasourceOptions()"
+					on-change="ctrl.datasourceChanged($option)">
+				</gf-form-dropdown>
+			</div> &nbsp;
+			<span>Supports Proxy and Authentication</span>
+		</div>
+
+		<div class="gf-form">
+			<span class="gf-form-label width-7">{{ ctrl.panel.useDatasource ? 'Path' : 'URL' }}</span>
+			<input type="text" class="input-large gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.refresh()" ng-model-onblur />
+		</div>
+	</div>
+
+
+
+	<div class="section gf-form-group markdown-html" style="width:100%;">
+		<h5 class="section-heading">Parameters (via javascript)</h5>
+		<!--
+		<textarea 
+		  class="gf-form-input" 
+			autocorrect="off" 
+			spellcheck="false" 
+			autocapitalize="off"
+			rows="7" 
+			style="width:100%" 
+		  ng-model="ctrl.panel.params_js" 
+		  ng-change="ctrl.updateFN()" 
+		  ng-model-onblur>
+		</textarea>
+	-->
+
+		<div class="gf-form-inline">
+			<div class="gf-form gf-form--grow">
+				<code-editor content="ctrl.panel.params_js" on-change="ctrl.updateFN()" data-mode="javascript" behaviours-enabled="false" data-max-lines="20" >
+				</code-editor>
+			</div>
+		</div>
+		
+		<a ng-href="{{ ctrl.theURL }}" target="_blank" style="text-decoration: none; font-size:90%;">{{ ctrl.theURL }} &nbsp; <i class="fa fa-external-link"></i></a>
+	</div>
+
+<br/>
+<span class="small">
+  Request Count: {{ ctrl.requestCount }}<br/>
+</span>
+
+</div>

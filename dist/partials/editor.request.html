@@ -5,9 +5,9 @@
 		<div class="gf-form">
 			<gf-form-switch class="gf-form-inline" label="Data Source" label-class="width-7" checked="ctrl.panel.useDatasource" on-change="ctrl.datasourceChanged(null)"></gf-form-switch>
 			<div class="gf-form">
-				<gf-form-dropdown 
+				<gf-form-dropdown
 					ng-show="ctrl.panel.useDatasource"
-					model="ctrl.panel.datasource" 
+					model="ctrl.panel.datasource"
 					css-class="gf-size-auto"
 					lookup-text="true"
 					get-options="ctrl.getDatasourceOptions()"
@@ -51,19 +51,30 @@
 		<h5 class="section-heading">Parameters (via javascript)</h5>
 		<div class="gf-form-inline">
 			<div class="gf-form gf-form--grow">
-				<code-editor content="ctrl.panel.params_js" on-change="ctrl.updateFN()" data-mode="javascript" behaviours-enabled="false" data-max-lines="20" >
+				<code-editor
+					content="ctrl.panel.params_js"
+					on-change="ctrl.updateFN()"
+					data-mode="javascript"
+					data-behaviours-enabled="true"
+					data-snippets-enabled="false"
+					data-max-lines="20" >
 				</code-editor>
 			</div>
 		</div>
 		<a ng-href="{{ ctrl.theURL }}" target="_blank">{{ ctrl.theURL }} &nbsp; <i class="fa fa-external-link"></i></a>
 	</div>
 
-	
 	<div class="section gf-form-group" style="width:100%;" ng-hide="ctrl.panel.method == 'iframe'">
 		<h5 class="section-heading">Headers (via javascript)</h5>
 		<div class="gf-form-inline">
 			<div class="gf-form gf-form--grow">
-				<code-editor content="ctrl.panel.header_js" on-change="ctrl.updateFN()" data-mode="javascript" behaviours-enabled="false" data-max-lines="20" >
+				<code-editor
+					content="ctrl.panel.header_js"
+					on-change="ctrl.updateFN()"
+					data-mode="javascript"
+					data-behaviours-enabled="true"
+					data-snippets-enabled="false"
+					data-max-lines="20" >
 				</code-editor>
 			</div>
 		</div>

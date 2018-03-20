@@ -5,18 +5,16 @@
 </div>
 
 
-<!-- JSON -->
+<!-- JSON? TODO?? why no refresh? -->
 <div class="gf-form-group" ng-show="ctrl.json">
-  BEFORE!
-  <json-tree root-name="XXXXX" object="ctrl.json" start-expanded="true"></json-tree>
-  AFTER!
+  <json-tree root-name="sub" object="ctrl.jsonholder" start-expanded="true"></json-tree>
 </div>
 
 
 <!-- Show if we have HTML content -->
-<p 
-  class="markdown-html panel-text-content" 
-  ng-bind-html="ctrl.content" 
+<p
+  class="markdown-html panel-text-content"
+  ng-bind-html="ctrl.content"
   ng-show="ctrl.content"></p>
 
 <div class="ajaxmodal">

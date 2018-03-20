@@ -33,6 +33,9 @@ using an <iframe
 * Move ajax requests to 'issueQueries' block rather than refresh
 * Show loading spinner
 * Convert to TypeScript
+* Use datasources for complex authentication
+* Support loading images
+* Support header configuration
 
 ##### v0.0.3
 
@@ -45,7 +48,6 @@ using an <iframe
 
 ### Wishlist... if you are looking for a project :)
 
-* Add authentication info to the sub-request?
 * Configure timer to refresh
 * Load CSS file?
 * configure javascript for display

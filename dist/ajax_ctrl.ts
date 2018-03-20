@@ -7,11 +7,36 @@ import kbn from 'app/core/utils/kbn';
 import moment from 'moment';
 import './css/ajax-panel.css!';
 
+export class DSInfo {
+  name: string = null;
+  baseURL: string = null;
+  isProxy: boolean = false;
+  withCredentials: boolean = false;
+  basicAuth: string = null;
+
+  constructor(ds) {
+    this.name = ds.name;
+    if (ds.url) {
+      this.baseURL = ds.url;
+    } else if (ds.urls) {
+      this.baseURL = ds.urls[0];
+    }
+
+    console.log('TODO... proxy?', ds);
+    this.isProxy = this.baseURL.startsWith('/api/');
+    this.withCredentials = ds.withCredentials;
+    this.basicAuth = ds.basicAuth;
+  }
+}
+
 export class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
   static scrollable = true;
 
   params_fn: Function = null;
+  header_fn: Function = null;
+
+  json: any = null; // The the json-tree
   content: string = null; // The actual HTML
   objectURL: any = null; // Used for images
 
@@ -24,6 +49,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
 
   // Used in the editor
   theURL: string = null; // Used for debugging
+  dsInfo: DSInfo = null;
 
   static panelDefaults = {
     method: 'GET',
@@ -36,12 +62,15 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       ' now:Date.now(),\n' +
       ' since:ctrl.lastRequestTime\n' +
       '}',
+    header_js: '{\n\n}',
+    responseType: 'text',
   };
 
   constructor(
     $scope,
     $injector,
     public $q,
+    public $http,
     public templateSrv,
     public datasourceSrv,
     public backendSrv,
@@ -63,13 +92,19 @@ export class AjaxCtrl extends MetricsPanelCtrl {
 
   getCurrentParams() {
     if (this.params_fn) {
-      this.updateTimeRange();
       return this.params_fn(this);
     }
     return null;
   }
 
-  _getURL(ds) {
+  getHeaders() {
+    if (this.header_fn) {
+      return this.header_fn(this);
+    }
+    return null;
+  }
+
+  _getURL() {
     let url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
     const params = this.getCurrentParams();
     if (params) {
@@ -77,12 +112,8 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       url = encodeURI(url + (hasArgs ? '&' : '?') + $.param(params));
     }
 
-    if (ds) {
-      if (ds.url) {
-        url = ds.url + url;
-      } else if (ds.urls) {
-        url = ds.urls[0] + url;
-      }
+    if (this.dsInfo) {
+      return this.dsInfo.baseURL + url;
     }
     return url;
   }
@@ -94,86 +125,64 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    let dsp = null;
-    if (this.panel.useDatasource) {
-      if (!this.panel.datasource) {
-        this.panel.datasource = 'default';
-      }
-      dsp = this.datasourceSrv.get(this.panel.datasource);
-    } else {
-      dsp = this.$q.when(null);
-    }
-
+    this.updateTimeRange();
     this.error = null; // remove the error
-    dsp.then(
-      ds => {
-        const sent = Date.now();
-        const src = (this.theURL = this._getURL(ds));
-        if (this.panel.method === 'iframe') {
-          this.lastRequestTime = sent;
-          const html = `<iframe width="100%" height="${
-            this.height
-          }" frameborder="0" src="${src}"><\/iframe>`;
-          this.update(html, false);
-        } else {
-          const url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
-          const params = this.getCurrentParams();
+    const sent = Date.now();
+    const src = (this.theURL = this._getURL());
+    if (this.panel.method === 'iframe') {
+      this.lastRequestTime = sent;
+      const height = this.height;
+      const html = `<iframe width="100%" height="${height}" frameborder="0" src="${src}"><\/iframe>`;
+      this.update(html, false);
+    } else {
+      const url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+      const params = this.getCurrentParams();
 
-          let options: any = {
-            method: this.panel.method,
-            url: url,
-            params: params,
-            headers: this.panel.headers,
-          };
-          options.headers = options.headers || {};
+      let options: any = {
+        method: this.panel.method,
+        responseType: this.panel.responseType,
+        url: url,
+        params: params,
+        headers: this.getHeaders(),
+        cache: false,
+      };
+      options.headers = options.headers || {};
 
-          if (ds && (ds.url || ds.urls)) {
-            if (ds.basicAuth || ds.withCredentials) {
-              options.withCredentials = true;
-            }
-            if (ds.basicAuth) {
-              options.headers.Authorization = ds.basicAuth;
-            }
-
-            if (ds.url) {
-              options.url = ds.url + url;
-            } else if (ds.urls) {
-              options.url = ds.urls[0] + url;
-            }
-          } else if (!options.url || options.url.indexOf('://') < 0) {
-            this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-            this.update(this.error, false);
-            return;
-          }
-
-          // Now make the call
-          this.requestCount++;
-          this.loading = true;
-          console.log('AJAX REQUEST', options);
-          this.backendSrv.datasourceRequest(options).then(
-            response => {
-              this.lastRequestTime = sent;
-              this.loading = false;
-              this.update(response);
-            },
-            err => {
-              this.lastRequestTime = sent;
-              this.loading = false;
-
-              this.error = err; //.data.error + " ["+err.status+"]";
-              this.inspector = {error: err};
-              let body =
-                '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-              this.update(body, false);
-            }
-          );
+      if (this.dsInfo) {
+        if (this.dsInfo.basicAuth || this.dsInfo.withCredentials) {
+          options.withCredentials = true;
         }
-      },
-      err => {
-        this.error = err;
-        console.warn('Unable to find Data Source', this.panel.datasource, err);
+        if (this.dsInfo.basicAuth) {
+          options.headers.Authorization = this.dsInfo.basicAuth;
+        }
+        options.url = this.dsInfo.baseURL + url;
+      } else if (!options.url || options.url.indexOf('://') < 0) {
+        this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
+        this.update(this.error, false);
+        return;
       }
-    );
+
+      // Now make the call
+      this.requestCount++;
+      this.loading = true;
+      console.log('AJAX REQUEST', options);
+      this.backendSrv.datasourceRequest(options).then(
+        response => {
+          this.lastRequestTime = sent;
+          this.loading = false;
+          this.update(response);
+        },
+        err => {
+          this.lastRequestTime = sent;
+          this.loading = false;
+
+          this.error = err; //.data.error + " ["+err.status+"]";
+          this.inspector = {error: err};
+          let body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
+          this.update(body, false);
+        }
+      );
+    }
 
     // Return empty results
     return null; //this.$q.when( [] );
@@ -186,6 +195,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
 
   onPanelInitalized() {
     this.updateFN();
+    this.datasourceChanged(null);
     $(window).on(
       'resize',
       _.debounce(fn => {
@@ -201,11 +211,11 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       'public/plugins/' + this.pluginId + '/partials/editor.request.html',
       1
     );
-    this.addEditorTab(
-      'Display',
-      'public/plugins/' + this.pluginId + '/partials/editor.display.html',
-      2
-    );
+    // this.addEditorTab(
+    //   'Display',
+    //   'public/plugins/' + this.pluginId + '/partials/editor.display.html',
+    //   2
+    // );
     this.editorTabIndex = 1;
     this.updateFN();
   }
@@ -215,7 +225,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       this.datasourceSrv
         .getMetricSources()
         // .filter(value => {
-        //   return includeBuiltin || !value.meta.builtIn;
+        //   return !value.meta.builtIn; // skip mixed and 'grafana'?
         // })
         .map(ds => {
           return {value: ds.value, text: ds.name, datasource: ds};
@@ -223,9 +233,25 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     );
   }
 
+  // This saves the info we need from the datasouce
   datasourceChanged(option) {
     if (option && option.datasource) {
       this.setDatasource(option.datasource);
+    }
+
+    if (this.panel.useDatasource) {
+      if (!this.panel.datasource) {
+        this.panel.datasource = 'default';
+      }
+
+      this.datasourceSrv.get(this.panel.datasource).then(ds => {
+        if (ds) {
+          this.dsInfo = new DSInfo(ds);
+        }
+        this.refresh();
+      });
+    } else {
+      this.dsInfo = null;
       this.refresh();
     }
   }
@@ -247,12 +273,26 @@ export class AjaxCtrl extends MetricsPanelCtrl {
         this.fn_error = ex;
       }
     }
+    if (this.panel.header_js) {
+      try {
+        this.header_fn = new Function(
+          'ctrl',
+          'return ' +
+            this.templateSrv.replace(this.panel.header_js, this.panel.scopedVars)
+        );
+      } catch (ex) {
+        console.warn('error parsing header_js', this.panel.header_js, ex);
+        this.header_fn = null;
+        this.fn_error = ex;
+      }
+    }
     this.refresh();
   }
 
   update(rsp: any, checkVars: boolean = true) {
     if (!rsp) {
-      this.content = '';
+      this.content = null;
+      this.json = null;
       return;
     }
 
@@ -273,11 +313,10 @@ export class AjaxCtrl extends MetricsPanelCtrl {
           URL.revokeObjectURL(old);
         }
         this.img.css('display', 'block');
-        console.log('Got Image', blob, contentType);
-        this.content = '';
+        this.content = null;
+        this.json = null;
         return;
       }
-      console.log('GOT', contentType);
     }
 
     // Its not an image, so remove it
@@ -285,14 +324,16 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       this.img.css('display', 'none');
       URL.revokeObjectURL(this.objectURL);
       this.objectURL = null;
-      console.log('Removing old image');
     }
 
     console.log('UPDATE... text', rsp);
     let html = rsp;
 
     if (!_.isString(html)) {
-      html = JSON.stringify(html, null, 2);
+      this.json = rsp;
+      this.content = null;
+      return;
+      //html = JSON.stringify(html, null, 2);
     }
 
     try {
@@ -301,8 +342,10 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       }
       this.content = this.$sce.trustAsHtml(html);
     } catch (e) {
-      console.log('AJAX panel error: ', e, html);
-      this.content = this.$sce.trustAsHtml(html);
+      console.log('trustAsHtml error: ', e, html);
+      this.content = null;
+      this.json = null;
+      this.error = 'Error trusint HTML: ' + e;
     }
   }
 
@@ -317,7 +360,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
 
   link(scope, elem, attrs, ctrl) {
     this.img = $(elem.find('img')[0]);
-    this.overlay = $(elem.find('.mymodal')[0]);
+    this.overlay = $(elem.find('.ajaxmodal')[0]);
     this.overlay.remove();
     this.overlay.css('display', 'block');
     this.img.css('display', 'none');

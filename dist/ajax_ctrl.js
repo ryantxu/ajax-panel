@@ -13,7 +13,7 @@ System.register(
           b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
       };
     var sdk_1, jquery_1, lodash_1;
-    var AjaxCtrl;
+    var DSInfo, AjaxCtrl;
     return {
       setters: [
         function(sdk_1_1) {
@@ -28,12 +28,34 @@ System.register(
         function(_1) {},
       ],
       execute: function() {
+        DSInfo = (function() {
+          function DSInfo(ds) {
+            this.name = null;
+            this.baseURL = null;
+            this.isProxy = false;
+            this.withCredentials = false;
+            this.basicAuth = null;
+            this.name = ds.name;
+            if (ds.url) {
+              this.baseURL = ds.url;
+            } else if (ds.urls) {
+              this.baseURL = ds.urls[0];
+            }
+            console.log('TODO... proxy?', ds);
+            this.isProxy = this.baseURL.startsWith('/api/');
+            this.withCredentials = ds.withCredentials;
+            this.basicAuth = ds.basicAuth;
+          }
+          return DSInfo;
+        })();
+        exports_1('DSInfo', DSInfo);
         AjaxCtrl = (function(_super) {
           __extends(AjaxCtrl, _super);
           function AjaxCtrl(
             $scope,
             $injector,
             $q,
+            $http,
             templateSrv,
             datasourceSrv,
             backendSrv,
@@ -42,11 +64,14 @@ System.register(
             var _this = this;
             _super.call(this, $scope, $injector);
             this.$q = $q;
+            this.$http = $http;
             this.templateSrv = templateSrv;
             this.datasourceSrv = datasourceSrv;
             this.backendSrv = backendSrv;
             this.$sce = $sce;
             this.params_fn = null;
+            this.header_fn = null;
+            this.json = null; // The the json-tree
             this.content = null; // The actual HTML
             this.objectURL = null; // Used for images
             this.img = null; // HTMLElement
@@ -56,6 +81,7 @@ System.register(
             this.fn_error = null;
             // Used in the editor
             this.theURL = null; // Used for debugging
+            this.dsInfo = null;
             lodash_1.default.defaults(this.panel, AjaxCtrl.panelDefaults);
             $scope.$on('$destroy', function() {
               if (_this.objectURL) {
@@ -67,12 +93,17 @@ System.register(
           }
           AjaxCtrl.prototype.getCurrentParams = function() {
             if (this.params_fn) {
-              this.updateTimeRange();
               return this.params_fn(this);
             }
             return null;
           };
-          AjaxCtrl.prototype._getURL = function(ds) {
+          AjaxCtrl.prototype.getHeaders = function() {
+            if (this.header_fn) {
+              return this.header_fn(this);
+            }
+            return null;
+          };
+          AjaxCtrl.prototype._getURL = function() {
             var url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
             var params = this.getCurrentParams();
             if (params) {
@@ -81,12 +112,8 @@ System.register(
                 url + (hasArgs ? '&' : '?') + jquery_1.default.param(params)
               );
             }
-            if (ds) {
-              if (ds.url) {
-                url = ds.url + url;
-              } else if (ds.urls) {
-                url = ds.urls[0] + url;
-              }
+            if (this.dsInfo) {
+              return this.dsInfo.baseURL + url;
             }
             return url;
           };
@@ -97,87 +124,67 @@ System.register(
               this.error = this.fn_error;
               return;
             }
-            var dsp = null;
-            if (this.panel.useDatasource) {
-              if (!this.panel.datasource) {
-                this.panel.datasource = 'default';
-              }
-              dsp = this.datasourceSrv.get(this.panel.datasource);
-            } else {
-              dsp = this.$q.when(null);
-            }
+            this.updateTimeRange();
             this.error = null; // remove the error
-            dsp.then(
-              function(ds) {
-                var sent = Date.now();
-                var src = (_this.theURL = _this._getURL(ds));
-                if (_this.panel.method === 'iframe') {
-                  _this.lastRequestTime = sent;
-                  var html =
-                    '<iframe width="100%" height="' +
-                    _this.height +
-                    '" frameborder="0" src="' +
-                    src +
-                    '"></iframe>';
-                  _this.update(html, false);
-                } else {
-                  var url = _this.templateSrv.replace(
-                    _this.panel.url,
-                    _this.panel.scopedVars
-                  );
-                  var params = _this.getCurrentParams();
-                  var options = {
-                    method: _this.panel.method,
-                    url: url,
-                    params: params,
-                    headers: _this.panel.headers,
-                  };
-                  options.headers = options.headers || {};
-                  if (ds && (ds.url || ds.urls)) {
-                    if (ds.basicAuth || ds.withCredentials) {
-                      options.withCredentials = true;
-                    }
-                    if (ds.basicAuth) {
-                      options.headers.Authorization = ds.basicAuth;
-                    }
-                    if (ds.url) {
-                      options.url = ds.url + url;
-                    } else if (ds.urls) {
-                      options.url = ds.urls[0] + url;
-                    }
-                  } else if (!options.url || options.url.indexOf('://') < 0) {
-                    _this.error =
-                      'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-                    _this.update(_this.error, false);
-                    return;
-                  }
-                  // Now make the call
-                  _this.requestCount++;
-                  _this.loading = true;
-                  console.log('AJAX REQUEST', options);
-                  _this.backendSrv.datasourceRequest(options).then(
-                    function(response) {
-                      _this.lastRequestTime = sent;
-                      _this.loading = false;
-                      _this.update(response);
-                    },
-                    function(err) {
-                      _this.lastRequestTime = sent;
-                      _this.loading = false;
-                      _this.error = err; //.data.error + " ["+err.status+"]";
-                      _this.inspector = {error: err};
-                      var body =
-                        '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-                      _this.update(body, false);
-                    }
-                  );
+            var sent = Date.now();
+            var src = (this.theURL = this._getURL());
+            if (this.panel.method === 'iframe') {
+              this.lastRequestTime = sent;
+              var height = this.height;
+              var html =
+                '<iframe width="100%" height="' +
+                height +
+                '" frameborder="0" src="' +
+                src +
+                '"></iframe>';
+              this.update(html, false);
+            } else {
+              var url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+              var params = this.getCurrentParams();
+              var options = {
+                method: this.panel.method,
+                responseType: this.panel.responseType,
+                url: url,
+                params: params,
+                headers: this.getHeaders(),
+                cache: false,
+              };
+              options.headers = options.headers || {};
+              if (this.dsInfo) {
+                if (this.dsInfo.basicAuth || this.dsInfo.withCredentials) {
+                  options.withCredentials = true;
                 }
-              },
-              function(err) {
-                _this.error = err;
-                console.warn('Unable to find Data Source', _this.panel.datasource, err);
+                if (this.dsInfo.basicAuth) {
+                  options.headers.Authorization = this.dsInfo.basicAuth;
+                }
+                options.url = this.dsInfo.baseURL + url;
+              } else if (!options.url || options.url.indexOf('://') < 0) {
+                this.error =
+                  'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
+                this.update(this.error, false);
+                return;
               }
-            );
+              // Now make the call
+              this.requestCount++;
+              this.loading = true;
+              console.log('AJAX REQUEST', options);
+              this.backendSrv.datasourceRequest(options).then(
+                function(response) {
+                  _this.lastRequestTime = sent;
+                  _this.loading = false;
+                  _this.update(response);
+                },
+                function(err) {
+                  _this.lastRequestTime = sent;
+                  _this.loading = false;
+                  _this.error = err; //.data.error + " ["+err.status+"]";
+                  _this.inspector = {error: err};
+                  var body =
+                    '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
+                  _this.update(body, false);
+                }
+              );
+            }
             // Return empty results
             return null; //this.$q.when( [] );
           };
@@ -188,6 +195,7 @@ System.register(
           AjaxCtrl.prototype.onPanelInitalized = function() {
             var _this = this;
             this.updateFN();
+            this.datasourceChanged(null);
             jquery_1.default(window).on(
               'resize',
               lodash_1.default.debounce(function(fn) {
@@ -202,11 +210,11 @@ System.register(
               'public/plugins/' + this.pluginId + '/partials/editor.request.html',
               1
             );
-            this.addEditorTab(
-              'Display',
-              'public/plugins/' + this.pluginId + '/partials/editor.display.html',
-              2
-            );
+            // this.addEditorTab(
+            //   'Display',
+            //   'public/plugins/' + this.pluginId + '/partials/editor.display.html',
+            //   2
+            // );
             this.editorTabIndex = 1;
             this.updateFN();
           };
@@ -217,9 +225,24 @@ System.register(
               })
             );
           };
+          // This saves the info we need from the datasouce
           AjaxCtrl.prototype.datasourceChanged = function(option) {
+            var _this = this;
             if (option && option.datasource) {
               this.setDatasource(option.datasource);
+            }
+            if (this.panel.useDatasource) {
+              if (!this.panel.datasource) {
+                this.panel.datasource = 'default';
+              }
+              this.datasourceSrv.get(this.panel.datasource).then(function(ds) {
+                if (ds) {
+                  _this.dsInfo = new DSInfo(ds);
+                }
+                _this.refresh();
+              });
+            } else {
+              this.dsInfo = null;
               this.refresh();
             }
           };
@@ -239,6 +262,19 @@ System.register(
                 this.fn_error = ex;
               }
             }
+            if (this.panel.header_js) {
+              try {
+                this.header_fn = new Function(
+                  'ctrl',
+                  'return ' +
+                    this.templateSrv.replace(this.panel.header_js, this.panel.scopedVars)
+                );
+              } catch (ex) {
+                console.warn('error parsing header_js', this.panel.header_js, ex);
+                this.header_fn = null;
+                this.fn_error = ex;
+              }
+            }
             this.refresh();
           };
           AjaxCtrl.prototype.update = function(rsp, checkVars) {
@@ -246,7 +282,8 @@ System.register(
               checkVars = true;
             }
             if (!rsp) {
-              this.content = '';
+              this.content = null;
+              this.json = null;
               return;
             }
             var contentType = null;
@@ -265,23 +302,23 @@ System.register(
                   URL.revokeObjectURL(old);
                 }
                 this.img.css('display', 'block');
-                console.log('Got Image', blob, contentType);
-                this.content = '';
+                this.content = null;
+                this.json = null;
                 return;
               }
-              console.log('GOT', contentType);
             }
             // Its not an image, so remove it
             if (this.objectURL) {
               this.img.css('display', 'none');
               URL.revokeObjectURL(this.objectURL);
               this.objectURL = null;
-              console.log('Removing old image');
             }
             console.log('UPDATE... text', rsp);
             var html = rsp;
             if (!lodash_1.default.isString(html)) {
-              html = JSON.stringify(html, null, 2);
+              this.json = rsp;
+              this.content = null;
+              return;
             }
             try {
               if (checkVars) {
@@ -289,8 +326,10 @@ System.register(
               }
               this.content = this.$sce.trustAsHtml(html);
             } catch (e) {
-              console.log('AJAX panel error: ', e, html);
-              this.content = this.$sce.trustAsHtml(html);
+              console.log('trustAsHtml error: ', e, html);
+              this.content = null;
+              this.json = null;
+              this.error = 'Error trusint HTML: ' + e;
             }
           };
           AjaxCtrl.prototype.openFullscreen = function() {
@@ -304,7 +343,7 @@ System.register(
           };
           AjaxCtrl.prototype.link = function(scope, elem, attrs, ctrl) {
             this.img = jquery_1.default(elem.find('img')[0]);
-            this.overlay = jquery_1.default(elem.find('.mymodal')[0]);
+            this.overlay = jquery_1.default(elem.find('.ajaxmodal')[0]);
             this.overlay.remove();
             this.overlay.css('display', 'block');
             this.img.css('display', 'none');
@@ -323,6 +362,8 @@ System.register(
               ' now:Date.now(),\n' +
               ' since:ctrl.lastRequestTime\n' +
               '}',
+            header_js: '{\n\n}',
+            responseType: 'text',
           };
           return AjaxCtrl;
         })(sdk_1.MetricsPanelCtrl);

@@ -1,2 +1,2 @@
-import {AjaxCtrl} from './ajax_ctrl';
-export {AjaxCtrl as PanelCtrl};
+import { AjaxCtrl } from './ajax_ctrl';
+export { AjaxCtrl as PanelCtrl };

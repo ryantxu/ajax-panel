@@ -64,6 +64,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     this.json = null; // The the json-tree
                     this.content = null; // The actual HTML
                     this.objectURL = null; // Used for images
+                    this.scopedVars = null; // updated each request
                     this.img = null; // HTMLElement
                     this.overlay = null;
                     this.requestCount = 0;
@@ -110,34 +111,49 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     else {
                         this.editorTabIndex = 1;
                     }
+                    this.refresh();
                     this.updateFN();
                     this.datasourceChanged(null);
                 };
-                AjaxCtrl.prototype.getCurrentParams = function () {
+                AjaxCtrl.prototype.getCurrentParams = function (scopedVars) {
+                    var params = {};
                     if (this.params_fn) {
-                        return this.params_fn(this);
+                        params = this.params_fn(this);
+                    }
+                    // if(false) {
+                    //   this.templateSrv.fillVariableValuesForUrl(params, scopedVars);
+                    // }
+                    return params;
+                };
+                AjaxCtrl.prototype.template = function (v) {
+                    if (v) {
+                        return this.templateSrv.replace(v, this.scopedVars);
                     }
                     return null;
                 };
-                AjaxCtrl.prototype.getHeaders = function () {
+                AjaxCtrl.prototype.getHeaders = function (scopedVars) {
                     if (this.header_fn) {
                         return this.header_fn(this);
                     }
                     return null;
                 };
-                AjaxCtrl.prototype._getURL = function () {
-                    var url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+                AjaxCtrl.prototype._getURL = function (scopedVars) {
+                    var url = this.templateSrv.replace(this.panel.url, scopedVars);
                     var params = this.getCurrentParams();
                     if (params) {
                         var hasArgs = url.indexOf('?') > 0;
                         var p = jquery_1.default.param(params);
                         url = url + (hasArgs ? '&' : '?') + encodeURI(p);
                     }
+                    console.log('XX', this.templateSrv);
                     if (this.dsInfo) {
                         return this.dsInfo.baseURL + url;
                     }
                     return url;
                 };
+                /**
+                 * @override
+                 */
                 AjaxCtrl.prototype.updateTimeRange = function (datasource) {
                     // Keep the timeinfo even after updating the range
                     var before = this.timeInfo;
@@ -146,7 +162,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         this.timeInfo = before;
                     }
                 };
-                // Rather than issue a datasource query, we will call our ajax request
+                /**
+                 * Rather than issue a datasource query, we will call our ajax request
+                 * @override
+                 */
                 AjaxCtrl.prototype.issueQueries = function (datasource) {
                     var _this = this;
                     if (this.fn_error) {
@@ -154,7 +173,13 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         this.error = this.fn_error;
                         return null;
                     }
-                    var src = this._getURL();
+                    // make shallow copy of scoped vars,
+                    // and add built in variables interval and interval_ms
+                    var scopedVars = this.scopedVars = Object.assign({}, this.panel.scopedVars, {
+                        __interval: { text: this.interval, value: this.interval },
+                        __interval_ms: { text: this.intervalMs, value: this.intervalMs },
+                    });
+                    var src = this._getURL(scopedVars);
                     if (this.panel.skipSameURL && src === this.lastURL) {
                         this.loading = false;
                         return null;
@@ -169,7 +194,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         this.update(html, false);
                     }
                     else {
-                        var url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+                        var url = this.templateSrv.replace(this.panel.url, scopedVars);
                         var params = this.getCurrentParams();
                         var options = {
                             method: this.panel.method,
@@ -272,8 +297,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     this.params_fn = null;
                     if (this.panel.params_js) {
                         try {
-                            this.params_fn = new Function('ctrl', 'return ' +
-                                this.templateSrv.replace(this.panel.params_js, this.panel.scopedVars));
+                            this.params_fn = new Function('ctrl', 'return ' + this.panel.params_js);
                         }
                         catch (ex) {
                             console.warn('error parsing params_js', this.panel.params_js, ex);
@@ -283,8 +307,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     }
                     if (this.panel.header_js) {
                         try {
-                            this.header_fn = new Function('ctrl', 'return ' +
-                                this.templateSrv.replace(this.panel.header_js, this.panel.scopedVars));
+                            this.header_fn = new Function('ctrl', 'return ' + this.panel.header_js);
                         }
                         catch (ex) {
                             console.warn('error parsing header_js', this.panel.header_js, ex);
@@ -377,7 +400,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     }
                     try {
                         if (checkVars) {
-                            body = this.templateSrv.replace(body, this.panel.scopedVars);
+                            body = this.templateSrv.replace(body, this.scopedVars);
                         }
                         this.content = this.$sce.trustAsHtml(body);
                     }
@@ -419,9 +442,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                                 " to:ctrl.range.to.format('x'), \n" +
                                 ' height:ctrl.height,\n' +
                                 ' now:Date.now(),\n' +
+                                ' interval: ctrl.template(\'$__interval\'),\n' +
                                 ' since:ctrl.lastRequestTime\n' +
                                 '}',
-                            header_js: '{\n\n}',
+                            header_js: '{}',
                             responseType: 'text',
                             withCredentials: false,
                             skipSameURL: true,
@@ -444,15 +468,15 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     },
                     {
                         name: 'Image',
-                        text: 'template variables in URL',
+                        text: 'Sending "Accept" header',
                         config: {
                             method: 'GET',
-                            url: 'https://httpbin.org/image?asdgasdg',
-                            params_js: '{\n' + ' __now:Date.now(),\n' + '}',
-                            responseType: 'arraybuffer',
+                            url: 'https://httpbin.org/image',
+                            params_js: '{}',
+                            header_js: "{\n  Accept: 'image/jpeg'\n}",
+                            responseType: 'blob',
                             showTime: true,
-                            showTimeFormat: 'LTS',
-                            showTimeValue: 'request',
+                            showTimeValue: 'recieve',
                         },
                     },
                     {
@@ -461,10 +485,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         config: {
                             method: 'GET',
                             url: 'https://httpbin.org/anything',
-                            header_js: '{\n' +
-                                " sample:'value',  // x is unix ms timestamp\n" +
-                                " Authentication: 'xxx'\n" +
-                                '}',
+                            header_js: "{\n  Accept: 'text/plain'\n}",
                             showTime: true,
                         },
                     },

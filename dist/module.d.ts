@@ -23,6 +23,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     json: any;
     content: string;
     objectURL: any;
+    scopedVars: any;
     img: any;
     overlay: any;
     requestCount: number;
@@ -63,9 +64,9 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             method: string;
             url: string;
             params_js: string;
+            header_js: string;
             responseType: string;
             showTime: boolean;
-            showTimeFormat: string;
             showTimeValue: string;
         };
     } | {
@@ -139,9 +140,9 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             method: string;
             url: string;
             params_js: string;
+            header_js: string;
             responseType: string;
             showTime: boolean;
-            showTimeFormat: string;
             showTimeValue: string;
         };
     } | {
@@ -182,10 +183,18 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
         };
     })[];
     loadExample(example: any, evt?: any): void;
-    getCurrentParams(): any;
-    getHeaders(): any;
-    _getURL(): any;
+    getCurrentParams(scopedVars?: any): {};
+    template(v: string): any;
+    getHeaders(scopedVars?: any): any;
+    _getURL(scopedVars?: any): any;
+    /**
+     * @override
+     */
     updateTimeRange(datasource?: any): void;
+    /**
+     * Rather than issue a datasource query, we will call our ajax request
+     * @override
+     */
     issueQueries(datasource: any): any;
     handleQueryResult(result: any): void;
     onPanelInitalized(): void;

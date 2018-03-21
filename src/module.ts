@@ -38,6 +38,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   json: any = null; // The the json-tree
   content: string = null; // The actual HTML
   objectURL: any = null; // Used for images
+  scopedVars: any = null; // updated each request
 
   img: any = null; // HTMLElement
   overlay: any = null;
@@ -65,9 +66,10 @@ class AjaxCtrl extends MetricsPanelCtrl {
           " to:ctrl.range.to.format('x'), \n" +
           ' height:ctrl.height,\n' +
           ' now:Date.now(),\n' +
+          " interval: ctrl.template('$__interval'),\n" +
           ' since:ctrl.lastRequestTime\n' +
           '}',
-        header_js: '{\n\n}',
+        header_js: '{}',
         responseType: 'text',
         withCredentials: false,
         skipSameURL: true,
@@ -92,16 +94,15 @@ class AjaxCtrl extends MetricsPanelCtrl {
     },
     {
       name: 'Image',
-      text: 'template variables in URL',
+      text: 'Sending "Accept" header',
       config: {
         method: 'GET',
-        url: 'https://httpbin.org/image?asdgasdg',
-        params_js: '{\n' + ' __now:Date.now(),\n' + '}',
-        responseType: 'arraybuffer',
-
+        url: 'https://httpbin.org/image',
+        params_js: '{}',
+        header_js: "{\n  Accept: 'image/jpeg'\n}",
+        responseType: 'blob',
         showTime: true,
-        showTimeFormat: 'LTS',
-        showTimeValue: 'request',
+        showTimeValue: 'recieve',
       },
     },
     {
@@ -110,11 +111,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       config: {
         method: 'GET',
         url: 'https://httpbin.org/anything',
-        header_js:
-          '{\n' +
-          " sample:'value',  // x is unix ms timestamp\n" +
-          " Authentication: 'xxx'\n" +
-          '}',
+        header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
       },
     },
@@ -217,32 +214,45 @@ class AjaxCtrl extends MetricsPanelCtrl {
     } else {
       this.editorTabIndex = 1;
     }
+    this.refresh();
     this.updateFN();
     this.datasourceChanged(null);
   }
 
-  getCurrentParams() {
+  getCurrentParams(scopedVars?: any) {
+    let params = {};
     if (this.params_fn) {
-      return this.params_fn(this);
+      params = this.params_fn(this);
+    }
+    // if(false) {
+    //   this.templateSrv.fillVariableValuesForUrl(params, scopedVars);
+    // }
+    return params;
+  }
+
+  template(v: string) {
+    if (v) {
+      return this.templateSrv.replace(v, this.scopedVars);
     }
     return null;
   }
 
-  getHeaders() {
+  getHeaders(scopedVars?: any) {
     if (this.header_fn) {
       return this.header_fn(this);
     }
     return null;
   }
 
-  _getURL() {
-    let url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+  _getURL(scopedVars?: any) {
+    let url = this.templateSrv.replace(this.panel.url, scopedVars);
     const params = this.getCurrentParams();
     if (params) {
       const hasArgs = url.indexOf('?') > 0;
       const p = $.param(params);
       url = url + (hasArgs ? '&' : '?') + encodeURI(p);
     }
+    console.log('XX', this.templateSrv);
 
     if (this.dsInfo) {
       return this.dsInfo.baseURL + url;
@@ -250,6 +260,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
     return url;
   }
 
+  /**
+   * @override
+   */
   updateTimeRange(datasource?) {
     // Keep the timeinfo even after updating the range
     const before = this.timeInfo;
@@ -259,15 +272,24 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
   }
 
-  // Rather than issue a datasource query, we will call our ajax request
+  /**
+   * Rather than issue a datasource query, we will call our ajax request
+   * @override
+   */
   issueQueries(datasource) {
     if (this.fn_error) {
       this.loading = false;
       this.error = this.fn_error;
       return null;
     }
+    // make shallow copy of scoped vars,
+    // and add built in variables interval and interval_ms
+    const scopedVars = (this.scopedVars = Object.assign({}, this.panel.scopedVars, {
+      __interval: {text: this.interval, value: this.interval},
+      __interval_ms: {text: this.intervalMs, value: this.intervalMs},
+    }));
 
-    const src = this._getURL();
+    const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
       this.loading = false;
       return null;
@@ -282,7 +304,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       const html = `<iframe width="100%" height="${height}" frameborder="0" src="${src}"><\/iframe>`;
       this.update(html, false);
     } else {
-      const url = this.templateSrv.replace(this.panel.url, this.panel.scopedVars);
+      const url = this.templateSrv.replace(this.panel.url, scopedVars);
       const params = this.getCurrentParams();
 
       let options: any = {
@@ -419,11 +441,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
     if (this.panel.params_js) {
       try {
-        this.params_fn = new Function(
-          'ctrl',
-          'return ' +
-            this.templateSrv.replace(this.panel.params_js, this.panel.scopedVars)
-        );
+        this.params_fn = new Function('ctrl', 'return ' + this.panel.params_js);
       } catch (ex) {
         console.warn('error parsing params_js', this.panel.params_js, ex);
         this.params_fn = null;
@@ -432,11 +450,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
     if (this.panel.header_js) {
       try {
-        this.header_fn = new Function(
-          'ctrl',
-          'return ' +
-            this.templateSrv.replace(this.panel.header_js, this.panel.scopedVars)
-        );
+        this.header_fn = new Function('ctrl', 'return ' + this.panel.header_js);
       } catch (ex) {
         console.warn('error parsing header_js', this.panel.header_js, ex);
         this.header_fn = null;
@@ -530,7 +544,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
     try {
       if (checkVars) {
-        body = this.templateSrv.replace(body, this.panel.scopedVars);
+        body = this.templateSrv.replace(body, this.scopedVars);
       }
       this.content = this.$sce.trustAsHtml(body);
     } catch (e) {

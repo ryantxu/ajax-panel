@@ -2,7 +2,13 @@
 	<div class="section gf-form-group" style="width:100%;">
 		<h5 class="section-heading">HTTP Request</h5>
 		<div class="gf-form">
-			<gf-form-switch class="gf-form-inline" label="Data Source" label-class="width-9" checked="ctrl.panel.useDatasource" on-change="ctrl.datasourceChanged(null)"></gf-form-switch>
+			<gf-form-switch 
+				class="gf-form-inline" 
+				label="Data Source" 
+				label-class="width-9" 
+				tooltip="Use a data source to supports advanced authentication or proxy"
+				checked="ctrl.panel.useDatasource" 
+				on-change="ctrl.datasourceChanged(null)"></gf-form-switch>
 			<div class="gf-form">
 				<gf-form-dropdown
 					ng-show="ctrl.panel.useDatasource"
@@ -13,7 +19,6 @@
 					on-change="ctrl.datasourceChanged($option)">
 				</gf-form-dropdown>
 			</div> &nbsp;
-			<span ng-hide="ctrl.panel.useDatasource">Use a data source to supports advanced authentication or proxy</span>
 		    <span ng-show="ctrl.panel.useDatasource" class="small-link">
 			  <span ng-show="ctrl.dsInfo.isProxy" class="label label-tag">Proxy</span>
 			  <span ng-show="ctrl.dsInfo.basicAuth" class="label label-tag">Basic Auth</span>
@@ -33,7 +38,13 @@
 		</div>
 		<div ng-if="ctrl.panel.method !== 'iframe'">
 			<div class="gf-form" >
-				<span class="gf-form-label width-9">Response</span>
+				<span class="gf-form-label width-9">
+					Response
+					<info-popover mode="right-normal" position="top center">
+					  Useful when loading images<br/>
+					  or other non-text content
+					</info-popover>
+				</span>
 				<div class="gf-form-select-wrapper width-9">
 					<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.onConfigChanged()">
 						<option value="text">Text</option>
@@ -43,7 +54,7 @@
 						<option value="arraybuffer">Array Buffer  (for images)</option>
 					</select>
 				</div>
-				<span><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType" target="_blank"><i class="fa fa-question-circle"></i></a></span>
+				<span bs-tooltip="'See documentation at:<br/>https://developer.mozilla.org/'"> &nbsp; <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType" target="_blank"><i class="fa fa-question-circle"></i></a></span>
 			</div>
 			<gf-form-switch 
 				class="gf-form" 
@@ -54,14 +65,14 @@
 		</div>
 		<gf-form-switch 
 			class="gf-form" 
-			label="Skip Duplicates" 
+			tooltip="Only make a request when the URL changes."
+			label="Only Changes" 
 			label-class="width-9" 
 			checked="ctrl.panel.skipSameURL" 
 			on-change="ctrl.onConfigChanged()"></gf-form-switch>
 	</div>
 
 	
-
 	<div class="section gf-form-group small-link" style="width:100%;">
 		<h5 class="section-heading">Parameters (via javascript)</h5>
 		<div class="gf-form-inline">

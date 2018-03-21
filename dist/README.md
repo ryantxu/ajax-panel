@@ -48,8 +48,9 @@ using an <iframe
 
 * Quick and Dirty, but it works!
 
-### Wishlist... if you are looking for a project :)
+### TODO... contributions welcome
 
 * Configure timer to refresh
 * configure javascript for display
-* Check that parameters have changed before sending a new request
+* Improve image styling
+* show raw JSON with `<json-tree`

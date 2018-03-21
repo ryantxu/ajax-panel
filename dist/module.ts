@@ -88,7 +88,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       text: 'Responds with the request attributes',
       config: {
         method: 'GET',
-        url: 'https://httpbin.org/anything?interval=$__interval',
+        url: 'https://httpbin.org/anything?templateInURL=$__interval',
         header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
       },
@@ -123,7 +123,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       text: 'load an image in an iframe',
       config: {
         method: 'iframe',
-        url: 'https://dummyimage.com/600x400/f00/fff&text=GRAFANA',
+        url: 'https://dummyimage.com/600x300/4286f4/000&text=GRAFANA',
         params_js: '{}',
       },
     },
@@ -134,17 +134,20 @@ class AjaxCtrl extends MetricsPanelCtrl {
         url: 'https://httpbin.org/basic-auth/user/pass',
         withCredentials: true,
         params_js: '{}',
-        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
+        header_js: '{\n' 
+        + "   Authorization: 'Basic ' + btoa('user' + ':' + 'pass')\n"
+        + "// Authorization: 'Basic dXNlcjpwYXNz'\n"
+        + '}',
       },
     },
     {
       name: 'Basic Auth (fail)',
       text: 'send correct basic auth',
       config: {
-        url: 'https://httpbin.org/basic-auth/user/pass',
+        url: 'https://httpbin.org/basic-auth/userx/passx',
         withCredentials: true,
         params_js: '{}',
-        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
+        header_js: '{\n' + " Authorization: 'Basic ...bad..'\n" + '}',
       },
     },
   ];
@@ -241,13 +244,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const params = this.getCurrentParams();
     if (params) {
       const p = $.param(params);
-      if(p) {
+      if (p) {
         const hasArgs = url.indexOf('?') > 0;
         url = url + (hasArgs ? '&' : '?') + encodeURI(p);
       }
     }
-    console.log('XX', this.templateSrv);
-
     if (this.dsInfo) {
       return this.dsInfo.baseURL + url;
     }

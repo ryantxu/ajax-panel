@@ -46,6 +46,16 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             showTimePrefix: any;
             showTimeFormat: string;
             showTimeValue: string;
+            templateResponse: boolean;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            header_js: string;
+            showTime: boolean;
         };
     } | {
         name: string;
@@ -75,30 +85,11 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
         config: {
             method: string;
             url: string;
-            header_js: string;
-            showTime: boolean;
-        };
-    } | {
-        name: string;
-        text: string;
-        config: {
-            method: string;
-            url: string;
             params_js: string;
         };
     } | {
         name: string;
         text: string;
-        config: {
-            url: string;
-            withCredentials: boolean;
-            params_js: string;
-            header_js: string;
-        };
-    } | {
-        name: string;
-        text: string;
-        editorTabIndex: number;
         config: {
             url: string;
             withCredentials: boolean;
@@ -122,6 +113,16 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             showTimePrefix: any;
             showTimeFormat: string;
             showTimeValue: string;
+            templateResponse: boolean;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            header_js: string;
+            showTime: boolean;
         };
     } | {
         name: string;
@@ -151,30 +152,11 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
         config: {
             method: string;
             url: string;
-            header_js: string;
-            showTime: boolean;
-        };
-    } | {
-        name: string;
-        text: string;
-        config: {
-            method: string;
-            url: string;
             params_js: string;
         };
     } | {
         name: string;
         text: string;
-        config: {
-            url: string;
-            withCredentials: boolean;
-            params_js: string;
-            header_js: string;
-        };
-    } | {
-        name: string;
-        text: string;
-        editorTabIndex: number;
         config: {
             url: string;
             withCredentials: boolean;

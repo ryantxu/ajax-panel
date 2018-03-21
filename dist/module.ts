@@ -66,7 +66,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
           " to:ctrl.range.to.format('x'), \n" +
           ' height:ctrl.height,\n' +
           ' now:Date.now(),\n' +
-          ' interval: ctrl.template(\'$__interval\'),\n' +
+          " interval: ctrl.template('$__interval'),\n" +
+          " sample: 'Not escaped: $__interval',\n" +
           ' since:ctrl.lastRequestTime\n' +
           '}',
         header_js: '{}',
@@ -78,6 +79,18 @@ class AjaxCtrl extends MetricsPanelCtrl {
         showTimePrefix: null,
         showTimeFormat: 'LTS',
         showTimeValue: 'request',
+
+        templateResponse: true,
+      },
+    },
+    {
+      name: 'Echo Service',
+      text: 'Responds with the request attributes',
+      config: {
+        method: 'GET',
+        url: 'https://httpbin.org/anything?interval=$__interval',
+        header_js: "{\n  Accept: 'text/plain'\n}",
+        showTime: true,
       },
     },
     {
@@ -106,16 +119,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
       },
     },
     {
-      name: 'Echo Service',
-      text: 'Responds with the request attributes',
-      config: {
-        method: 'GET',
-        url: 'https://httpbin.org/anything',
-        header_js: "{\n  Accept: 'text/plain'\n}",
-        showTime: true,
-      },
-    },
-    {
       name: 'Image in IFrame',
       text: 'load an image in an iframe',
       config: {
@@ -137,17 +140,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     {
       name: 'Basic Auth (fail)',
       text: 'send correct basic auth',
-      config: {
-        url: 'https://httpbin.org/basic-auth/user/pass',
-        withCredentials: true,
-        params_js: '{}',
-        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
-      },
-    },
-    {
-      name: 'Show Time',
-      text: 'This will use a response header for the time',
-      editorTabIndex: 2,
       config: {
         url: 'https://httpbin.org/basic-auth/user/pass',
         withCredentials: true,
@@ -219,7 +211,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.datasourceChanged(null);
   }
 
-  getCurrentParams(scopedVars?:any) {
+  getCurrentParams(scopedVars?: any) {
     let params = {};
     if (this.params_fn) {
       params = this.params_fn(this);
@@ -230,29 +222,31 @@ class AjaxCtrl extends MetricsPanelCtrl {
     return params;
   }
 
-  template(v:string) {
-      if(v) {
-        return this.templateSrv.replace(v, this.scopedVars);
-      }
-      return null;
+  template(v: string) {
+    if (v) {
+      return this.templateSrv.replace(v, this.scopedVars);
+    }
+    return null;
   }
 
-  getHeaders(scopedVars?:any) {
+  getHeaders(scopedVars?: any) {
     if (this.header_fn) {
       return this.header_fn(this);
     }
     return null;
   }
 
-  _getURL(scopedVars?:any) {
+  _getURL(scopedVars?: any) {
     let url = this.templateSrv.replace(this.panel.url, scopedVars);
     const params = this.getCurrentParams();
     if (params) {
-      const hasArgs = url.indexOf('?') > 0;
       const p = $.param(params);
-      url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+      if(p) {
+        const hasArgs = url.indexOf('?') > 0;
+        url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+      }
     }
-    console.log( 'XX', this.templateSrv );
+    console.log('XX', this.templateSrv);
 
     if (this.dsInfo) {
       return this.dsInfo.baseURL + url;
@@ -284,10 +278,10 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
     // make shallow copy of scoped vars,
     // and add built in variables interval and interval_ms
-    const scopedVars = this.scopedVars = Object.assign({}, this.panel.scopedVars, {
-      __interval:    { text: this.interval, value: this.interval },
-      __interval_ms: { text: this.intervalMs, value: this.intervalMs },
-    });
+    const scopedVars = (this.scopedVars = Object.assign({}, this.panel.scopedVars, {
+      __interval: {text: this.interval, value: this.interval},
+      __interval_ms: {text: this.intervalMs, value: this.intervalMs},
+    }));
 
     const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
@@ -441,10 +435,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
     if (this.panel.params_js) {
       try {
-        this.params_fn = new Function(
-          'ctrl',
-          'return ' + this.panel.params_js
-        );
+        this.params_fn = new Function('ctrl', 'return ' + this.panel.params_js);
       } catch (ex) {
         console.warn('error parsing params_js', this.panel.params_js, ex);
         this.params_fn = null;
@@ -453,10 +444,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
     if (this.panel.header_js) {
       try {
-        this.header_fn = new Function(
-          'ctrl',
-          'return ' + this.panel.header_js
-        );
+        this.header_fn = new Function('ctrl', 'return ' + this.panel.header_js);
       } catch (ex) {
         console.warn('error parsing header_js', this.panel.header_js, ex);
         this.header_fn = null;
@@ -549,7 +537,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     try {
-      if (checkVars) {
+      if (checkVars && this.panel.templateResponse) {
         body = this.templateSrv.replace(body, this.scopedVars);
       }
       this.content = this.$sce.trustAsHtml(body);
@@ -557,7 +545,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       console.log('trustAsHtml error: ', e, body);
       this.content = null;
       this.json = null;
-      this.error = 'Error trusint HTML: ' + e;
+      this.error = 'Error trust HTML: ' + e;
+      this.content = this.$sce.trustAsHtml(this.error);
     }
   }
 

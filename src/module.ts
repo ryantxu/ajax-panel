@@ -67,6 +67,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
           ' height:ctrl.height,\n' +
           ' now:Date.now(),\n' +
           " interval: ctrl.template('$__interval'),\n" +
+          " sample: 'Not escaped: $__interval',\n" +
           ' since:ctrl.lastRequestTime\n' +
           '}',
         header_js: '{}',
@@ -78,6 +79,18 @@ class AjaxCtrl extends MetricsPanelCtrl {
         showTimePrefix: null,
         showTimeFormat: 'LTS',
         showTimeValue: 'request',
+
+        templateResponse: true,
+      },
+    },
+    {
+      name: 'Echo Service',
+      text: 'Responds with the request attributes',
+      config: {
+        method: 'GET',
+        url: 'https://httpbin.org/anything?interval=$__interval',
+        header_js: "{\n  Accept: 'text/plain'\n}",
+        showTime: true,
       },
     },
     {
@@ -106,16 +119,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
       },
     },
     {
-      name: 'Echo Service',
-      text: 'Responds with the request attributes',
-      config: {
-        method: 'GET',
-        url: 'https://httpbin.org/anything',
-        header_js: "{\n  Accept: 'text/plain'\n}",
-        showTime: true,
-      },
-    },
-    {
       name: 'Image in IFrame',
       text: 'load an image in an iframe',
       config: {
@@ -137,17 +140,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     {
       name: 'Basic Auth (fail)',
       text: 'send correct basic auth',
-      config: {
-        url: 'https://httpbin.org/basic-auth/user/pass',
-        withCredentials: true,
-        params_js: '{}',
-        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
-      },
-    },
-    {
-      name: 'Show Time',
-      text: 'This will use a response header for the time',
-      editorTabIndex: 2,
       config: {
         url: 'https://httpbin.org/basic-auth/user/pass',
         withCredentials: true,
@@ -248,9 +240,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
     let url = this.templateSrv.replace(this.panel.url, scopedVars);
     const params = this.getCurrentParams();
     if (params) {
-      const hasArgs = url.indexOf('?') > 0;
       const p = $.param(params);
-      url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+      if (p) {
+        const hasArgs = url.indexOf('?') > 0;
+        url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+      }
     }
     console.log('XX', this.templateSrv);
 
@@ -543,7 +537,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     try {
-      if (checkVars) {
+      if (checkVars && this.panel.templateResponse) {
         body = this.templateSrv.replace(body, this.scopedVars);
       }
       this.content = this.$sce.trustAsHtml(body);
@@ -551,7 +545,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       console.log('trustAsHtml error: ', e, body);
       this.content = null;
       this.json = null;
-      this.error = 'Error trusint HTML: ' + e;
+      this.error = 'Error trust HTML: ' + e;
+      this.content = this.$sce.trustAsHtml(this.error);
     }
   }
 

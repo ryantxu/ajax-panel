@@ -141,9 +141,11 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     var url = this.templateSrv.replace(this.panel.url, scopedVars);
                     var params = this.getCurrentParams();
                     if (params) {
-                        var hasArgs = url.indexOf('?') > 0;
                         var p = jquery_1.default.param(params);
-                        url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+                        if (p) {
+                            var hasArgs = url.indexOf('?') > 0;
+                            url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+                        }
                     }
                     console.log('XX', this.templateSrv);
                     if (this.dsInfo) {
@@ -175,10 +177,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     }
                     // make shallow copy of scoped vars,
                     // and add built in variables interval and interval_ms
-                    var scopedVars = this.scopedVars = Object.assign({}, this.panel.scopedVars, {
+                    var scopedVars = (this.scopedVars = Object.assign({}, this.panel.scopedVars, {
                         __interval: { text: this.interval, value: this.interval },
                         __interval_ms: { text: this.intervalMs, value: this.intervalMs },
-                    });
+                    }));
                     var src = this._getURL(scopedVars);
                     if (this.panel.skipSameURL && src === this.lastURL) {
                         this.loading = false;
@@ -399,7 +401,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         this.json = null;
                     }
                     try {
-                        if (checkVars) {
+                        if (checkVars && this.panel.templateResponse) {
                             body = this.templateSrv.replace(body, this.scopedVars);
                         }
                         this.content = this.$sce.trustAsHtml(body);
@@ -408,7 +410,8 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         console.log('trustAsHtml error: ', e, body);
                         this.content = null;
                         this.json = null;
-                        this.error = 'Error trusint HTML: ' + e;
+                        this.error = 'Error trust HTML: ' + e;
+                        this.content = this.$sce.trustAsHtml(this.error);
                     }
                 };
                 AjaxCtrl.prototype.openFullscreen = function () {
@@ -442,7 +445,8 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                                 " to:ctrl.range.to.format('x'), \n" +
                                 ' height:ctrl.height,\n' +
                                 ' now:Date.now(),\n' +
-                                ' interval: ctrl.template(\'$__interval\'),\n' +
+                                " interval: ctrl.template('$__interval'),\n" +
+                                " sample: 'Not escaped: $__interval',\n" +
                                 ' since:ctrl.lastRequestTime\n' +
                                 '}',
                             header_js: '{}',
@@ -453,6 +457,17 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             showTimePrefix: null,
                             showTimeFormat: 'LTS',
                             showTimeValue: 'request',
+                            templateResponse: true,
+                        },
+                    },
+                    {
+                        name: 'Echo Service',
+                        text: 'Responds with the request attributes',
+                        config: {
+                            method: 'GET',
+                            url: 'https://httpbin.org/anything?interval=$__interval',
+                            header_js: "{\n  Accept: 'text/plain'\n}",
+                            showTime: true,
                         },
                     },
                     {
@@ -480,16 +495,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         },
                     },
                     {
-                        name: 'Echo Service',
-                        text: 'Responds with the request attributes',
-                        config: {
-                            method: 'GET',
-                            url: 'https://httpbin.org/anything',
-                            header_js: "{\n  Accept: 'text/plain'\n}",
-                            showTime: true,
-                        },
-                    },
-                    {
                         name: 'Image in IFrame',
                         text: 'load an image in an iframe',
                         config: {
@@ -511,17 +516,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     {
                         name: 'Basic Auth (fail)',
                         text: 'send correct basic auth',
-                        config: {
-                            url: 'https://httpbin.org/basic-auth/user/pass',
-                            withCredentials: true,
-                            params_js: '{}',
-                            header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
-                        },
-                    },
-                    {
-                        name: 'Show Time',
-                        text: 'This will use a response header for the time',
-                        editorTabIndex: 2,
                         config: {
                             url: 'https://httpbin.org/basic-auth/user/pass',
                             withCredentials: true,

@@ -104,6 +104,12 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         'Loaded Example Configuraiton',
                         example.name,
                     ]);
+                    if (example.editorTabIndex) {
+                        this.editorTabIndex = example.editorTabIndex;
+                    }
+                    else {
+                        this.editorTabIndex = 1;
+                    }
                     this.updateFN();
                     this.datasourceChanged(null);
                 };
@@ -132,6 +138,14 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     }
                     return url;
                 };
+                AjaxCtrl.prototype.updateTimeRange = function (datasource) {
+                    // Keep the timeinfo even after updating the range
+                    var before = this.timeInfo;
+                    _super.prototype.updateTimeRange.call(this);
+                    if (this.panel.showTime && before) {
+                        this.timeInfo = before;
+                    }
+                };
                 // Rather than issue a datasource query, we will call our ajax request
                 AjaxCtrl.prototype.issueQueries = function (datasource) {
                     var _this = this;
@@ -140,10 +154,8 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         this.error = this.fn_error;
                         return null;
                     }
-                    this.updateTimeRange();
                     var src = this._getURL();
                     if (this.panel.skipSameURL && src === this.lastURL) {
-                        console.log('URL Did not change', src);
                         this.loading = false;
                         return null;
                     }
@@ -222,6 +234,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
                     this.addEditorTab('Request', 'public/plugins/' + this.pluginId + '/partials/editor.request.html', 1);
                     this.addEditorTab('Display', 'public/plugins/' + this.pluginId + '/partials/editor.display.html', 2);
+                    this.addEditorTab('Examples', 'public/plugins/' + this.pluginId + '/partials/editor.examples.html', 4);
                     this.editorTabIndex = 1;
                     this.updateFN();
                 };
@@ -284,16 +297,37 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                 AjaxCtrl.prototype.update = function (rsp, checkVars) {
                     if (checkVars === void 0) { checkVars = true; }
                     if (this.panel.showTime) {
-                        var when = null;
-                        if ('request' === this.panel.showTimeValue) {
-                            when = this.lastRequestTime;
+                        var txt = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
+                        if (this.panel.showTimeValue) {
+                            var when = null;
+                            if ('request' === this.panel.showTimeValue) {
+                                when = this.lastRequestTime;
+                            }
+                            else if ('recieve' === this.panel.showTimeValue) {
+                                when = Date.now();
+                            }
+                            else if (this.panel.showTimeValue.startsWith('header-')) {
+                                var h = this.panel.showTimeValue.substring('header-'.length);
+                                var v = rsp.headers[h];
+                                if (v) {
+                                    console.log('TODO, parse header', v, h);
+                                }
+                                else {
+                                    var vals = {};
+                                    for (var key in rsp.headers()) {
+                                        vals[key] = rsp.headers[key];
+                                    }
+                                    console.log('Header:', h, 'not found in:', vals, rsp);
+                                }
+                            }
+                            if (when) {
+                                txt += moment_1.default(when).format(this.panel.showTimeFormat);
+                            }
+                            else {
+                                txt += 'missing: ' + this.panel.showTimeValue;
+                            }
                         }
-                        if (when) {
-                            this.timeInfo = moment_1.default(when).format(this.panel.showTimeFormat);
-                        }
-                        else {
-                            this.timeInfo = this.lastRequestTime + '?';
-                        }
+                        this.timeInfo = txt;
                     }
                     else {
                         this.timeInfo = null;
@@ -392,6 +426,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             withCredentials: false,
                             skipSameURL: true,
                             showTime: false,
+                            showTimePrefix: null,
                             showTimeFormat: 'LTS',
                             showTimeValue: 'request',
                         },
@@ -455,6 +490,17 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     {
                         name: 'Basic Auth (fail)',
                         text: 'send correct basic auth',
+                        config: {
+                            url: 'https://httpbin.org/basic-auth/user/pass',
+                            withCredentials: true,
+                            params_js: '{}',
+                            header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
+                        },
+                    },
+                    {
+                        name: 'Show Time',
+                        text: 'This will use a response header for the time',
+                        editorTabIndex: 2,
                         config: {
                             url: 'https://httpbin.org/basic-auth/user/pass',
                             withCredentials: true,

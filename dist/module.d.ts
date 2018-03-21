@@ -42,6 +42,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             withCredentials: boolean;
             skipSameURL: boolean;
             showTime: boolean;
+            showTimePrefix: any;
             showTimeFormat: string;
             showTimeValue: string;
         };
@@ -87,6 +88,16 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     } | {
         name: string;
         text: string;
+        config: {
+            url: string;
+            withCredentials: boolean;
+            params_js: string;
+            header_js: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        editorTabIndex: number;
         config: {
             url: string;
             withCredentials: boolean;
@@ -107,6 +118,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             withCredentials: boolean;
             skipSameURL: boolean;
             showTime: boolean;
+            showTimePrefix: any;
             showTimeFormat: string;
             showTimeValue: string;
         };
@@ -158,11 +170,22 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             params_js: string;
             header_js: string;
         };
+    } | {
+        name: string;
+        text: string;
+        editorTabIndex: number;
+        config: {
+            url: string;
+            withCredentials: boolean;
+            params_js: string;
+            header_js: string;
+        };
     })[];
     loadExample(example: any, evt?: any): void;
     getCurrentParams(): any;
     getHeaders(): any;
     _getURL(): any;
+    updateTimeRange(datasource?: any): void;
     issueQueries(datasource: any): any;
     handleQueryResult(result: any): void;
     onPanelInitalized(): void;

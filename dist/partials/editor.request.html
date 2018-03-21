@@ -2,7 +2,7 @@
 	<div class="section gf-form-group" style="width:100%;">
 		<h5 class="section-heading">HTTP Request</h5>
 		<div class="gf-form">
-			<gf-form-switch class="gf-form-inline" label="Data Source" label-class="width-7" checked="ctrl.panel.useDatasource" on-change="ctrl.datasourceChanged(null)"></gf-form-switch>
+			<gf-form-switch class="gf-form-inline" label="Data Source" label-class="width-9" checked="ctrl.panel.useDatasource" on-change="ctrl.datasourceChanged(null)"></gf-form-switch>
 			<div class="gf-form">
 				<gf-form-dropdown
 					ng-show="ctrl.panel.useDatasource"
@@ -22,18 +22,18 @@
 			</span>
 		</div>
 		<div class="gf-form">
-			<span class="gf-form-label width-7">{{ ctrl.panel.useDatasource ? 'Path' : 'URL' }}</span>
+			<span class="gf-form-label width-9">{{ ctrl.panel.useDatasource ? 'Path' : 'URL' }}</span>
 			<input type="text" class="input-large gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.onConfigChanged()" ng-model-onblur />
 		</div>
 		<div class="gf-form">
-			<span class="gf-form-label width-7">Method</span>
+			<span class="gf-form-label width-9">Method</span>
 			<div class="gf-form-select-wrapper width-9">
 		    <select class="gf-form-input" ng-model="ctrl.panel.method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.onConfigChanged()"></select>
 			</div>
 		</div>
 		<div ng-if="ctrl.panel.method !== 'iframe'">
 			<div class="gf-form" >
-				<span class="gf-form-label width-7">Response</span>
+				<span class="gf-form-label width-9">Response</span>
 				<div class="gf-form-select-wrapper width-9">
 					<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.onConfigChanged()">
 						<option value="text">Text</option>
@@ -48,14 +48,14 @@
 			<gf-form-switch 
 				class="gf-form" 
 				label="Credentials" 
-				label-class="width-7" 
+				label-class="width-9" 
 				checked="ctrl.panel.withCredentials" 
 				on-change="ctrl.onConfigChanged()"></gf-form-switch>
 		</div>
 		<gf-form-switch 
 			class="gf-form" 
-			label="Skip Same URL" 
-			label-class="width-7" 
+			label="Skip Duplicates" 
+			label-class="width-9" 
 			checked="ctrl.panel.skipSameURL" 
 			on-change="ctrl.onConfigChanged()"></gf-form-switch>
 	</div>
@@ -91,26 +91,6 @@
 					data-snippets-enabled="false"
 					data-max-lines="20" >
 				</code-editor>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="editor-row">
-	<div class="section gf-form-group" style="width:100%;">
-		<h5 class="section-heading">Configuration Examples</h5>
-		<div class="dashlist">
-			<div class="dashlist-section">
-				<div class="dashlist-item" ng-repeat="example in ctrl.getStaticExamples()">
-				<a class="dashlist-link" 
-					ng-click="ctrl.loadExample(example, $event);" href="#">
-					<span class="dashlist-title">
-						{{example.name}}
-					</span>
-					<span class="pluginlist-version">
-						{{example.text}}
-					</span>
-				</a>
 			</div>
 		</div>
 	</div>

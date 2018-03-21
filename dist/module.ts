@@ -73,6 +73,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         skipSameURL: true,
 
         showTime: false,
+        showTimePrefix: null,
         showTimeFormat: 'LTS',
         showTimeValue: 'request',
       },
@@ -146,6 +147,17 @@ class AjaxCtrl extends MetricsPanelCtrl {
         header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
       },
     },
+    {
+      name: 'Show Time',
+      text: 'This will use a response header for the time',
+      editorTabIndex: 2,
+      config: {
+        url: 'https://httpbin.org/basic-auth/user/pass',
+        withCredentials: true,
+        params_js: '{}',
+        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
+      },
+    },
   ];
 
   constructor(
@@ -200,6 +212,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
       example.name,
     ]);
 
+    if(example.editorTabIndex) {
+        this.editorTabIndex = example.editorTabIndex;
+    }
+    else {
+        this.editorTabIndex = 1;
+    }
     this.updateFN();
     this.datasourceChanged(null);
   }
@@ -233,6 +251,15 @@ class AjaxCtrl extends MetricsPanelCtrl {
     return url;
   }
 
+  updateTimeRange(datasource?) {
+    // Keep the timeinfo even after updating the range
+    const before = this.timeInfo;
+    super.updateTimeRange();
+    if(this.panel.showTime && before) {
+      this.timeInfo = before;
+    }
+  }
+
   // Rather than issue a datasource query, we will call our ajax request
   issueQueries(datasource) {
     if (this.fn_error) {
@@ -241,10 +268,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       return null;
     }
 
-    this.updateTimeRange();
     const src = this._getURL();
     if (this.panel.skipSameURL && src === this.lastURL) {
-      console.log('URL Did not change', src);
       this.loading = false;
       return null;
     }
@@ -344,6 +369,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
       'public/plugins/' + this.pluginId + '/partials/editor.display.html',
       2
     );
+    this.addEditorTab(
+      'Examples',
+      'public/plugins/' + this.pluginId + '/partials/editor.examples.html',
+      4
+    );
     this.editorTabIndex = 1;
     this.updateFN();
   }
@@ -419,15 +449,38 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   update(rsp: any, checkVars: boolean = true) {
     if (this.panel.showTime) {
-      let when = null;
-      if ('request' === this.panel.showTimeValue) {
-        when = this.lastRequestTime;
+      let txt:string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
+      if(this.panel.showTimeValue) {
+        let when = null;
+        if ('request' === this.panel.showTimeValue) {
+            when = this.lastRequestTime;
+        }
+        else if ('recieve' === this.panel.showTimeValue) {
+            when = Date.now();
+        }
+        else if(this.panel.showTimeValue.startsWith('header-')) {
+            let h = this.panel.showTimeValue.substring('header-'.length);
+            let v = rsp.headers[h];
+            if(v) {
+                console.log('TODO, parse header', v, h);
+            }
+            else {
+                let vals:any = {};
+                for (let key in rsp.headers()) {
+                    vals[key] = rsp.headers[key];
+                }
+                console.log('Header:', h, 'not found in:', vals, rsp);
+            }
+        }
+
+        if (when) {
+            txt += moment(when).format(this.panel.showTimeFormat);
+        }
+        else {
+            txt += 'missing: '+this.panel.showTimeValue;
+        }
       }
-      if (when) {
-        this.timeInfo = moment(when).format(this.panel.showTimeFormat);
-      } else {
-        this.timeInfo = this.lastRequestTime + '?';
-      }
+      this.timeInfo = txt;
     } else {
       this.timeInfo = null;
     }

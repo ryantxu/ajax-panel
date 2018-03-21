@@ -39,7 +39,6 @@ using an <iframe
 * Support showing time info
 * Include various sample configurations
 
-
 ##### v0.0.3
 
 * Support template variables in url (@linar-jether)

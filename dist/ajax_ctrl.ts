@@ -107,7 +107,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       config: {
         method: 'GET',
         url: 'https://httpbin.org/anything',
-        header_js: 
+        header_js:
           '{\n' +
           " sample:'value',  // x is unix ms timestamp\n" +
           " Authentication: 'xxx'\n" +
@@ -138,9 +138,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       config: {
         url: 'https://httpbin.org/basic-auth/user/pass',
         params_js: '{}',
-        header_js: '{\n' +
-        " Authentication: 'not a real header'\n" +
-        '}',
+        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
       },
     },
   ];
@@ -181,7 +179,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       evt.preventDefault();
     }
 
-    console.log( 'Loading example', example );
+    console.log('Loading example', example);
     const first = AjaxCtrl.examples[0].config;
     _.forEach(_.keys(first), k => {
       delete this.panel[k];
@@ -190,7 +188,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, first);
 
     $(window).scrollTop(0);
-    appEvents.emit('dash-scroll', { animate: false, evt: 0 });
+    appEvents.emit('dash-scroll', {animate: false, evt: 0});
 
     this.$rootScope.appEvent('alert-success', [
       'Loaded Example Configuraiton',
@@ -458,7 +456,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     if (!_.isString(body)) {
-      body = '<pre>'+JSON.stringify(body, null, 2)+'</pre>';
+      body = '<pre>' + JSON.stringify(body, null, 2) + '</pre>';
       this.json = null;
     }
 

@@ -441,9 +441,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         config: {
                             url: 'https://httpbin.org/basic-auth/user/pass',
                             params_js: '{}',
-                            header_js: '{\n' +
-                                " Authentication: 'not a real header'\n" +
-                                '}',
+                            header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
                         },
                     },
                 ];

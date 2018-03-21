@@ -214,6 +214,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         _this.refresh();
                     }, 150));
                 };
+                AjaxCtrl.prototype.onConfigChanged = function () {
+                    this.lastURL = null;
+                    this.refresh();
+                };
                 AjaxCtrl.prototype.onInitEditMode = function () {
                     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
                     this.addEditorTab('Request', 'public/plugins/' + this.pluginId + '/partials/editor.request.html', 1);
@@ -242,12 +246,12 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             if (ds) {
                                 _this.dsInfo = new DSInfo(ds);
                             }
-                            _this.refresh();
+                            _this.onConfigChanged();
                         });
                     }
                     else {
                         this.dsInfo = null;
-                        this.refresh();
+                        this.onConfigChanged();
                     }
                 };
                 AjaxCtrl.prototype.updateFN = function () {
@@ -275,7 +279,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             this.fn_error = ex;
                         }
                     }
-                    this.refresh();
+                    this.onConfigChanged();
                 };
                 AjaxCtrl.prototype.update = function (rsp, checkVars) {
                     if (checkVars === void 0) { checkVars = true; }

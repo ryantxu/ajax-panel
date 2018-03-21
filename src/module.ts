@@ -327,6 +327,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
     );
   }
 
+  onConfigChanged() {
+    this.lastURL = null;
+    this.refresh();
+  }
+
   onInitEditMode() {
     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
     this.addEditorTab(
@@ -371,11 +376,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
         if (ds) {
           this.dsInfo = new DSInfo(ds);
         }
-        this.refresh();
+        this.onConfigChanged();
       });
     } else {
       this.dsInfo = null;
-      this.refresh();
+      this.onConfigChanged();
     }
   }
 
@@ -409,7 +414,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.fn_error = ex;
       }
     }
-    this.refresh();
+    this.onConfigChanged();
   }
 
   update(rsp: any, checkVars: boolean = true) {

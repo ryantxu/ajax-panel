@@ -2,18 +2,18 @@
 
 	<div class="section gf-form-group">
 		<h5 class="section-heading">Time</h5>
-		<gf-form-switch class="gf-form" label="Show Time" label-class="width-7" checked="ctrl.panel.showTime" on-change="ctrl.refresh()"></gf-form-switch>
+		<gf-form-switch class="gf-form" label="Show Time" label-class="width-7" checked="ctrl.panel.showTime" on-change="ctrl.onConfigChanged()"></gf-form-switch>
 		<div class="gf-form">
 			<span class="gf-form-label width-7">Value</span>
 			<div class="gf-form-select-wrapper width-9">
-				<select class="gf-form-input" ng-model="ctrl.panel.showTimeValue" ng-change="ctrl.refresh()">
+				<select class="gf-form-input" ng-model="ctrl.panel.showTimeValue" ng-change="ctrl.onConfigChanged()">
 					<option value="request">Request</option>
 				</select>
 			</div>
 		</div>
 		<div class="gf-form">
 			<span class="gf-form-label width-7">Format</span>
-			<input type="text" class="gf-form-input  width-9" placeholder="MomentJS" ng-model="ctrl.panel.showTimeFormat" ng-change="ctrl.refresh()" ng-model-onblur />
+			<input type="text" class="gf-form-input  width-9" placeholder="MomentJS" ng-model="ctrl.panel.showTimeFormat" ng-change="ctrl.onConfigChanged()" ng-model-onblur />
 			<span>&nbsp;<a href="https://momentjs.com/docs/#/displaying/" target="_blank"><i class="fa fa-question-circle"></i></a></span>
 		</div>
 	</div>

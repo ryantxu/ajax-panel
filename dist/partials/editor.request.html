@@ -23,19 +23,19 @@
 		</div>
 		<div class="gf-form">
 			<span class="gf-form-label width-7">{{ ctrl.panel.useDatasource ? 'Path' : 'URL' }}</span>
-			<input type="text" class="input-large gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.refresh()" ng-model-onblur />
+			<input type="text" class="input-large gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.onConfigChanged()" ng-model-onblur />
 		</div>
 		<div class="gf-form">
 			<span class="gf-form-label width-7">Method</span>
 			<div class="gf-form-select-wrapper width-9">
-		    <select class="gf-form-input" ng-model="ctrl.panel.method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.refresh()"></select>
+		    <select class="gf-form-input" ng-model="ctrl.panel.method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.onConfigChanged()"></select>
 			</div>
 		</div>
 		<div ng-if="ctrl.panel.method !== 'iframe'">
 			<div class="gf-form" >
 				<span class="gf-form-label width-7">Response</span>
 				<div class="gf-form-select-wrapper width-9">
-					<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.refresh()">
+					<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.onConfigChanged()">
 						<option value="text">Text</option>
 						<option value="blob">Blob</option>
 						<option value="document">Document</option>
@@ -50,14 +50,14 @@
 				label="Credentials" 
 				label-class="width-7" 
 				checked="ctrl.panel.withCredentials" 
-				on-change="ctrl.refresh()"></gf-form-switch>
+				on-change="ctrl.onConfigChanged()"></gf-form-switch>
 		</div>
 		<gf-form-switch 
 			class="gf-form" 
 			label="Skip Same URL" 
 			label-class="width-7" 
 			checked="ctrl.panel.skipSameURL" 
-			on-change="ctrl.refresh()"></gf-form-switch>
+			on-change="ctrl.onConfigChanged()"></gf-form-switch>
 	</div>
 
 	

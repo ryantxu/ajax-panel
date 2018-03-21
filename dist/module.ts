@@ -223,7 +223,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const params = this.getCurrentParams();
     if (params) {
       const hasArgs = url.indexOf('?') > 0;
-      const p =  $.param(params);
+      const p = $.param(params);
       url = url + (hasArgs ? '&' : '?') + encodeURI(p);
     }
 
@@ -243,12 +243,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
     this.updateTimeRange();
     const src = this._getURL();
-    if(this.panel.skipSameURL && src === this.lastURL) {
-      console.log( 'URL Did not change', src );
+    if (this.panel.skipSameURL && src === this.lastURL) {
+      console.log('URL Did not change', src);
       this.loading = false;
       return null;
     }
-    
+
     this.lastURL = src;
     this.error = null; // remove the error
     const sent = Date.now();
@@ -327,6 +327,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
     );
   }
 
+  onConfigChanged() {
+    this.lastURL = null;
+    this.refresh();
+  }
+
   onInitEditMode() {
     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
     this.addEditorTab(
@@ -371,11 +376,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
         if (ds) {
           this.dsInfo = new DSInfo(ds);
         }
-        this.refresh();
+        this.onConfigChanged();
       });
     } else {
       this.dsInfo = null;
-      this.refresh();
+      this.onConfigChanged();
     }
   }
 
@@ -409,7 +414,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.fn_error = ex;
       }
     }
-    this.refresh();
+    this.onConfigChanged();
   }
 
   update(rsp: any, checkVars: boolean = true) {

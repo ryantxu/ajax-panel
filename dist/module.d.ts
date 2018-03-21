@@ -166,6 +166,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     issueQueries(datasource: any): any;
     handleQueryResult(result: any): void;
     onPanelInitalized(): void;
+    onConfigChanged(): void;
     onInitEditMode(): void;
     getDatasourceOptions(): Promise<any>;
     datasourceChanged(option: any): void;

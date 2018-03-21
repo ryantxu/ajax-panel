@@ -51,6 +51,5 @@ using an <iframe
 ### Wishlist... if you are looking for a project :)
 
 * Configure timer to refresh
-* Load CSS file?
 * configure javascript for display
 * Check that parameters have changed before sending a new request

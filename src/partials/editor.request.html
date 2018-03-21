@@ -31,20 +31,36 @@
 		    <select class="gf-form-input" ng-model="ctrl.panel.method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.refresh()"></select>
 			</div>
 		</div>
-		<div class="gf-form" ng-hide="ctrl.panel.method == 'iframe'">
-			<span class="gf-form-label width-7">Response</span>
-			<div class="gf-form-select-wrapper width-9">
-				<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.refresh()">
-					<option value="text">Text</option>
-					<option value="blob">Blob</option>
-					<option value="document">Document</option>
-					<option value="json">JSON</option>
-					<option value="arraybuffer">Array Buffer  (for images)</option>
-				</select>
+		<div ng-if="ctrl.panel.method !== 'iframe'">
+			<div class="gf-form" >
+				<span class="gf-form-label width-7">Response</span>
+				<div class="gf-form-select-wrapper width-9">
+					<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.refresh()">
+						<option value="text">Text</option>
+						<option value="blob">Blob</option>
+						<option value="document">Document</option>
+						<option value="json">JSON</option>
+						<option value="arraybuffer">Array Buffer  (for images)</option>
+					</select>
+				</div>
+				<span><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType" target="_blank"><i class="fa fa-question-circle"></i></a></span>
 			</div>
-			<span><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType" target="_blank"><i class="fa fa-question-circle"></i></a></span>
+			<gf-form-switch 
+				class="gf-form" 
+				label="Credentials" 
+				label-class="width-7" 
+				checked="ctrl.panel.withCredentials" 
+				on-change="ctrl.refresh()"></gf-form-switch>
 		</div>
+		<gf-form-switch 
+			class="gf-form" 
+			label="Skip Same URL" 
+			label-class="width-7" 
+			checked="ctrl.panel.skipSameURL" 
+			on-change="ctrl.refresh()"></gf-form-switch>
 	</div>
+
+	
 
 	<div class="section gf-form-group small-link" style="width:100%;">
 		<h5 class="section-heading">Parameters (via javascript)</h5>
@@ -60,7 +76,7 @@
 				</code-editor>
 			</div>
 		</div>
-		<a ng-href="{{ ctrl.theURL }}" target="_blank">{{ ctrl.theURL }} &nbsp; <i class="fa fa-external-link"></i></a>
+		<a ng-href="{{ ctrl.lastURL }}" target="_blank">{{ ctrl.lastURL }} &nbsp; <i class="fa fa-external-link"></i></a>
 	</div>
 
 	<div class="section gf-form-group" style="width:100%;" ng-hide="ctrl.panel.method == 'iframe'">

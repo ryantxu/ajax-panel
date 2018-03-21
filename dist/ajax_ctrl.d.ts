@@ -9,6 +9,7 @@ export declare class DSInfo {
     constructor(ds: any);
 }
 export declare class AjaxCtrl extends MetricsPanelCtrl {
+    $rootScope: any;
     $q: any;
     $http: any;
     templateSrv: any;
@@ -22,7 +23,6 @@ export declare class AjaxCtrl extends MetricsPanelCtrl {
     json: any;
     content: string;
     objectURL: any;
-    jsonholder: any;
     img: any;
     overlay: any;
     requestCount: number;
@@ -30,17 +30,144 @@ export declare class AjaxCtrl extends MetricsPanelCtrl {
     fn_error: any;
     theURL: string;
     dsInfo: DSInfo;
-    static panelDefaults: {
-        method: string;
-        url: string;
-        params_js: string;
-        header_js: string;
-        responseType: string;
-        showTime: boolean;
-        showTimeFormat: string;
-        showTimeValue: string;
-    };
-    constructor($scope: any, $injector: any, $q: any, $http: any, templateSrv: any, datasourceSrv: any, backendSrv: any, $sce: any);
+    static examples: ({
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+            header_js: string;
+            responseType: string;
+            showTime: boolean;
+            showTimeFormat: string;
+            showTimeValue: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+            responseType: string;
+            showTime: boolean;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+            responseType: string;
+            showTime: boolean;
+            showTimeFormat: string;
+            showTimeValue: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            header_js: string;
+            showTime: boolean;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            url: string;
+            params_js: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            url: string;
+            params_js: string;
+            header_js: string;
+        };
+    })[];
+    constructor($scope: any, $injector: any, $rootScope: any, $q: any, $http: any, templateSrv: any, datasourceSrv: any, backendSrv: any, $sce: any);
+    getStaticExamples(): ({
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+            header_js: string;
+            responseType: string;
+            showTime: boolean;
+            showTimeFormat: string;
+            showTimeValue: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+            responseType: string;
+            showTime: boolean;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+            responseType: string;
+            showTime: boolean;
+            showTimeFormat: string;
+            showTimeValue: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            header_js: string;
+            showTime: boolean;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            url: string;
+            params_js: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            url: string;
+            params_js: string;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            url: string;
+            params_js: string;
+            header_js: string;
+        };
+    })[];
+    loadExample(example: any, evt?: any): void;
     getCurrentParams(): any;
     getHeaders(): any;
     _getURL(): any;

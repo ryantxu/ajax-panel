@@ -1,11 +1,11 @@
 ///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
-System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-panel.css!'], function(exports_1) {
+System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', 'moment', './css/ajax-panel.css!'], function(exports_1) {
     var __extends = (this && this.__extends) || function (d, b) {
         for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-    var sdk_1, jquery_1, lodash_1, moment_1;
+    var sdk_1, jquery_1, lodash_1, app_events_1, moment_1;
     var DSInfo, AjaxCtrl;
     return {
         setters:[
@@ -17,6 +17,9 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
             },
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
+            },
+            function (app_events_1_1) {
+                app_events_1 = app_events_1_1;
             },
             function (moment_1_1) {
                 moment_1 = moment_1_1;
@@ -37,7 +40,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                     else if (ds.urls) {
                         this.baseURL = ds.urls[0];
                     }
-                    console.log('TODO... proxy?', ds);
                     this.isProxy = this.baseURL.startsWith('/api/');
                     this.withCredentials = ds.withCredentials;
                     this.basicAuth = ds.basicAuth;
@@ -47,9 +49,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
             exports_1("DSInfo", DSInfo);
             AjaxCtrl = (function (_super) {
                 __extends(AjaxCtrl, _super);
-                function AjaxCtrl($scope, $injector, $q, $http, templateSrv, datasourceSrv, backendSrv, $sce) {
+                function AjaxCtrl($scope, $injector, $rootScope, $q, $http, templateSrv, datasourceSrv, backendSrv, $sce) {
                     var _this = this;
                     _super.call(this, $scope, $injector);
+                    this.$rootScope = $rootScope;
                     this.$q = $q;
                     this.$http = $http;
                     this.templateSrv = templateSrv;
@@ -61,7 +64,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                     this.json = null; // The the json-tree
                     this.content = null; // The actual HTML
                     this.objectURL = null; // Used for images
-                    this.jsonholder = null;
                     this.img = null; // HTMLElement
                     this.overlay = null;
                     this.requestCount = 0;
@@ -70,24 +72,41 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                     // Used in the editor
                     this.theURL = null; // Used for debugging
                     this.dsInfo = null;
-                    lodash_1.default.defaults(this.panel, AjaxCtrl.panelDefaults);
+                    lodash_1.default.defaults(this.panel, AjaxCtrl.examples[0].config);
                     $scope.$on('$destroy', function () {
                         if (_this.objectURL) {
                             URL.revokeObjectURL(_this.objectURL);
                         }
                     });
-                    this.jsonholder = {
-                        hello: 'world',
-                        a: 1,
-                        b: false,
-                        sub: {
-                            a: 1,
-                            b: false,
-                        },
-                    };
                     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
                     this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
                 }
+                // Expose the examples to Angular
+                AjaxCtrl.prototype.getStaticExamples = function () {
+                    return AjaxCtrl.examples;
+                };
+                AjaxCtrl.prototype.loadExample = function (example, evt) {
+                    var _this = this;
+                    if (evt) {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                    }
+                    console.log('Loading example', example);
+                    var first = AjaxCtrl.examples[0].config;
+                    lodash_1.default.forEach(lodash_1.default.keys(first), function (k) {
+                        delete _this.panel[k];
+                    });
+                    lodash_1.default.defaults(this.panel, example.config);
+                    lodash_1.default.defaults(this.panel, first);
+                    jquery_1.default(window).scrollTop(0);
+                    app_events_1.default.emit('dash-scroll', { animate: false, evt: 0 });
+                    this.$rootScope.appEvent('alert-success', [
+                        'Loaded Example Configuraiton',
+                        example.name,
+                    ]);
+                    this.updateFN();
+                    this.datasourceChanged(null);
+                };
                 AjaxCtrl.prototype.getCurrentParams = function () {
                     if (this.params_fn) {
                         return this.params_fn(this);
@@ -267,7 +286,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                         this.timeInfo = null;
                     }
                     if (!rsp) {
-                        this.jsonholder.sub = this.content = null;
+                        this.content = null;
                         this.json = null;
                         return;
                     }
@@ -294,7 +313,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                                 URL.revokeObjectURL(old);
                             }
                             this.img.css('display', 'block');
-                            this.jsonholder.sub = this.content = null;
+                            this.content = null;
                             this.json = null;
                             return;
                         }
@@ -306,9 +325,8 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                         this.objectURL = null;
                     }
                     if (!lodash_1.default.isString(body)) {
-                        body = JSON.stringify(body, null, 2);
+                        body = '<pre>' + JSON.stringify(body, null, 2) + '</pre>';
                         this.json = null;
-                        this.jsonholder.sub = null;
                     }
                     try {
                         if (checkVars) {
@@ -320,7 +338,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                         console.log('trustAsHtml error: ', e, body);
                         this.content = null;
                         this.json = null;
-                        this.jsonholder.sub = null;
                         this.error = 'Error trusint HTML: ' + e;
                     }
                 };
@@ -342,22 +359,94 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'moment', './css/ajax-pa
                 };
                 AjaxCtrl.templateUrl = 'partials/module.html';
                 AjaxCtrl.scrollable = true;
-                AjaxCtrl.panelDefaults = {
-                    method: 'GET',
-                    url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
-                    params_js: '{\n' +
-                        " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
-                        " to:ctrl.range.to.format('x'), \n" +
-                        ' height:ctrl.height,\n' +
-                        ' now:Date.now(),\n' +
-                        ' since:ctrl.lastRequestTime\n' +
-                        '}',
-                    header_js: '{\n\n}',
-                    responseType: 'text',
-                    showTime: false,
-                    showTimeFormat: 'LTS',
-                    showTimeValue: 'request',
-                };
+                AjaxCtrl.examples = [
+                    {
+                        // The first example should set all relevant fields!
+                        name: 'Simple',
+                        text: 'loads static content from github',
+                        config: {
+                            method: 'GET',
+                            url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
+                            params_js: '{\n' +
+                                " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
+                                " to:ctrl.range.to.format('x'), \n" +
+                                ' height:ctrl.height,\n' +
+                                ' now:Date.now(),\n' +
+                                ' since:ctrl.lastRequestTime\n' +
+                                '}',
+                            header_js: '{\n\n}',
+                            responseType: 'text',
+                            showTime: false,
+                            showTimeFormat: 'LTS',
+                            showTimeValue: 'request',
+                        },
+                    },
+                    {
+                        name: 'Webcamera in Thailand',
+                        text: 'Load an image dynamically',
+                        config: {
+                            method: 'GET',
+                            url: 'http://tat.touch-ics.com/CCTV/cam.php?cam=31&datatype=image&langISO=EN&t=current&reloadtime=1',
+                            params_js: '{\n' + ' __now:Date.now(),\n' + '}',
+                            responseType: 'arraybuffer',
+                            showTime: true,
+                        },
+                    },
+                    {
+                        name: 'Image',
+                        text: 'template variables in URL',
+                        config: {
+                            method: 'GET',
+                            url: 'https://httpbin.org/image?asdgasdg',
+                            params_js: '{\n' + ' __now:Date.now(),\n' + '}',
+                            responseType: 'arraybuffer',
+                            showTime: true,
+                            showTimeFormat: 'LTS',
+                            showTimeValue: 'request',
+                        },
+                    },
+                    {
+                        name: 'Echo Service',
+                        text: 'Responds with the request attributes',
+                        config: {
+                            method: 'GET',
+                            url: 'https://httpbin.org/anything',
+                            header_js: '{\n' +
+                                " sample:'value',  // x is unix ms timestamp\n" +
+                                " Authentication: 'xxx'\n" +
+                                '}',
+                            showTime: true,
+                        },
+                    },
+                    {
+                        name: 'Image in IFrame',
+                        text: 'load an image in an iframe',
+                        config: {
+                            method: 'iframe',
+                            url: 'https://dummyimage.com/600x400/f00/fff&text=GRAFANA',
+                            params_js: '{\n' + ' __now:Date.now(),\n' + '}',
+                        },
+                    },
+                    {
+                        name: 'Basic Auth (success)',
+                        text: 'send correct basic auth',
+                        config: {
+                            url: 'https://httpbin.org/basic-auth/user/pass',
+                            params_js: '{}',
+                        },
+                    },
+                    {
+                        name: 'Basic Auth (fail)',
+                        text: 'send correct basic auth',
+                        config: {
+                            url: 'https://httpbin.org/basic-auth/user/pass',
+                            params_js: '{}',
+                            header_js: '{\n' +
+                                " Authentication: 'not a real header'\n" +
+                                '}',
+                        },
+                    },
+                ];
                 return AjaxCtrl;
             })(sdk_1.MetricsPanelCtrl);
             exports_1("AjaxCtrl", AjaxCtrl);

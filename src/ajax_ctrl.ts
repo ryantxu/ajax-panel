@@ -4,6 +4,7 @@ import {MetricsPanelCtrl} from 'app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
 import kbn from 'app/core/utils/kbn';
+import appEvents from 'app/core/app_events';
 import moment from 'moment';
 import './css/ajax-panel.css!';
 
@@ -21,8 +22,6 @@ export class DSInfo {
     } else if (ds.urls) {
       this.baseURL = ds.urls[0];
     }
-
-    console.log('TODO... proxy?', ds);
     this.isProxy = this.baseURL.startsWith('/api/');
     this.withCredentials = ds.withCredentials;
     this.basicAuth = ds.basicAuth;
@@ -39,7 +38,6 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   json: any = null; // The the json-tree
   content: string = null; // The actual HTML
   objectURL: any = null; // Used for images
-  jsonholder: any = null;
 
   img: any = null; // HTMLElement
   overlay: any = null;
@@ -52,28 +50,103 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   theURL: string = null; // Used for debugging
   dsInfo: DSInfo = null;
 
-  static panelDefaults = {
-    method: 'GET',
-    url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
-    params_js:
-      '{\n' +
-      " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
-      " to:ctrl.range.to.format('x'), \n" +
-      ' height:ctrl.height,\n' +
-      ' now:Date.now(),\n' +
-      ' since:ctrl.lastRequestTime\n' +
-      '}',
-    header_js: '{\n\n}',
-    responseType: 'text',
+  static examples = [
+    {
+      // The first example should set all relevant fields!
+      name: 'Simple',
+      text: 'loads static content from github',
+      config: {
+        method: 'GET',
+        url:
+          'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
+        params_js:
+          '{\n' +
+          " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
+          " to:ctrl.range.to.format('x'), \n" +
+          ' height:ctrl.height,\n' +
+          ' now:Date.now(),\n' +
+          ' since:ctrl.lastRequestTime\n' +
+          '}',
+        header_js: '{\n\n}',
+        responseType: 'text',
 
-    showTime: false,
-    showTimeFormat: 'LTS',
-    showTimeValue: 'request',
-  };
+        showTime: false,
+        showTimeFormat: 'LTS',
+        showTimeValue: 'request',
+      },
+    },
+    {
+      name: 'Webcamera in Thailand',
+      text: 'Load an image dynamically',
+      config: {
+        method: 'GET',
+        url:
+          'http://tat.touch-ics.com/CCTV/cam.php?cam=31&datatype=image&langISO=EN&t=current&reloadtime=1',
+        params_js: '{\n' + ' __now:Date.now(),\n' + '}',
+        responseType: 'arraybuffer',
+        showTime: true,
+      },
+    },
+    {
+      name: 'Image',
+      text: 'template variables in URL',
+      config: {
+        method: 'GET',
+        url: 'https://httpbin.org/image?asdgasdg',
+        params_js: '{\n' + ' __now:Date.now(),\n' + '}',
+        responseType: 'arraybuffer',
+
+        showTime: true,
+        showTimeFormat: 'LTS',
+        showTimeValue: 'request',
+      },
+    },
+    {
+      name: 'Echo Service',
+      text: 'Responds with the request attributes',
+      config: {
+        method: 'GET',
+        url: 'https://httpbin.org/anything',
+        header_js:
+          '{\n' +
+          " sample:'value',  // x is unix ms timestamp\n" +
+          " Authentication: 'xxx'\n" +
+          '}',
+        showTime: true,
+      },
+    },
+    {
+      name: 'Image in IFrame',
+      text: 'load an image in an iframe',
+      config: {
+        method: 'iframe',
+        url: 'https://dummyimage.com/600x400/f00/fff&text=GRAFANA',
+        params_js: '{\n' + ' __now:Date.now(),\n' + '}',
+      },
+    },
+    {
+      name: 'Basic Auth (success)',
+      text: 'send correct basic auth',
+      config: {
+        url: 'https://httpbin.org/basic-auth/user/pass',
+        params_js: '{}',
+      },
+    },
+    {
+      name: 'Basic Auth (fail)',
+      text: 'send correct basic auth',
+      config: {
+        url: 'https://httpbin.org/basic-auth/user/pass',
+        params_js: '{}',
+        header_js: '{\n' + " Authentication: 'not a real header'\n" + '}',
+      },
+    },
+  ];
 
   constructor(
     $scope,
     $injector,
+    public $rootScope,
     public $q,
     public $http,
     public templateSrv,
@@ -83,7 +156,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
   ) {
     super($scope, $injector);
 
-    _.defaults(this.panel, AjaxCtrl.panelDefaults);
+    _.defaults(this.panel, AjaxCtrl.examples[0].config);
 
     $scope.$on('$destroy', () => {
       if (this.objectURL) {
@@ -91,18 +164,39 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       }
     });
 
-    this.jsonholder = {
-      hello: 'world',
-      a: 1,
-      b: false,
-      sub: {
-        a: 1,
-        b: false,
-      },
-    };
-
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
+  }
+
+  // Expose the examples to Angular
+  getStaticExamples() {
+    return AjaxCtrl.examples;
+  }
+
+  loadExample(example: any, evt?: any) {
+    if (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
+
+    console.log('Loading example', example);
+    const first = AjaxCtrl.examples[0].config;
+    _.forEach(_.keys(first), k => {
+      delete this.panel[k];
+    });
+    _.defaults(this.panel, example.config);
+    _.defaults(this.panel, first);
+
+    $(window).scrollTop(0);
+    appEvents.emit('dash-scroll', {animate: false, evt: 0});
+
+    this.$rootScope.appEvent('alert-success', [
+      'Loaded Example Configuraiton',
+      example.name,
+    ]);
+
+    this.updateFN();
+    this.datasourceChanged(null);
   }
 
   getCurrentParams() {
@@ -319,7 +413,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     if (!rsp) {
-      this.jsonholder.sub = this.content = null;
+      this.content = null;
       this.json = null;
       return;
     }
@@ -348,7 +442,7 @@ export class AjaxCtrl extends MetricsPanelCtrl {
           URL.revokeObjectURL(old);
         }
         this.img.css('display', 'block');
-        this.jsonholder.sub = this.content = null;
+        this.content = null;
         this.json = null;
         return;
       }
@@ -362,10 +456,8 @@ export class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     if (!_.isString(body)) {
-      body = JSON.stringify(body, null, 2);
-
+      body = '<pre>' + JSON.stringify(body, null, 2) + '</pre>';
       this.json = null;
-      this.jsonholder.sub = null;
     }
 
     try {
@@ -377,7 +469,6 @@ export class AjaxCtrl extends MetricsPanelCtrl {
       console.log('trustAsHtml error: ', e, body);
       this.content = null;
       this.json = null;
-      this.jsonholder.sub = null;
       this.error = 'Error trusint HTML: ' + e;
     }
   }

@@ -37,6 +37,7 @@ using an <iframe
 * Support loading images
 * Support header configuration
 * Support showing time info
+* Include various sample configurations
 
 ##### v0.0.3
 

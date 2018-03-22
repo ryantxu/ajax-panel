@@ -19,13 +19,13 @@ using an <iframe
 
 ### Screenshots
 
-* ![Screenshot](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot.png)
-* ![Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
-* ![Examples](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-examples.png)
+![Screenshot](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot.png)
+![Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
+![Examples](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-examples.png)
 
 #### Changelog
 
-##### v0.0.4 (not released yet)
+##### v0.0.4
 
 * Support template variables in parameters (@linar-jether)
 * Improved error handling

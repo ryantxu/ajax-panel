@@ -509,10 +509,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             url: 'https://httpbin.org/basic-auth/user/pass',
                             withCredentials: true,
                             params_js: '{}',
-                            header_js: '{\n'
-                                + "   Authorization: 'Basic ' + btoa('user' + ':' + 'pass')\n"
-                                + "// Authorization: 'Basic dXNlcjpwYXNz'\n"
-                                + '}',
+                            header_js: '{\n' +
+                                "   Authorization: 'Basic ' + btoa('user' + ':' + 'pass')\n" +
+                                "// Authorization: 'Basic dXNlcjpwYXNz'\n" +
+                                '}',
                         },
                     },
                     {

@@ -22,7 +22,10 @@ using an <iframe
 
 ### Screenshots
 
-* [Screenshot of the options screen](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
+* [Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot.png)
+* [Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
+* [Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-examples.png)
+
 
 #### Changelog
 
@@ -48,9 +51,9 @@ using an <iframe
 
 * Quick and Dirty, but it works!
 
-### TODO... contributions welcome
+### TODO... contributions welcome!
 
 * Configure timer to refresh
 * configure javascript for display
-* Improve image styling
+* Improve image styling and options
 * show raw JSON with `<json-tree`

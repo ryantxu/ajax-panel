@@ -17,14 +17,11 @@ using an <iframe
 
   The parameters that will be passed in the request. This is a javascript object with access to the variables: - `ctrl` The control object.
 
-  Sample Parameters:
-  `{ from:ctrl.range.from.format('x'), // x is unix ms timestamp to:ctrl.range.to.format('x'), height:ctrl.height }`
-
 ### Screenshots
 
-* [Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot.png)
-* [Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
-* [Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-examples.png)
+* ![Screenshot](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot.png)
+* ![Options](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-ajax-options.png)
+* ![Examples](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-examples.png)
 
 #### Changelog
 
@@ -56,3 +53,4 @@ using an <iframe
 * configure javascript for display
 * Improve image styling and options
 * show raw JSON with `<json-tree`
+* Response formatting: markdown/html/pre/etc?

@@ -247,7 +247,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       const p = $.param(params);
       if (p) {
         const hasArgs = url.indexOf('?') > 0;
-        url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+        url = url + (hasArgs ? '&' : '?') + p;
       }
     }
     if (this.dsInfo) {

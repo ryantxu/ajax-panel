@@ -144,7 +144,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         var p = jquery_1.default.param(params);
                         if (p) {
                             var hasArgs = url.indexOf('?') > 0;
-                            url = url + (hasArgs ? '&' : '?') + encodeURI(p);
+                            url = url + (hasArgs ? '&' : '?') + p;
                         }
                     }
                     if (this.dsInfo) {

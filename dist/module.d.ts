@@ -1,5 +1,6 @@
 /// <reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
 import { MetricsPanelCtrl } from 'app/plugins/sdk';
+import './css/ajax-panel.css!';
 export declare class DSInfo {
     name: string;
     baseURL: string;
@@ -7,6 +8,17 @@ export declare class DSInfo {
     withCredentials: boolean;
     basicAuth: string;
     constructor(ds: any);
+}
+export declare enum DisplayStyle {
+    Direct = "Direct",
+    Template = "Template",
+    Image = "Image",
+    JSON = "JSON",
+}
+export declare enum TemplateMode {
+    html = "html",
+    markdown = "markdown",
+    text = "text",
 }
 declare class AjaxCtrl extends MetricsPanelCtrl {
     $rootScope: any;
@@ -24,6 +36,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     content: string;
     objectURL: any;
     scopedVars: any;
+    display: DisplayStyle;
     img: any;
     overlay: any;
     requestCount: number;
@@ -36,6 +49,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
         text: string;
         config: {
             method: string;
+            display: string;
             url: string;
             params_js: string;
             header_js: string;
@@ -47,6 +61,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             showTimeFormat: string;
             showTimeValue: string;
             templateResponse: boolean;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -56,6 +71,35 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             url: string;
             header_js: string;
             showTime: boolean;
+            display?: undefined;
+            params_js?: undefined;
+            responseType?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            display: DisplayStyle;
+            mode: TemplateMode;
+            url: string;
+            header_js: string;
+            showTime: boolean;
+            params_js?: undefined;
+            responseType?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
         };
     } | {
         name: string;
@@ -66,6 +110,15 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             params_js: string;
             responseType: string;
             showTime: boolean;
+            display?: undefined;
+            header_js?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -78,6 +131,13 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             responseType: string;
             showTime: boolean;
             showTimeValue: string;
+            display?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -86,6 +146,17 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             method: string;
             url: string;
             params_js: string;
+            display?: undefined;
+            header_js?: undefined;
+            responseType?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTime?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -95,6 +166,16 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             withCredentials: boolean;
             params_js: string;
             header_js: string;
+            method?: undefined;
+            display?: undefined;
+            responseType?: undefined;
+            skipSameURL?: undefined;
+            showTime?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     })[];
     constructor($scope: any, $injector: any, $rootScope: any, $q: any, $http: any, templateSrv: any, datasourceSrv: any, backendSrv: any, $sce: any);
@@ -103,6 +184,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
         text: string;
         config: {
             method: string;
+            display: string;
             url: string;
             params_js: string;
             header_js: string;
@@ -114,6 +196,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             showTimeFormat: string;
             showTimeValue: string;
             templateResponse: boolean;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -123,6 +206,35 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             url: string;
             header_js: string;
             showTime: boolean;
+            display?: undefined;
+            params_js?: undefined;
+            responseType?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
+        };
+    } | {
+        name: string;
+        text: string;
+        config: {
+            method: string;
+            display: DisplayStyle;
+            mode: TemplateMode;
+            url: string;
+            header_js: string;
+            showTime: boolean;
+            params_js?: undefined;
+            responseType?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
         };
     } | {
         name: string;
@@ -133,6 +245,15 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             params_js: string;
             responseType: string;
             showTime: boolean;
+            display?: undefined;
+            header_js?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -145,6 +266,13 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             responseType: string;
             showTime: boolean;
             showTimeValue: string;
+            display?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -153,6 +281,17 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             method: string;
             url: string;
             params_js: string;
+            display?: undefined;
+            header_js?: undefined;
+            responseType?: undefined;
+            withCredentials?: undefined;
+            skipSameURL?: undefined;
+            showTime?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     } | {
         name: string;
@@ -162,6 +301,16 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
             withCredentials: boolean;
             params_js: string;
             header_js: string;
+            method?: undefined;
+            display?: undefined;
+            responseType?: undefined;
+            skipSameURL?: undefined;
+            showTime?: undefined;
+            showTimePrefix?: undefined;
+            showTimeFormat?: undefined;
+            showTimeValue?: undefined;
+            templateResponse?: undefined;
+            mode?: undefined;
         };
     })[];
     loadExample(example: any, evt?: any): void;
@@ -169,14 +318,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     template(v: string): any;
     getHeaders(scopedVars?: any): any;
     _getURL(scopedVars?: any): any;
-    /**
-     * @override
-     */
     updateTimeRange(datasource?: any): void;
-    /**
-     * Rather than issue a datasource query, we will call our ajax request
-     * @override
-     */
     issueQueries(datasource: any): any;
     handleQueryResult(result: any): void;
     onPanelInitalized(): void;

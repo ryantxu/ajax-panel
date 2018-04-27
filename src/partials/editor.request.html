@@ -1,5 +1,5 @@
 <div class="editor-row">
-	<div class="section gf-form-group" style="width:100%;">
+	<div class="gf-form-group">
 		<h5 class="section-heading">HTTP Request</h5>
 		<div class="gf-form">
 			<gf-form-switch 
@@ -73,24 +73,22 @@
 	</div>
 
 	
-	<div class="section gf-form-group small-link" style="width:100%;">
+	<div class="gf-form-group small-link">
 		<h5 class="section-heading">Parameters (via javascript)</h5>
-		<div class="gf-form-inline">
-			<div class="gf-form gf-form--grow">
-				<code-editor
-					content="ctrl.panel.params_js"
-					on-change="ctrl.updateFN()"
-					data-mode="javascript"
-					data-behaviours-enabled="true"
-					data-snippets-enabled="false"
-					data-max-lines="20" >
-				</code-editor>
-			</div>
+		<div class="gf-form gf-form--grow">
+			<code-editor
+				content="ctrl.panel.params_js"
+				on-change="ctrl.updateFN()"
+				data-mode="javascript"
+				data-behaviours-enabled="true"
+				data-snippets-enabled="false"
+				data-max-lines="20" >
+			</code-editor>
 		</div>
 		<a ng-href="{{ ctrl.lastURL }}" target="_blank">{{ ctrl.lastURL }} &nbsp; <i class="fa fa-external-link"></i></a>
 	</div>
 
-	<div class="section gf-form-group" style="width:100%;" ng-hide="ctrl.panel.method == 'iframe'">
+	<div class="gf-form-group" ng-if="ctrl.panel.method != 'iframe'">
 		<h5 class="section-heading">Headers (via javascript)</h5>
 		<div class="gf-form-inline">
 			<div class="gf-form gf-form--grow">

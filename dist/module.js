@@ -1,14 +1,19 @@
-///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
-System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', 'moment', './css/ajax-panel.css!'], function(exports_1) {
-    var __extends = (this && this.__extends) || function (d, b) {
-        for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-    var sdk_1, jquery_1, lodash_1, app_events_1, moment_1;
-    var DSInfo, AjaxCtrl;
+System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "moment", "./css/ajax-panel.css!"], function (exports_1, context_1) {
+    "use strict";
+    var __extends = (this && this.__extends) || (function () {
+        var extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var __moduleName = context_1 && context_1.id;
+    var sdk_1, jquery_1, lodash_1, app_events_1, moment_1, DSInfo, DisplayStyle, TemplateMode, AjaxCtrl;
     return {
-        setters:[
+        setters: [
             function (sdk_1_1) {
                 sdk_1 = sdk_1_1;
             },
@@ -24,8 +29,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
             function (moment_1_1) {
                 moment_1 = moment_1_1;
             },
-            function (_1) {}],
-        execute: function() {
+            function (_1) {
+            }
+        ],
+        execute: function () {
             DSInfo = (function () {
                 function DSInfo(ds) {
                     this.name = null;
@@ -45,44 +52,56 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     this.basicAuth = ds.basicAuth;
                 }
                 return DSInfo;
-            })();
+            }());
             exports_1("DSInfo", DSInfo);
+            (function (DisplayStyle) {
+                DisplayStyle["Direct"] = "Direct";
+                DisplayStyle["Template"] = "Template";
+                DisplayStyle["Image"] = "Image";
+                DisplayStyle["JSON"] = "JSON";
+            })(DisplayStyle || (DisplayStyle = {}));
+            exports_1("DisplayStyle", DisplayStyle);
+            (function (TemplateMode) {
+                TemplateMode["html"] = "html";
+                TemplateMode["markdown"] = "markdown";
+                TemplateMode["text"] = "text";
+            })(TemplateMode || (TemplateMode = {}));
+            exports_1("TemplateMode", TemplateMode);
             AjaxCtrl = (function (_super) {
                 __extends(AjaxCtrl, _super);
                 function AjaxCtrl($scope, $injector, $rootScope, $q, $http, templateSrv, datasourceSrv, backendSrv, $sce) {
-                    var _this = this;
-                    _super.call(this, $scope, $injector);
-                    this.$rootScope = $rootScope;
-                    this.$q = $q;
-                    this.$http = $http;
-                    this.templateSrv = templateSrv;
-                    this.datasourceSrv = datasourceSrv;
-                    this.backendSrv = backendSrv;
-                    this.$sce = $sce;
-                    this.params_fn = null;
-                    this.header_fn = null;
-                    this.json = null; // The the json-tree
-                    this.content = null; // The actual HTML
-                    this.objectURL = null; // Used for images
-                    this.scopedVars = null; // updated each request
-                    this.img = null; // HTMLElement
-                    this.overlay = null;
-                    this.requestCount = 0;
-                    this.lastRequestTime = -1;
-                    this.fn_error = null;
-                    // Used in the editor
-                    this.lastURL = null;
-                    this.dsInfo = null;
-                    lodash_1.default.defaults(this.panel, AjaxCtrl.examples[0].config);
+                    var _this = _super.call(this, $scope, $injector) || this;
+                    _this.$rootScope = $rootScope;
+                    _this.$q = $q;
+                    _this.$http = $http;
+                    _this.templateSrv = templateSrv;
+                    _this.datasourceSrv = datasourceSrv;
+                    _this.backendSrv = backendSrv;
+                    _this.$sce = $sce;
+                    _this.params_fn = null;
+                    _this.header_fn = null;
+                    _this.json = null;
+                    _this.content = null;
+                    _this.objectURL = null;
+                    _this.scopedVars = null;
+                    _this.display = DisplayStyle.Direct;
+                    _this.img = null;
+                    _this.overlay = null;
+                    _this.requestCount = 0;
+                    _this.lastRequestTime = -1;
+                    _this.fn_error = null;
+                    _this.lastURL = null;
+                    _this.dsInfo = null;
+                    lodash_1.default.defaults(_this.panel, AjaxCtrl.examples[0].config);
                     $scope.$on('$destroy', function () {
                         if (_this.objectURL) {
                             URL.revokeObjectURL(_this.objectURL);
                         }
                     });
-                    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
-                    this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
+                    _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
+                    _this.events.on('panel-initialized', _this.onPanelInitalized.bind(_this));
+                    return _this;
                 }
-                // Expose the examples to Angular
                 AjaxCtrl.prototype.getStaticExamples = function () {
                     return AjaxCtrl.examples;
                 };
@@ -120,9 +139,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     if (this.params_fn) {
                         params = this.params_fn(this);
                     }
-                    // if(false) {
-                    //   this.templateSrv.fillVariableValuesForUrl(params, scopedVars);
-                    // }
                     return params;
                 };
                 AjaxCtrl.prototype.template = function (v) {
@@ -152,21 +168,13 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     }
                     return url;
                 };
-                /**
-                 * @override
-                 */
                 AjaxCtrl.prototype.updateTimeRange = function (datasource) {
-                    // Keep the timeinfo even after updating the range
                     var before = this.timeInfo;
                     _super.prototype.updateTimeRange.call(this);
                     if (this.panel.showTime && before) {
                         this.timeInfo = before;
                     }
                 };
-                /**
-                 * Rather than issue a datasource query, we will call our ajax request
-                 * @override
-                 */
                 AjaxCtrl.prototype.issueQueries = function (datasource) {
                     var _this = this;
                     if (this.fn_error) {
@@ -174,8 +182,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         this.error = this.fn_error;
                         return null;
                     }
-                    // make shallow copy of scoped vars,
-                    // and add built in variables interval and interval_ms
                     var scopedVars = (this.scopedVars = Object.assign({}, this.panel.scopedVars, {
                         __interval: { text: this.interval, value: this.interval },
                         __interval_ms: { text: this.intervalMs, value: this.intervalMs },
@@ -186,7 +192,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         return null;
                     }
                     this.lastURL = src;
-                    this.error = null; // remove the error
+                    this.error = null;
                     var sent = Date.now();
                     if (this.panel.method === 'iframe') {
                         this.lastRequestTime = sent;
@@ -221,7 +227,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             this.update(this.error, false);
                             return;
                         }
-                        // Now make the call
                         this.requestCount++;
                         this.loading = true;
                         this.backendSrv.datasourceRequest(options).then(function (response) {
@@ -231,18 +236,15 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         }, function (err) {
                             _this.lastRequestTime = sent;
                             _this.loading = false;
-                            _this.error = err; //.data.error + " ["+err.status+"]";
+                            _this.error = err;
                             _this.inspector = { error: err };
                             var body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
                             _this.update(body, false);
                         });
                     }
-                    // Return empty results
-                    return null; //this.$q.when( [] );
+                    return null;
                 };
-                // Overrides the default handling
                 AjaxCtrl.prototype.handleQueryResult = function (result) {
-                    // Nothing. console.log('handleQueryResult', result);
                 };
                 AjaxCtrl.prototype.onPanelInitalized = function () {
                     var _this = this;
@@ -257,7 +259,7 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     this.refresh();
                 };
                 AjaxCtrl.prototype.onInitEditMode = function () {
-                    this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
+                    this.editorTabs.splice(1, 1);
                     this.addEditorTab('Request', 'public/plugins/' + this.pluginId + '/partials/editor.request.html', 1);
                     this.addEditorTab('Display', 'public/plugins/' + this.pluginId + '/partials/editor.display.html', 2);
                     this.addEditorTab('Examples', 'public/plugins/' + this.pluginId + '/partials/editor.examples.html', 4);
@@ -271,7 +273,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         return { value: ds.value, text: ds.name, datasource: ds };
                     }));
                 };
-                // This saves the info we need from the datasouce
                 AjaxCtrl.prototype.datasourceChanged = function (option) {
                     var _this = this;
                     if (option && option.datasource) {
@@ -386,10 +387,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                             this.img.css('display', 'block');
                             this.content = null;
                             this.json = null;
+                            this.display = this.panel.display = DisplayStyle.Image;
                             return;
                         }
                     }
-                    // Its not an image, so remove it
                     if (this.objectURL) {
                         this.img.css('display', 'none');
                         URL.revokeObjectURL(this.objectURL);
@@ -415,7 +416,6 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                 };
                 AjaxCtrl.prototype.openFullscreen = function () {
                     var _this = this;
-                    // Update the image
                     this.overlay.find('img').attr('src', this.objectURL);
                     jquery_1.default('.grafana-app').append(this.overlay);
                     this.overlay.on('click', function () {
@@ -433,11 +433,11 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                 AjaxCtrl.scrollable = true;
                 AjaxCtrl.examples = [
                     {
-                        // The first example should set all relevant fields!
                         name: 'Simple',
                         text: 'loads static content from github',
                         config: {
                             method: 'GET',
+                            display: "Direct",
                             url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
                             params_js: '{\n' +
                                 " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
@@ -464,6 +464,18 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                         text: 'Responds with the request attributes',
                         config: {
                             method: 'GET',
+                            url: 'https://httpbin.org/anything?templateInURL=$__interval',
+                            header_js: "{\n  Accept: 'text/plain'\n}",
+                            showTime: true,
+                        },
+                    },
+                    {
+                        name: 'Echo Service with template',
+                        text: 'Use JSON response in template text',
+                        config: {
+                            method: 'GET',
+                            display: DisplayStyle.Template,
+                            mode: TemplateMode.text,
                             url: 'https://httpbin.org/anything?templateInURL=$__interval',
                             header_js: "{\n  Accept: 'text/plain'\n}",
                             showTime: true,
@@ -527,10 +539,10 @@ System.register(['app/plugins/sdk', 'jquery', 'lodash', 'app/core/app_events', '
                     },
                 ];
                 return AjaxCtrl;
-            })(sdk_1.MetricsPanelCtrl);
+            }(sdk_1.MetricsPanelCtrl));
             exports_1("AjaxCtrl", AjaxCtrl);
             exports_1("PanelCtrl", AjaxCtrl);
         }
-    }
+    };
 });
 //# sourceMappingURL=module.js.map

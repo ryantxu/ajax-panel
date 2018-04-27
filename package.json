@@ -1,8 +1,8 @@
 {
   "name": "ryantxu-ajax-panel",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "AJAX Panel Plugin for Grafana",
-  "main": "src/module.js",
+  "main": "src/module.ts",
   "scripts": {
     "build": "grunt",
     "test": "./node_modules/karma/bin/karma start",
@@ -38,7 +38,8 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-string-replace": "^1.3",
-    "grunt-typescript": "^0.8.0",
+    "grunt-ts": "^6.0.0-beta.19",
+    "grunt-tslint": "^5.0.1",
     "husky": "^0.14.3",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -52,6 +53,8 @@
     "prettier": "1.11.1",
     "pretty-quick": "^1.4.1",
     "sinon": "^3.2.1",
-    "systemjs-plugin-css": "^0.1.35"
+    "systemjs-plugin-css": "^0.1.35",
+    "tslint": "^5.8.0",
+    "typescript": "^2.8.3"
   }
 }

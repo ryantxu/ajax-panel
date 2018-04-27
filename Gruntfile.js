@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   var pkgJson = require('./package.json');
 
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-typescript');
+  grunt.loadNpmTasks('grunt-ts');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-string-replace');
 
@@ -47,19 +47,23 @@ module.exports = function(grunt) {
       },
     },
 
-    typescript: {
+    ts: {
       build: {
-        src: ['dist/**/*.ts', '!**/*.d.ts'],
-        dest: 'dist',
+        src: ['src/**/*.ts', '!**/*.d.ts', '!**/*.min.js'],
+        outDir: 'dist',
         options: {
+          rootDir: 'src',
+          verbose: true,
+
+          target: 'ES5',
           module: 'system',
-          target: 'es5',
-          rootDir: 'dist/',
+          sourceMap: true,
           declaration: true,
           emitDecoratorMetadata: true,
           experimentalDecorators: true,
-          sourceMap: true,
           noImplicitAny: false,
+          strictNullChecks: false,
+          skipLibCheck: true,
         },
       },
     },
@@ -108,7 +112,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
     'clean',
     'copy:dist_js',
-    'typescript:build',
+    'ts:build',
     'copy:dist_html',
     'copy:dist_css',
     'copy:dist_img',

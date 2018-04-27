@@ -28,6 +28,19 @@ export class DSInfo {
   }
 }
 
+export enum DisplayStyle {
+  Direct = 'Direct',
+  Template = 'Template',
+  Image = 'Image',
+  JSON = 'JSON',
+}
+
+export enum TemplateMode {
+  html = 'html',
+  markdown = 'markdown',
+  text = 'text',
+}
+
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
   static scrollable = true;
@@ -39,6 +52,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   content: string = null; // The actual HTML
   objectURL: any = null; // Used for images
   scopedVars: any = null; // updated each request
+  display: DisplayStyle = DisplayStyle.Direct;
 
   img: any = null; // HTMLElement
   overlay: any = null;
@@ -58,6 +72,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       text: 'loads static content from github',
       config: {
         method: 'GET',
+        display: 'Direct',
         url:
           'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
         params_js:
@@ -88,6 +103,18 @@ class AjaxCtrl extends MetricsPanelCtrl {
       text: 'Responds with the request attributes',
       config: {
         method: 'GET',
+        url: 'https://httpbin.org/anything?templateInURL=$__interval',
+        header_js: "{\n  Accept: 'text/plain'\n}",
+        showTime: true,
+      },
+    },
+    {
+      name: 'Echo Service with template',
+      text: 'Use JSON response in template text',
+      config: {
+        method: 'GET',
+        display: DisplayStyle.Template,
+        mode: TemplateMode.text,
         url: 'https://httpbin.org/anything?templateInURL=$__interval',
         header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
@@ -522,6 +549,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.img.css('display', 'block');
         this.content = null;
         this.json = null;
+        this.display = this.panel.display = DisplayStyle.Image;
         return;
       }
     }

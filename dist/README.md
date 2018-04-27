@@ -25,6 +25,11 @@ using an <iframe
 
 #### Changelog
 
+
+##### v0.0.5 (not released yet)
+* TODO... templates
+
+
 ##### v0.0.4
 
 * Support template variables in parameters (@linar-jether)

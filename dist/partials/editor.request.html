@@ -85,7 +85,12 @@
 				data-max-lines="20" >
 			</code-editor>
 		</div>
-		<a ng-href="{{ ctrl.lastURL }}" target="_blank">{{ ctrl.lastURL }} &nbsp; <i class="fa fa-external-link"></i></a>
+		<div style="overflow:hidden; white-space: nowrap;">
+		  <a ng-href="{{ ctrl.lastURL }}" target="_blank">
+			<i class="fa fa-external-link"></i>
+			{{ ctrl.lastURL }}
+		  </a>
+		</div>
 	</div>
 
 	<div class="gf-form-group" ng-if="ctrl.panel.method != 'iframe'">

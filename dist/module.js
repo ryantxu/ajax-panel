@@ -100,8 +100,12 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     });
                     _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
                     _this.events.on('panel-initialized', _this.onPanelInitalized.bind(_this));
+                    _this.events.on('render', _this.onRender.bind(_this));
                     return _this;
                 }
+                AjaxCtrl.prototype.onRender = function () {
+                    this.renderingCompleted();
+                };
                 AjaxCtrl.prototype.getStaticExamples = function () {
                     return AjaxCtrl.examples;
                 };
@@ -189,7 +193,6 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     var src = this._getURL(scopedVars);
                     if (this.panel.skipSameURL && src === this.lastURL) {
                         this.loading = false;
-                        this.renderingCompleted();
                         return null;
                     }
                     this.lastURL = src;
@@ -199,7 +202,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         this.lastRequestTime = sent;
                         var height = this.height;
                         var html = "<iframe width=\"100%\" height=\"" + height + "\" frameborder=\"0\" src=\"" + src + "\"></iframe>";
-                        this.update(html, false);
+                        this.process(html, false);
                     }
                     else {
                         var url = this.templateSrv.replace(this.panel.url, scopedVars);
@@ -225,7 +228,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         }
                         else if (!options.url || options.url.indexOf('://') < 0) {
                             this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-                            this.update(this.error, false);
+                            this.process(this.error, false);
                             return;
                         }
                         this.requestCount++;
@@ -233,19 +236,20 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         this.backendSrv.datasourceRequest(options).then(function (response) {
                             _this.lastRequestTime = sent;
                             _this.loading = false;
-                            _this.update(response);
+                            _this.process(response);
                         }, function (err) {
                             _this.lastRequestTime = sent;
                             _this.loading = false;
                             _this.error = err;
                             _this.inspector = { error: err };
                             var body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-                            _this.update(body, false);
+                            _this.process(body, false);
                         });
                     }
                     return null;
                 };
                 AjaxCtrl.prototype.handleQueryResult = function (result) {
+                    this.render();
                 };
                 AjaxCtrl.prototype.onPanelInitalized = function () {
                     var _this = this;
@@ -320,7 +324,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     }
                     this.onConfigChanged();
                 };
-                AjaxCtrl.prototype.update = function (rsp, checkVars) {
+                AjaxCtrl.prototype.process = function (rsp, checkVars) {
                     if (checkVars === void 0) { checkVars = true; }
                     if (this.panel.showTime) {
                         var txt = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
@@ -389,7 +393,6 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                             this.content = null;
                             this.json = null;
                             this.display = this.panel.display = DisplayStyle.Image;
-                            this.renderingCompleted();
                             return;
                         }
                     }
@@ -415,7 +418,6 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         this.error = 'Error trust HTML: ' + e;
                         this.content = this.$sce.trustAsHtml(this.error);
                     }
-                    this.renderingCompleted();
                 };
                 AjaxCtrl.prototype.openFullscreen = function () {
                     var _this = this;

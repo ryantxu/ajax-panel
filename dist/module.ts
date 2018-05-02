@@ -203,6 +203,14 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
+    this.events.on('render', this.onRender.bind(this));
+  }
+
+  onRender() {
+    // The queries were already called
+    // TODO, move the trustAsHtml here
+
+    this.renderingCompleted();
   }
 
   // Expose the examples to Angular
@@ -315,7 +323,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
       this.loading = false;
-      this.renderingCompleted();
       return null;
     }
 
@@ -326,7 +333,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.lastRequestTime = sent;
       const height = this.height;
       const html = `<iframe width="100%" height="${height}" frameborder="0" src="${src}"><\/iframe>`;
-      this.update(html, false);
+      this.process(html, false);
     } else {
       const url = this.templateSrv.replace(this.panel.url, scopedVars);
       const params = this.getCurrentParams();
@@ -352,7 +359,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         options.url = this.dsInfo.baseURL + url;
       } else if (!options.url || options.url.indexOf('://') < 0) {
         this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-        this.update(this.error, false);
+        this.process(this.error, false);
         return;
       }
 
@@ -363,7 +370,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         response => {
           this.lastRequestTime = sent;
           this.loading = false;
-          this.update(response);
+          this.process(response);
         },
         err => {
           this.lastRequestTime = sent;
@@ -372,7 +379,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
           this.error = err; //.data.error + " ["+err.status+"]";
           this.inspector = {error: err};
           let body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-          this.update(body, false);
+          this.process(body, false);
         }
       );
     }
@@ -384,6 +391,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
   // Overrides the default handling
   handleQueryResult(result) {
     // Nothing. console.log('handleQueryResult', result);
+
+    this.render();
   }
 
   onPanelInitalized() {
@@ -484,7 +493,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.onConfigChanged();
   }
 
-  update(rsp: any, checkVars: boolean = true) {
+  process(rsp: any, checkVars: boolean = true) {
     if (this.panel.showTime) {
       let txt: string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
       if (this.panel.showTimeValue) {
@@ -551,8 +560,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.content = null;
         this.json = null;
         this.display = this.panel.display = DisplayStyle.Image;
-
-        this.renderingCompleted();
         return;
       }
     }
@@ -581,8 +588,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.error = 'Error trust HTML: ' + e;
       this.content = this.$sce.trustAsHtml(this.error);
     }
-    
-    this.renderingCompleted();
   }
 
   openFullscreen() {

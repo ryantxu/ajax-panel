@@ -179,6 +179,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
         };
     })[];
     constructor($scope: any, $injector: any, $rootScope: any, $q: any, $http: any, templateSrv: any, datasourceSrv: any, backendSrv: any, $sce: any);
+    onRender(): void;
     getStaticExamples(): ({
         name: string;
         text: string;
@@ -327,7 +328,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     getDatasourceOptions(): Promise<any>;
     datasourceChanged(option: any): void;
     updateFN(): void;
-    update(rsp: any, checkVars?: boolean): void;
+    process(rsp: any, checkVars?: boolean): void;
     openFullscreen(): void;
     link(scope: any, elem: any, attrs: any, ctrl: any): void;
 }

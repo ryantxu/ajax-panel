@@ -1,21 +1,20 @@
 
-<!-- Visibility is handled by jquery -->
-<div class="imgwrap" ng-click="ctrl.openFullscreen();">
-  <img src="" />
-</div>
-
-
 <!-- JSON? TODO?? why no refresh? -->
-<div class="gf-form-group" ng-show="ctrl.json">
+<div class="gf-form-group" ng-if="ctrl.json">
   <json-tree root-name="sub" object="ctrl.jsonholder" start-expanded="true"></json-tree>
 </div>
-
 
 <!-- Show if we have HTML content -->
 <p
   class="markdown-html panel-text-content"
   ng-bind-html="ctrl.content"
-  ng-show="ctrl.content"></p>
+  ng-if="ctrl.content"></p>
+
+<!-- Visibility is handled by jquery -->
+<div class="imgwrap" ng-click="ctrl.openFullscreen();">
+  <img src="" />
+</div>
+
 
 <div class="ajaxmodal">
   <div class="center-popup">

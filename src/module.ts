@@ -315,6 +315,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
       this.loading = false;
+      this.renderingCompleted();
       return null;
     }
 
@@ -550,6 +551,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.content = null;
         this.json = null;
         this.display = this.panel.display = DisplayStyle.Image;
+
+        this.renderingCompleted();
         return;
       }
     }
@@ -578,6 +581,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.error = 'Error trust HTML: ' + e;
       this.content = this.$sce.trustAsHtml(this.error);
     }
+
+    this.renderingCompleted();
   }
 
   openFullscreen() {

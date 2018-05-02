@@ -25,10 +25,11 @@ using an <iframe
 
 #### Changelog
 
-
 ##### v0.0.5 (not released yet)
-* TODO... templates
 
+* Fixed issue with 5.1
+* Support direct link rendered image
+* TODO... templates
 
 ##### v0.0.4
 

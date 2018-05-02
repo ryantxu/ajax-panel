@@ -189,6 +189,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     var src = this._getURL(scopedVars);
                     if (this.panel.skipSameURL && src === this.lastURL) {
                         this.loading = false;
+                        this.renderingCompleted();
                         return null;
                     }
                     this.lastURL = src;
@@ -388,6 +389,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                             this.content = null;
                             this.json = null;
                             this.display = this.panel.display = DisplayStyle.Image;
+                            this.renderingCompleted();
                             return;
                         }
                     }
@@ -413,6 +415,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         this.error = 'Error trust HTML: ' + e;
                         this.content = this.$sce.trustAsHtml(this.error);
                     }
+                    this.renderingCompleted();
                 };
                 AjaxCtrl.prototype.openFullscreen = function () {
                     var _this = this;
@@ -437,7 +440,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         text: 'loads static content from github',
                         config: {
                             method: 'GET',
-                            display: "Direct",
+                            display: 'Direct',
                             url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
                             params_js: '{\n' +
                                 " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +

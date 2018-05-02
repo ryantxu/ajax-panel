@@ -27,6 +27,8 @@ using an <iframe
 
 ##### v0.0.5 (not released yet)
 
+* Fixed issue with 5.1
+* Support direct link rendered image
 * TODO... templates
 
 ##### v0.0.4

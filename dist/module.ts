@@ -29,18 +29,17 @@ export class DSInfo {
 }
 
 export enum DisplayStyle {
-  Direct = "Direct",
-  Template = "Template",
-  Image = "Image", 
-  JSON = "JSON", 
+  Direct = 'Direct',
+  Template = 'Template',
+  Image = 'Image',
+  JSON = 'JSON',
 }
 
 export enum TemplateMode {
-  html = "html",
-  markdown = "markdown",
-  text = "text",
+  html = 'html',
+  markdown = 'markdown',
+  text = 'text',
 }
-
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -73,7 +72,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       text: 'loads static content from github',
       config: {
         method: 'GET',
-        display: "Direct",
+        display: 'Direct',
         url:
           'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
         params_js:
@@ -316,6 +315,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
       this.loading = false;
+      this.renderingCompleted();
       return null;
     }
 
@@ -551,6 +551,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.content = null;
         this.json = null;
         this.display = this.panel.display = DisplayStyle.Image;
+
+        this.renderingCompleted();
         return;
       }
     }
@@ -579,6 +581,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.error = 'Error trust HTML: ' + e;
       this.content = this.$sce.trustAsHtml(this.error);
     }
+    
+    this.renderingCompleted();
   }
 
   openFullscreen() {

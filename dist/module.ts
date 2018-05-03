@@ -28,17 +28,18 @@ export class DSInfo {
   }
 }
 
-export enum DisplayStyle {
-  Direct = 'Direct',
-  Template = 'Template',
-  Image = 'Image',
-  JSON = 'JSON',
-}
-
-export enum TemplateMode {
+// <option value="html">Direct HTML</option>	
+// <option value="text">Escaped Text</option>	
+// <option value="image">Image</option>	
+// <option value="json">JSON Tree</option>	
+// <option value="template">Angular Template</option>	
+export enum RenderMode {
   html = 'html',
-  markdown = 'markdown',
   text = 'text',
+  pre = 'pre',
+  image = 'image',
+  json = 'json',
+  template = 'template',
 }
 
 class AjaxCtrl extends MetricsPanelCtrl {
@@ -48,14 +49,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
   params_fn: Function = null;
   header_fn: Function = null;
 
-  json: any = null; // The the json-tree
-  content: string = null; // The actual HTML
+  isIframe: boolean = false;
   objectURL: any = null; // Used for images
   scopedVars: any = null; // updated each request
-  display: DisplayStyle = DisplayStyle.Direct;
 
-  img: any = null; // HTMLElement
-  overlay: any = null;
+  img: any = null;     // HTMLElement
+  overlay: any = null; // HTMLElement
+  ngtemplate: any = null; // HTMLElement
 
   requestCount = 0;
   lastRequestTime = -1;
@@ -67,12 +67,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   static examples = [
     {
-      // The first example should set all relevant fields!
+      // The first example should set all possible fields!
       name: 'Simple',
       text: 'loads static content from github',
       config: {
         method: 'GET',
-        display: 'Direct',
+        mode: RenderMode.html,
+        template: '',
         url:
           'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
         params_js:
@@ -103,18 +104,20 @@ class AjaxCtrl extends MetricsPanelCtrl {
       text: 'Responds with the request attributes',
       config: {
         method: 'GET',
+        mode: RenderMode.json,
         url: 'https://httpbin.org/anything?templateInURL=$__interval',
         header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
       },
     },
     {
-      name: 'Echo Service with template',
-      text: 'Use JSON response in template text',
+      name: 'Echo Service with Template',
+      text: 'Format the response with an angular template',
+      editorTabIndex: 2,
       config: {
         method: 'GET',
-        display: DisplayStyle.Template,
-        mode: TemplateMode.text,
+        mode: RenderMode.template,
+        template: "<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>",
         url: 'https://httpbin.org/anything?templateInURL=$__interval',
         header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
@@ -185,11 +188,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
     $injector,
     public $rootScope,
     public $q,
+    public $timeout,
     public $http,
+    public $sce,
     public templateSrv,
     public datasourceSrv,
     public backendSrv,
-    public $sce
+    public $compile,
   ) {
     super($scope, $injector);
 
@@ -203,14 +208,29 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
-    this.events.on('render', this.onRender.bind(this));
+    this.events.on('render', this.notifyWhenRenderingCompleted.bind(this));
   }
 
-  onRender() {
-    // The queries were already called
-    // TODO, move the trustAsHtml here
+  // This checks that all requests have completed before saying 
+  notifyWhenRenderingCompleted() {
+    if(this.requestCount>0) {
+      const requestID = this.requestCount;
+      this.$timeout(() => {
+        if(this.requestCount != requestID) {
+          //console.log('_notifyComplete/restarted...', Date.now(), requestID);
+          return;
+        }
 
-    this.renderingCompleted();
+        if(this.loading) {
+          //console.log('_notifyComplete/loading...', Date.now());
+          this.notifyWhenRenderingCompleted();
+        }
+        else {
+          //console.log('_notifyComplete/finished', Date.now());
+          this.renderingCompleted();
+        }
+      }, 50);
+    }
   }
 
   // Expose the examples to Angular
@@ -245,9 +265,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
     } else {
       this.editorTabIndex = 1;
     }
-    this.refresh();
+    this.$scope.response = null;
     this.updateFN();
+    this.updateTemplate();
     this.datasourceChanged(null);
+    this.refresh();
   }
 
   getCurrentParams(scopedVars?: any) {
@@ -261,6 +283,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     return params;
   }
 
+  // This is called from Javascript
   template(v: string) {
     if (v) {
       return this.templateSrv.replace(v, this.scopedVars);
@@ -329,11 +352,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.lastURL = src;
     this.error = null; // remove the error
     const sent = Date.now();
-    if (this.panel.method === 'iframe') {
-      this.lastRequestTime = sent;
-      const height = this.height;
-      const html = `<iframe width="100%" height="${height}" frameborder="0" src="${src}"><\/iframe>`;
-      this.process(html, false);
+    if (this.isIframe) {
+      this.$scope.url = this.$sce.trustAsResourceUrl(src);
+      return;
     } else {
       const url = this.templateSrv.replace(this.panel.url, scopedVars);
       const params = this.getCurrentParams();
@@ -359,7 +380,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         options.url = this.dsInfo.baseURL + url;
       } else if (!options.url || options.url.indexOf('://') < 0) {
         this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-        this.process(this.error, false);
+        this.process(this.error);
         return;
       }
 
@@ -369,8 +390,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.backendSrv.datasourceRequest(options).then(
         response => {
           this.lastRequestTime = sent;
-          this.loading = false;
           this.process(response);
+          this.loading = false;
         },
         err => {
           this.lastRequestTime = sent;
@@ -379,7 +400,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
           this.error = err; //.data.error + " ["+err.status+"]";
           this.inspector = {error: err};
           let body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-          this.process(body, false);
+          this.process(body);
         }
       );
     }
@@ -392,11 +413,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
   handleQueryResult(result) {
     // Nothing. console.log('handleQueryResult', result);
 
+    console.log('handleQueryResult', Date.now(), this.loading);
     this.render();
   }
 
   onPanelInitalized() {
     this.updateFN();
+    this.updateTemplate();
     this.datasourceChanged(null);
     $(window).on(
       'resize',
@@ -493,7 +516,59 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.onConfigChanged();
   }
 
-  process(rsp: any, checkVars: boolean = true) {
+  updateTemplate() {
+    let txt = '';
+    this.isIframe = this.panel.method === 'iframe';
+    if(this.panel.mode == RenderMode.template) {
+      if(!this.panel.template) {
+        this.panel.template = '<pre>{{ response }}</pre>';
+      }
+      txt = this.panel.template;
+    }
+    else {
+      delete this.panel.template;
+      if (this.isIframe) {
+        txt = '<iframe \
+          frameborder="0" \
+          width="100%"  \
+          height="{{ ctrl.height }}" \
+          ng-src="{{ url }}" \
+          ng-if="ctrl.panel.method === \'iframe\'"></iframe>';
+      } else {
+        if(!this.panel.mode) {
+          this.panel.mode = RenderMode.html; 
+        }    
+        switch(this.panel.mode) {
+          case RenderMode.html:
+            txt = '<div ng-bind-html="response"></div>';
+            break;
+          case RenderMode.text:
+            txt = '{{ response }}';
+            break;
+          case RenderMode.pre:
+            txt = '<pre>{{ response }}</pre>';
+            break;
+          case RenderMode.json:
+            txt = '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
+            break;
+          case RenderMode.image:
+            txt = '';
+            break;
+          default:
+            console.warn('Unsupported render mode:', this.panel.mode);
+        }
+      }
+    }
+    console.log( 'UPDATE template', this.panel, txt );
+
+    this.ngtemplate.html(txt);
+    this.$compile(this.ngtemplate.contents())(this.$scope);
+    if(this.$scope.response) {
+      this.render();
+    }
+  }
+
+  process(rsp: any) {
     if (this.panel.showTime) {
       let txt: string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
       if (this.panel.showTimeValue) {
@@ -528,21 +603,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     if (!rsp) {
-      this.content = null;
-      this.json = null;
       return;
     }
+    this.$scope.response = rsp.data ? rsp.data : rsp;
 
     let contentType = null;
     if (rsp.hasOwnProperty('headers')) {
       contentType = rsp.headers('Content-Type');
-    }
-
-    let body = null;
-    if (rsp.hasOwnProperty('data')) {
-      body = rsp.data;
-    } else {
-      body = rsp;
     }
 
     if (contentType) {
@@ -557,9 +624,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
           URL.revokeObjectURL(old);
         }
         this.img.css('display', 'block');
-        this.content = null;
-        this.json = null;
-        this.display = this.panel.display = DisplayStyle.Image;
+
+        // If we get an image, change the display to image type
+        if(this.panel.mode != RenderMode.image) {
+          this.panel.mode = RenderMode.image;
+          this.updateTemplate();
+        }
         return;
       }
     }
@@ -571,22 +641,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.objectURL = null;
     }
 
-    if (!_.isString(body)) {
-      body = '<pre>' + JSON.stringify(body, null, 2) + '</pre>';
-      this.json = null;
-    }
-
-    try {
-      if (checkVars && this.panel.templateResponse) {
-        body = this.templateSrv.replace(body, this.scopedVars);
-      }
-      this.content = this.$sce.trustAsHtml(body);
-    } catch (e) {
-      console.log('trustAsHtml error: ', e, body);
-      this.content = null;
-      this.json = null;
-      this.error = 'Error trust HTML: ' + e;
-      this.content = this.$sce.trustAsHtml(this.error);
+    // JSON Node needs to force refresh
+    if(this.panel.mode == RenderMode.json) {
+      this.updateTemplate();
     }
   }
 
@@ -599,8 +656,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
     });
   }
 
+  afterRender() {
+    console.log('AFTER RENDER!!!');
+  }
+
   link(scope, elem, attrs, ctrl) {
     this.img = $(elem.find('img')[0]);
+    this.ngtemplate = $(elem.find('.ngtemplate')[0]);
     this.overlay = $(elem.find('.ajaxmodal')[0]);
     this.overlay.remove();
     this.overlay.css('display', 'block');

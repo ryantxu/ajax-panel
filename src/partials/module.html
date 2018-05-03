@@ -1,27 +1,21 @@
 
-<!-- JSON? TODO?? why no refresh? -->
-<div class="gf-form-group" ng-if="ctrl.json">
-  <json-tree root-name="sub" object="ctrl.jsonholder" start-expanded="true"></json-tree>
-</div>
+<div><!-- Needed for Scrollbar to work! -->
 
-<!-- Show if we have HTML content -->
-<p
-  class="markdown-html panel-text-content"
-  ng-bind-html="ctrl.content"
-  ng-if="ctrl.content"></p>
+  <!-- Filled up by a dynamic template -->
+  <div class="ngtemplate"></div>
 
-<!-- Visibility is handled by jquery -->
-<div class="imgwrap" ng-click="ctrl.openFullscreen();">
-  <img src="" />
-</div>
-
-
-<div class="ajaxmodal">
-  <div class="center-popup">
-    <div class="center-wrap">
-      <img src="public/plugins/ryantxu-ajax-panel/img/loading.gif" />
-    </div>
+  <!-- Visibility is handled by jquery -->
+  <div class="imgwrap" ng-click="ctrl.openFullscreen();">
+    <img src="" />
   </div>
-  <div class="modal-backdrop"></div>
-</div>
 
+  <div class="ajaxmodal">
+    <div class="center-popup">
+      <div class="center-wrap">
+        <img />
+      </div>
+    </div>
+    <div class="modal-backdrop"></div>
+  </div>
+
+</div>

@@ -11,7 +11,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
         };
     })();
     var __moduleName = context_1 && context_1.id;
-    var sdk_1, jquery_1, lodash_1, app_events_1, moment_1, DSInfo, DisplayStyle, TemplateMode, AjaxCtrl;
+    var sdk_1, jquery_1, lodash_1, app_events_1, moment_1, DSInfo, RenderMode, AjaxCtrl;
     return {
         setters: [
             function (sdk_1_1) {
@@ -54,39 +54,36 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                 return DSInfo;
             }());
             exports_1("DSInfo", DSInfo);
-            (function (DisplayStyle) {
-                DisplayStyle["Direct"] = "Direct";
-                DisplayStyle["Template"] = "Template";
-                DisplayStyle["Image"] = "Image";
-                DisplayStyle["JSON"] = "JSON";
-            })(DisplayStyle || (DisplayStyle = {}));
-            exports_1("DisplayStyle", DisplayStyle);
-            (function (TemplateMode) {
-                TemplateMode["html"] = "html";
-                TemplateMode["markdown"] = "markdown";
-                TemplateMode["text"] = "text";
-            })(TemplateMode || (TemplateMode = {}));
-            exports_1("TemplateMode", TemplateMode);
+            (function (RenderMode) {
+                RenderMode["html"] = "html";
+                RenderMode["text"] = "text";
+                RenderMode["pre"] = "pre";
+                RenderMode["image"] = "image";
+                RenderMode["json"] = "json";
+                RenderMode["template"] = "template";
+            })(RenderMode || (RenderMode = {}));
+            exports_1("RenderMode", RenderMode);
             AjaxCtrl = (function (_super) {
                 __extends(AjaxCtrl, _super);
-                function AjaxCtrl($scope, $injector, $rootScope, $q, $http, templateSrv, datasourceSrv, backendSrv, $sce) {
+                function AjaxCtrl($scope, $injector, $rootScope, $q, $timeout, $http, $sce, templateSrv, datasourceSrv, backendSrv, $compile) {
                     var _this = _super.call(this, $scope, $injector) || this;
                     _this.$rootScope = $rootScope;
                     _this.$q = $q;
+                    _this.$timeout = $timeout;
                     _this.$http = $http;
+                    _this.$sce = $sce;
                     _this.templateSrv = templateSrv;
                     _this.datasourceSrv = datasourceSrv;
                     _this.backendSrv = backendSrv;
-                    _this.$sce = $sce;
+                    _this.$compile = $compile;
                     _this.params_fn = null;
                     _this.header_fn = null;
-                    _this.json = null;
-                    _this.content = null;
+                    _this.isIframe = false;
                     _this.objectURL = null;
                     _this.scopedVars = null;
-                    _this.display = DisplayStyle.Direct;
                     _this.img = null;
                     _this.overlay = null;
+                    _this.ngtemplate = null;
                     _this.requestCount = 0;
                     _this.lastRequestTime = -1;
                     _this.fn_error = null;
@@ -100,11 +97,25 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     });
                     _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
                     _this.events.on('panel-initialized', _this.onPanelInitalized.bind(_this));
-                    _this.events.on('render', _this.onRender.bind(_this));
+                    _this.events.on('render', _this.notifyWhenRenderingCompleted.bind(_this));
                     return _this;
                 }
-                AjaxCtrl.prototype.onRender = function () {
-                    this.renderingCompleted();
+                AjaxCtrl.prototype.notifyWhenRenderingCompleted = function () {
+                    var _this = this;
+                    if (this.requestCount > 0) {
+                        var requestID_1 = this.requestCount;
+                        this.$timeout(function () {
+                            if (_this.requestCount != requestID_1) {
+                                return;
+                            }
+                            if (_this.loading) {
+                                _this.notifyWhenRenderingCompleted();
+                            }
+                            else {
+                                _this.renderingCompleted();
+                            }
+                        }, 50);
+                    }
                 };
                 AjaxCtrl.prototype.getStaticExamples = function () {
                     return AjaxCtrl.examples;
@@ -134,9 +145,11 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     else {
                         this.editorTabIndex = 1;
                     }
-                    this.refresh();
+                    this.$scope.response = null;
                     this.updateFN();
+                    this.updateTemplate();
                     this.datasourceChanged(null);
+                    this.refresh();
                 };
                 AjaxCtrl.prototype.getCurrentParams = function (scopedVars) {
                     var params = {};
@@ -198,11 +211,9 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     this.lastURL = src;
                     this.error = null;
                     var sent = Date.now();
-                    if (this.panel.method === 'iframe') {
-                        this.lastRequestTime = sent;
-                        var height = this.height;
-                        var html = "<iframe width=\"100%\" height=\"" + height + "\" frameborder=\"0\" src=\"" + src + "\"></iframe>";
-                        this.process(html, false);
+                    if (this.isIframe) {
+                        this.$scope.url = this.$sce.trustAsResourceUrl(src);
+                        return;
                     }
                     else {
                         var url = this.templateSrv.replace(this.panel.url, scopedVars);
@@ -228,32 +239,34 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         }
                         else if (!options.url || options.url.indexOf('://') < 0) {
                             this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-                            this.process(this.error, false);
+                            this.process(this.error);
                             return;
                         }
                         this.requestCount++;
                         this.loading = true;
                         this.backendSrv.datasourceRequest(options).then(function (response) {
                             _this.lastRequestTime = sent;
-                            _this.loading = false;
                             _this.process(response);
+                            _this.loading = false;
                         }, function (err) {
                             _this.lastRequestTime = sent;
                             _this.loading = false;
                             _this.error = err;
                             _this.inspector = { error: err };
                             var body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-                            _this.process(body, false);
+                            _this.process(body);
                         });
                     }
                     return null;
                 };
                 AjaxCtrl.prototype.handleQueryResult = function (result) {
+                    console.log('handleQueryResult', Date.now(), this.loading);
                     this.render();
                 };
                 AjaxCtrl.prototype.onPanelInitalized = function () {
                     var _this = this;
                     this.updateFN();
+                    this.updateTemplate();
                     this.datasourceChanged(null);
                     jquery_1.default(window).on('resize', lodash_1.default.debounce(function (fn) {
                         _this.refresh();
@@ -324,8 +337,58 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     }
                     this.onConfigChanged();
                 };
-                AjaxCtrl.prototype.process = function (rsp, checkVars) {
-                    if (checkVars === void 0) { checkVars = true; }
+                AjaxCtrl.prototype.updateTemplate = function () {
+                    var txt = '';
+                    this.isIframe = this.panel.method === 'iframe';
+                    if (this.panel.mode == RenderMode.template) {
+                        if (!this.panel.template) {
+                            this.panel.template = '<pre>{{ response }}</pre>';
+                        }
+                        txt = this.panel.template;
+                    }
+                    else {
+                        delete this.panel.template;
+                        if (this.isIframe) {
+                            txt = '<iframe \
+          frameborder="0" \
+          width="100%"  \
+          height="{{ ctrl.height }}" \
+          ng-src="{{ url }}" \
+          ng-if="ctrl.panel.method === \'iframe\'"></iframe>';
+                        }
+                        else {
+                            if (!this.panel.mode) {
+                                this.panel.mode = RenderMode.html;
+                            }
+                            switch (this.panel.mode) {
+                                case RenderMode.html:
+                                    txt = '<div ng-bind-html="response"></div>';
+                                    break;
+                                case RenderMode.text:
+                                    txt = '{{ response }}';
+                                    break;
+                                case RenderMode.pre:
+                                    txt = '<pre>{{ response }}</pre>';
+                                    break;
+                                case RenderMode.json:
+                                    txt = '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
+                                    break;
+                                case RenderMode.image:
+                                    txt = '';
+                                    break;
+                                default:
+                                    console.warn('Unsupported render mode:', this.panel.mode);
+                            }
+                        }
+                    }
+                    console.log('UPDATE template', this.panel, txt);
+                    this.ngtemplate.html(txt);
+                    this.$compile(this.ngtemplate.contents())(this.$scope);
+                    if (this.$scope.response) {
+                        this.render();
+                    }
+                };
+                AjaxCtrl.prototype.process = function (rsp) {
                     if (this.panel.showTime) {
                         var txt = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
                         if (this.panel.showTimeValue) {
@@ -363,20 +426,12 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         this.timeInfo = null;
                     }
                     if (!rsp) {
-                        this.content = null;
-                        this.json = null;
                         return;
                     }
+                    this.$scope.response = rsp.data ? rsp.data : rsp;
                     var contentType = null;
                     if (rsp.hasOwnProperty('headers')) {
                         contentType = rsp.headers('Content-Type');
-                    }
-                    var body = null;
-                    if (rsp.hasOwnProperty('data')) {
-                        body = rsp.data;
-                    }
-                    else {
-                        body = rsp;
                     }
                     if (contentType) {
                         if (contentType.startsWith('image/')) {
@@ -390,9 +445,10 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                                 URL.revokeObjectURL(old);
                             }
                             this.img.css('display', 'block');
-                            this.content = null;
-                            this.json = null;
-                            this.display = this.panel.display = DisplayStyle.Image;
+                            if (this.panel.mode != RenderMode.image) {
+                                this.panel.mode = RenderMode.image;
+                                this.updateTemplate();
+                            }
                             return;
                         }
                     }
@@ -401,22 +457,8 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         URL.revokeObjectURL(this.objectURL);
                         this.objectURL = null;
                     }
-                    if (!lodash_1.default.isString(body)) {
-                        body = '<pre>' + JSON.stringify(body, null, 2) + '</pre>';
-                        this.json = null;
-                    }
-                    try {
-                        if (checkVars && this.panel.templateResponse) {
-                            body = this.templateSrv.replace(body, this.scopedVars);
-                        }
-                        this.content = this.$sce.trustAsHtml(body);
-                    }
-                    catch (e) {
-                        console.log('trustAsHtml error: ', e, body);
-                        this.content = null;
-                        this.json = null;
-                        this.error = 'Error trust HTML: ' + e;
-                        this.content = this.$sce.trustAsHtml(this.error);
+                    if (this.panel.mode == RenderMode.json) {
+                        this.updateTemplate();
                     }
                 };
                 AjaxCtrl.prototype.openFullscreen = function () {
@@ -427,8 +469,12 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         _this.overlay.remove();
                     });
                 };
+                AjaxCtrl.prototype.afterRender = function () {
+                    console.log('AFTER RENDER!!!');
+                };
                 AjaxCtrl.prototype.link = function (scope, elem, attrs, ctrl) {
                     this.img = jquery_1.default(elem.find('img')[0]);
+                    this.ngtemplate = jquery_1.default(elem.find('.ngtemplate')[0]);
                     this.overlay = jquery_1.default(elem.find('.ajaxmodal')[0]);
                     this.overlay.remove();
                     this.overlay.css('display', 'block');
@@ -442,7 +488,8 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         text: 'loads static content from github',
                         config: {
                             method: 'GET',
-                            display: 'Direct',
+                            mode: RenderMode.html,
+                            template: '',
                             url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
                             params_js: '{\n' +
                                 " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
@@ -469,18 +516,20 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         text: 'Responds with the request attributes',
                         config: {
                             method: 'GET',
+                            mode: RenderMode.json,
                             url: 'https://httpbin.org/anything?templateInURL=$__interval',
                             header_js: "{\n  Accept: 'text/plain'\n}",
                             showTime: true,
                         },
                     },
                     {
-                        name: 'Echo Service with template',
-                        text: 'Use JSON response in template text',
+                        name: 'Echo Service with Template',
+                        text: 'Format the response with an angular template',
+                        editorTabIndex: 2,
                         config: {
                             method: 'GET',
-                            display: DisplayStyle.Template,
-                            mode: TemplateMode.text,
+                            mode: RenderMode.template,
+                            template: "<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>",
                             url: 'https://httpbin.org/anything?templateInURL=$__interval',
                             header_js: "{\n  Accept: 'text/plain'\n}",
                             showTime: true,

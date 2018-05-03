@@ -28,11 +28,11 @@ export class DSInfo {
   }
 }
 
-// <option value="html">Direct HTML</option>	
-// <option value="text">Escaped Text</option>	
-// <option value="image">Image</option>	
-// <option value="json">JSON Tree</option>	
-// <option value="template">Angular Template</option>	
+// <option value="html">Direct HTML</option>
+// <option value="text">Escaped Text</option>
+// <option value="image">Image</option>
+// <option value="json">JSON Tree</option>
+// <option value="template">Angular Template</option>
 export enum RenderMode {
   html = 'html',
   text = 'text',
@@ -53,7 +53,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   objectURL: any = null; // Used for images
   scopedVars: any = null; // updated each request
 
-  img: any = null;     // HTMLElement
+  img: any = null; // HTMLElement
   overlay: any = null; // HTMLElement
   ngtemplate: any = null; // HTMLElement
 
@@ -64,6 +64,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   // Used in the editor
   lastURL: string = null;
   dsInfo: DSInfo = null;
+  debugParams: any = null;
 
   static examples = [
     {
@@ -117,7 +118,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
       config: {
         method: 'GET',
         mode: RenderMode.template,
-        template: "<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>",
+        template:
+          '<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>',
         url: 'https://httpbin.org/anything?templateInURL=$__interval',
         header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
@@ -194,7 +196,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     public templateSrv,
     public datasourceSrv,
     public backendSrv,
-    public $compile,
+    public $compile
   ) {
     super($scope, $injector);
 
@@ -211,21 +213,20 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.events.on('render', this.notifyWhenRenderingCompleted.bind(this));
   }
 
-  // This checks that all requests have completed before saying 
+  // This checks that all requests have completed before saying
   notifyWhenRenderingCompleted() {
-    if(this.requestCount>0) {
+    if (this.requestCount > 0) {
       const requestID = this.requestCount;
       this.$timeout(() => {
-        if(this.requestCount != requestID) {
+        if (this.requestCount != requestID) {
           //console.log('_notifyComplete/restarted...', Date.now(), requestID);
           return;
         }
 
-        if(this.loading) {
+        if (this.loading) {
           //console.log('_notifyComplete/loading...', Date.now());
           this.notifyWhenRenderingCompleted();
-        }
-        else {
+        } else {
           //console.log('_notifyComplete/finished', Date.now());
           this.renderingCompleted();
         }
@@ -342,6 +343,17 @@ class AjaxCtrl extends MetricsPanelCtrl {
       __interval: {text: this.interval, value: this.interval},
       __interval_ms: {text: this.intervalMs, value: this.intervalMs},
     }));
+    if(this.debugParams) {
+      this.debugParams = {};
+      console.log( '???', scopedVars );
+      _.each(scopedVars, (v, k) => {
+        console.log( 'each', k, v );
+        this.debugParams[k] = v.text;
+      });
+      _.each(this.templateSrv.variables, (v) => {
+        this.debugParams[v.name] = v.getValueForUrl();
+      });
+    }
 
     const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
@@ -354,6 +366,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const sent = Date.now();
     if (this.isIframe) {
       this.$scope.url = this.$sce.trustAsResourceUrl(src);
+      // Its not an image, so remove it
+      if (this.objectURL) {
+        this.img.css('display', 'none');
+        URL.revokeObjectURL(this.objectURL);
+        this.objectURL = null;
+      }
       return;
     } else {
       const url = this.templateSrv.replace(this.panel.url, scopedVars);
@@ -435,6 +453,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   onInitEditMode() {
+    this.debugParams = {};
     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
     this.addEditorTab(
       'Request',
@@ -519,26 +538,26 @@ class AjaxCtrl extends MetricsPanelCtrl {
   updateTemplate() {
     let txt = '';
     this.isIframe = this.panel.method === 'iframe';
-    if(this.panel.mode == RenderMode.template) {
-      if(!this.panel.template) {
+    if (this.panel.mode == RenderMode.template) {
+      if (!this.panel.template) {
         this.panel.template = '<pre>{{ response }}</pre>';
       }
       txt = this.panel.template;
-    }
-    else {
+    } else {
       delete this.panel.template;
       if (this.isIframe) {
-        txt = '<iframe \
+        txt =
+          '<iframe \
           frameborder="0" \
           width="100%"  \
           height="{{ ctrl.height }}" \
           ng-src="{{ url }}" \
           ng-if="ctrl.panel.method === \'iframe\'"></iframe>';
       } else {
-        if(!this.panel.mode) {
-          this.panel.mode = RenderMode.html; 
-        }    
-        switch(this.panel.mode) {
+        if (!this.panel.mode) {
+          this.panel.mode = RenderMode.html;
+        }
+        switch (this.panel.mode) {
           case RenderMode.html:
             txt = '<div ng-bind-html="response"></div>';
             break;
@@ -549,7 +568,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
             txt = '<pre>{{ response }}</pre>';
             break;
           case RenderMode.json:
-            txt = '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
+            txt =
+              '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
             break;
           case RenderMode.image:
             txt = '';
@@ -559,11 +579,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
         }
       }
     }
-    console.log( 'UPDATE template', this.panel, txt );
+    console.log('UPDATE template', this.panel, txt);
 
     this.ngtemplate.html(txt);
     this.$compile(this.ngtemplate.contents())(this.$scope);
-    if(this.$scope.response) {
+    if (this.$scope.response) {
       this.render();
     }
   }
@@ -626,7 +646,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.img.css('display', 'block');
 
         // If we get an image, change the display to image type
-        if(this.panel.mode != RenderMode.image) {
+        if (this.panel.mode != RenderMode.image) {
           this.panel.mode = RenderMode.image;
           this.updateTemplate();
         }
@@ -642,7 +662,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     // JSON Node needs to force refresh
-    if(this.panel.mode == RenderMode.json) {
+    if (this.panel.mode == RenderMode.json) {
       this.updateTemplate();
     }
   }

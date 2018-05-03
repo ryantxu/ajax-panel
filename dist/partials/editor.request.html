@@ -110,13 +110,14 @@
 	</div>
 
 	
-	<div class="gf-form-group">
-		<h5 class="section-heading">Scoped Variables</h5>
-		<div class="gf-form-inline">
-			<div class="gf-form gf-form--grow">
-				<pre>{{ ctrl.scopedVars | json }}</pre>
-			</div>
-		</div>
+	<div class="gf-form-group" ng-if="ctrl.debugParams">
+		<h5 class="section-heading">Variables</h5>
+		<table class="filter-table" style="width:auto;">
+			<tr ng-repeat="(key, value) in ctrl.debugParams track by $index">
+				<td>${{key}}</td>
+				<td>{{value}}</td>
+			</tr>
+		</table>
 	</div>
 </div>
 

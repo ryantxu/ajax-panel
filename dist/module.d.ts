@@ -42,6 +42,7 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     fn_error: any;
     lastURL: string;
     dsInfo: DSInfo;
+    debugParams: any;
     static examples: ({
         name: string;
         text: string;

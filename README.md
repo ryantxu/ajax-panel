@@ -1,7 +1,6 @@
 ## AJAX Panel for Grafana
 
-The AJAX Panel can load external content into the dashboard. This is a more powerful and flexible solution than
-using an <iframe
+The AJAX Panel can load external content into the dashboard.
 
 ### Options
 
@@ -25,12 +24,13 @@ using an <iframe
 
 #### Changelog
 
-##### v0.0.5 (not released yet)
+##### v0.0.5
 
 * Support angular templates using AJAX response
 * Options to display as: HTML, Text, JSON, or preformatted text
 * Fixed display issue with 5.1
 * Support direct link rendered image
+* Show possible variables in editor
 
 ##### v0.0.4
 
@@ -56,8 +56,5 @@ using an <iframe
 
 ### TODO... contributions welcome!
 
-* Configure timer to refresh
-* configure javascript for display
+* Configure independent refresh timer
 * Improve image styling and options
-* show raw JSON with `<json-tree`
-* Response formatting: markdown/html/pre/etc?

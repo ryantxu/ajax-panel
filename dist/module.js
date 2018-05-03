@@ -89,6 +89,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     _this.fn_error = null;
                     _this.lastURL = null;
                     _this.dsInfo = null;
+                    _this.debugParams = null;
                     lodash_1.default.defaults(_this.panel, AjaxCtrl.examples[0].config);
                     $scope.$on('$destroy', function () {
                         if (_this.objectURL) {
@@ -203,6 +204,17 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         __interval: { text: this.interval, value: this.interval },
                         __interval_ms: { text: this.intervalMs, value: this.intervalMs },
                     }));
+                    if (this.debugParams) {
+                        this.debugParams = {};
+                        console.log('???', scopedVars);
+                        lodash_1.default.each(scopedVars, function (v, k) {
+                            console.log('each', k, v);
+                            _this.debugParams[k] = v.text;
+                        });
+                        lodash_1.default.each(this.templateSrv.variables, function (v) {
+                            _this.debugParams[v.name] = v.getValueForUrl();
+                        });
+                    }
                     var src = this._getURL(scopedVars);
                     if (this.panel.skipSameURL && src === this.lastURL) {
                         this.loading = false;
@@ -213,6 +225,11 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     var sent = Date.now();
                     if (this.isIframe) {
                         this.$scope.url = this.$sce.trustAsResourceUrl(src);
+                        if (this.objectURL) {
+                            this.img.css('display', 'none');
+                            URL.revokeObjectURL(this.objectURL);
+                            this.objectURL = null;
+                        }
                         return;
                     }
                     else {
@@ -277,6 +294,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     this.refresh();
                 };
                 AjaxCtrl.prototype.onInitEditMode = function () {
+                    this.debugParams = {};
                     this.editorTabs.splice(1, 1);
                     this.addEditorTab('Request', 'public/plugins/' + this.pluginId + '/partials/editor.request.html', 1);
                     this.addEditorTab('Display', 'public/plugins/' + this.pluginId + '/partials/editor.display.html', 2);
@@ -349,7 +367,8 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     else {
                         delete this.panel.template;
                         if (this.isIframe) {
-                            txt = '<iframe \
+                            txt =
+                                '<iframe \
           frameborder="0" \
           width="100%"  \
           height="{{ ctrl.height }}" \
@@ -371,7 +390,8 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                                     txt = '<pre>{{ response }}</pre>';
                                     break;
                                 case RenderMode.json:
-                                    txt = '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
+                                    txt =
+                                        '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
                                     break;
                                 case RenderMode.image:
                                     txt = '';
@@ -529,7 +549,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         config: {
                             method: 'GET',
                             mode: RenderMode.template,
-                            template: "<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>",
+                            template: '<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>',
                             url: 'https://httpbin.org/anything?templateInURL=$__interval',
                             header_js: "{\n  Accept: 'text/plain'\n}",
                             showTime: true,

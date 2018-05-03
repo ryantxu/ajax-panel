@@ -64,6 +64,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   // Used in the editor
   lastURL: string = null;
   dsInfo: DSInfo = null;
+  debugParams: any = null;
 
   static examples = [
     {
@@ -342,6 +343,17 @@ class AjaxCtrl extends MetricsPanelCtrl {
       __interval: {text: this.interval, value: this.interval},
       __interval_ms: {text: this.intervalMs, value: this.intervalMs},
     }));
+    if (this.debugParams) {
+      this.debugParams = {};
+      console.log('???', scopedVars);
+      _.each(scopedVars, (v, k) => {
+        console.log('each', k, v);
+        this.debugParams[k] = v.text;
+      });
+      _.each(this.templateSrv.variables, v => {
+        this.debugParams[v.name] = v.getValueForUrl();
+      });
+    }
 
     const src = this._getURL(scopedVars);
     if (this.panel.skipSameURL && src === this.lastURL) {
@@ -354,6 +366,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
     const sent = Date.now();
     if (this.isIframe) {
       this.$scope.url = this.$sce.trustAsResourceUrl(src);
+      // Its not an image, so remove it
+      if (this.objectURL) {
+        this.img.css('display', 'none');
+        URL.revokeObjectURL(this.objectURL);
+        this.objectURL = null;
+      }
       return;
     } else {
       const url = this.templateSrv.replace(this.panel.url, scopedVars);
@@ -435,6 +453,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   onInitEditMode() {
+    this.debugParams = {};
     this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
     this.addEditorTab(
       'Request',

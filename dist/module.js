@@ -90,6 +90,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     _this.lastURL = null;
                     _this.dsInfo = null;
                     _this.debugParams = null;
+                    _this.timer = null;
                     lodash_1.default.defaults(_this.panel, AjaxCtrl.examples[0].config);
                     $scope.$on('$destroy', function () {
                         if (_this.objectURL) {
@@ -103,9 +104,13 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                 }
                 AjaxCtrl.prototype.notifyWhenRenderingCompleted = function () {
                     var _this = this;
+                    if (this.timer) {
+                        this.$timeout.cancel(this.timer);
+                    }
                     if (this.requestCount > 0) {
                         var requestID_1 = this.requestCount;
-                        this.$timeout(function () {
+                        this.timer = this.$timeout(function () {
+                            _this.timer = null;
                             if (_this.requestCount != requestID_1) {
                                 return;
                             }
@@ -115,7 +120,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                             else {
                                 _this.renderingCompleted();
                             }
-                        }, 50);
+                        }, 100);
                     }
                 };
                 AjaxCtrl.prototype.getStaticExamples = function () {

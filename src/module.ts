@@ -65,6 +65,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   lastURL: string = null;
   dsInfo: DSInfo = null;
   debugParams: any = null;
+  timer: any = null;
 
   static examples = [
     {
@@ -215,22 +216,26 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   // This checks that all requests have completed before saying
   notifyWhenRenderingCompleted() {
+    if (this.timer) {
+      this.$timeout.cancel(this.timer);
+    }
+
     if (this.requestCount > 0) {
       const requestID = this.requestCount;
-      this.$timeout(() => {
+      this.timer = this.$timeout(() => {
+        this.timer = null;
+
         if (this.requestCount != requestID) {
-          //console.log('_notifyComplete/restarted...', Date.now(), requestID);
           return;
         }
 
+        // If it is still loading... try again
         if (this.loading) {
-          //console.log('_notifyComplete/loading...', Date.now());
           this.notifyWhenRenderingCompleted();
         } else {
-          //console.log('_notifyComplete/finished', Date.now());
           this.renderingCompleted();
         }
-      }, 50);
+      }, 100);
     }
   }
 

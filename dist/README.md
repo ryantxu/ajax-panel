@@ -1,6 +1,6 @@
 ## AJAX Panel for Grafana
 
-The AJAX Panel can load external content into the dashboard. 
+The AJAX Panel can load external content into the dashboard.
 
 ### Options
 
@@ -58,3 +58,4 @@ The AJAX Panel can load external content into the dashboard.
 
 * Configure independent refresh timer
 * Improve image styling and options
+* Configure CSS?

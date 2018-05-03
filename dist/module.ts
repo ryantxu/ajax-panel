@@ -343,14 +343,14 @@ class AjaxCtrl extends MetricsPanelCtrl {
       __interval: {text: this.interval, value: this.interval},
       __interval_ms: {text: this.intervalMs, value: this.intervalMs},
     }));
-    if(this.debugParams) {
+    if (this.debugParams) {
       this.debugParams = {};
-      console.log( '???', scopedVars );
+      console.log('???', scopedVars);
       _.each(scopedVars, (v, k) => {
-        console.log( 'each', k, v );
+        console.log('each', k, v);
         this.debugParams[k] = v.text;
       });
-      _.each(this.templateSrv.variables, (v) => {
+      _.each(this.templateSrv.variables, v => {
         this.debugParams[v.name] = v.getValueForUrl();
       });
     }

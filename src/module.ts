@@ -434,9 +434,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   // Overrides the default handling
   handleQueryResult(result) {
-    // Nothing. console.log('handleQueryResult', result);
-
-    console.log('handleQueryResult', Date.now(), this.loading);
+    //console.log('handleQueryResult', Date.now(), this.loading);
     this.render();
   }
 

@@ -282,7 +282,6 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     return null;
                 };
                 AjaxCtrl.prototype.handleQueryResult = function (result) {
-                    console.log('handleQueryResult', Date.now(), this.loading);
                     this.render();
                 };
                 AjaxCtrl.prototype.onPanelInitalized = function () {

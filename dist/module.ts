@@ -216,7 +216,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   // This checks that all requests have completed before saying
   notifyWhenRenderingCompleted() {
-    if(this.timer) {
+    if (this.timer) {
       this.$timeout.cancel(this.timer);
     }
 
@@ -434,9 +434,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   // Overrides the default handling
   handleQueryResult(result) {
-    // Nothing. console.log('handleQueryResult', result);
-
-    console.log('handleQueryResult', Date.now(), this.loading);
+    //console.log('handleQueryResult', Date.now(), this.loading);
     this.render();
   }
 

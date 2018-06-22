@@ -401,7 +401,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
           options.headers.Authorization = this.dsInfo.basicAuth;
         }
         options.url = this.dsInfo.baseURL + url;
-      } else if (!options.url || options.url.indexOf('://') < 0) {
+      } else if (!options.url) {
+        this.error = 'Missing URL';
+        this.process(this.error);
+        return;
+      } else if (options.url.indexOf('://') < 0 && options.url.indexOf('api/') < 0) {
         this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
         this.process(this.error);
         return;

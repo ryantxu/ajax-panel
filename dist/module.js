@@ -211,9 +211,7 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     }));
                     if (this.debugParams) {
                         this.debugParams = {};
-                        console.log('???', scopedVars);
                         lodash_1.default.each(scopedVars, function (v, k) {
-                            console.log('each', k, v);
                             _this.debugParams[k] = v.text;
                         });
                         lodash_1.default.each(this.templateSrv.variables, function (v) {
@@ -259,9 +257,14 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                             }
                             options.url = this.dsInfo.baseURL + url;
                         }
-                        else if (!options.url || options.url.indexOf('://') < 0) {
-                            this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-                            this.process(this.error);
+                        else if (!options.url) {
+                            this.error = 'Missing URL';
+                            this.showError(this.error, null);
+                            return;
+                        }
+                        else if (options.url.indexOf('://') < 0 && options.url.indexOf('api/') < 0) {
+                            this.error = 'Invalid URL: ' + options.url;
+                            this.showError(this.error, params);
                             return;
                         }
                         this.requestCount++;
@@ -271,12 +274,12 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                             _this.process(response);
                             _this.loading = false;
                         }, function (err) {
+                            console.log('ERR', err);
                             _this.lastRequestTime = sent;
                             _this.loading = false;
                             _this.error = err;
                             _this.inspector = { error: err };
-                            var body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-                            _this.process(body);
+                            _this.showError('Request Error', err);
                         });
                     }
                     return null;
@@ -412,6 +415,23 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                         this.render();
                     }
                 };
+                AjaxCtrl.prototype.showError = function (msg, err) {
+                    this.timeInfo = null;
+                    if (this.objectURL) {
+                        this.img.css('display', 'none');
+                        URL.revokeObjectURL(this.objectURL);
+                        this.objectURL = null;
+                    }
+                    var txt = "<h1>" + msg + "</h1>";
+                    if (err) {
+                        txt += '<pre>' + JSON.stringify(err) + '</pre>';
+                    }
+                    this.ngtemplate.html(txt);
+                    this.$compile(this.ngtemplate.contents())(this.$scope);
+                    if (this.$scope.response) {
+                        this.render();
+                    }
+                };
                 AjaxCtrl.prototype.process = function (rsp) {
                     if (this.panel.showTime) {
                         var txt = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
@@ -492,9 +512,6 @@ System.register(["app/plugins/sdk", "jquery", "lodash", "app/core/app_events", "
                     this.overlay.on('click', function () {
                         _this.overlay.remove();
                     });
-                };
-                AjaxCtrl.prototype.afterRender = function () {
-                    console.log('AFTER RENDER!!!');
                 };
                 AjaxCtrl.prototype.link = function (scope, elem, attrs, ctrl) {
                     this.img = jquery_1.default(elem.find('img')[0]);

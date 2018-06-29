@@ -343,9 +343,9 @@ declare class AjaxCtrl extends MetricsPanelCtrl {
     datasourceChanged(option: any): void;
     updateFN(): void;
     updateTemplate(): void;
+    showError(msg: string, err: any): void;
     process(rsp: any): void;
     openFullscreen(): void;
-    afterRender(): void;
     link(scope: any, elem: any, attrs: any, ctrl: any): void;
 }
 export { AjaxCtrl, AjaxCtrl as PanelCtrl };

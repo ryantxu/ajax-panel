@@ -348,11 +348,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
       __interval: {text: this.interval, value: this.interval},
       __interval_ms: {text: this.intervalMs, value: this.intervalMs},
     }));
+
+    // This lets us see the parameters in the editor
     if (this.debugParams) {
       this.debugParams = {};
-      console.log('???', scopedVars);
       _.each(scopedVars, (v, k) => {
-        console.log('each', k, v);
         this.debugParams[k] = v.text;
       });
       _.each(this.templateSrv.variables, v => {
@@ -401,9 +401,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
           options.headers.Authorization = this.dsInfo.basicAuth;
         }
         options.url = this.dsInfo.baseURL + url;
-      } else if (!options.url || options.url.indexOf('://') < 0) {
-        this.error = 'Invalid URL: ' + options.url + ' // ' + JSON.stringify(params);
-        this.process(this.error);
+      } else if (!options.url) {
+        this.error = 'Missing URL';
+        this.showError(this.error, null);
+        return;
+      } else if (options.url.indexOf('://') < 0 && options.url.indexOf('api/') < 0) {
+        this.error = 'Invalid URL: ' + options.url;
+        this.showError(this.error, params);
         return;
       }
 
@@ -417,13 +421,13 @@ class AjaxCtrl extends MetricsPanelCtrl {
           this.loading = false;
         },
         err => {
+          console.log('ERR', err);
           this.lastRequestTime = sent;
           this.loading = false;
 
           this.error = err; //.data.error + " ["+err.status+"]";
           this.inspector = {error: err};
-          let body = '<h1>Error</h1><pre>' + JSON.stringify(err, null, ' ') + '</pre>';
-          this.process(body);
+          this.showError('Request Error', err);
         }
       );
     }
@@ -591,6 +595,26 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
   }
 
+  showError(msg: string, err: any) {
+    this.timeInfo = null;
+    if (this.objectURL) {
+      this.img.css('display', 'none');
+      URL.revokeObjectURL(this.objectURL);
+      this.objectURL = null;
+    }
+
+    let txt = `<h1>${msg}</h1>`;
+    if (err) {
+      txt += '<pre>' + JSON.stringify(err) + '</pre>';
+    }
+
+    this.ngtemplate.html(txt);
+    this.$compile(this.ngtemplate.contents())(this.$scope);
+    if (this.$scope.response) {
+      this.render();
+    }
+  }
+
   process(rsp: any) {
     if (this.panel.showTime) {
       let txt: string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
@@ -677,10 +701,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.overlay.on('click', () => {
       this.overlay.remove();
     });
-  }
-
-  afterRender() {
-    console.log('AFTER RENDER!!!');
   }
 
   link(scope, elem, attrs, ctrl) {

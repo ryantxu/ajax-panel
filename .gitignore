@@ -1,3 +1,6 @@
 node_modules
 npm-debug.log
 .tscache/
+
+# Remove dist on master branch
+dist/

@@ -4,7 +4,7 @@
 [![dependencies Status](https://david-dm.org/ryantxu/ajax-panel/status.svg)](https://david-dm.org/ryantxu/ajax-panel)
 [![devDependencies Status](https://david-dm.org/ryantxu/ajax-panel/dev-status.svg)](https://david-dm.org/ryantxu/ajax-panel?type=dev)
 
-The AJAX Panel can load external content into the dashboard.
+The AJAX Panel is a general way to load external content into a grafana dashboard.
 
 ### Options
 
@@ -63,9 +63,3 @@ The AJAX Panel can load external content into the dashboard.
 ##### v0.0.2
 
 * Quick and Dirty, but it works!
-
-### TODO... contributions welcome!
-
-* Configure independent refresh timer
-* Improve image styling and options
-* Configure CSS?

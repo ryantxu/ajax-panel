@@ -1,6 +1,8 @@
 ## AJAX Panel for Grafana
 
 [![CircleCI](https://circleci.com/gh/ryantxu/ajax-panel/tree/master.svg?style=svg)](https://circleci.com/gh/ryantxu/ajax-panel/tree/master)
+[![dependencies Status](https://david-dm.org/ryantxu/ajax-panel/status.svg)](https://david-dm.org/ryantxu/ajax-panel)
+[![devDependencies Status](https://david-dm.org/ryantxu/ajax-panel/dev-status.svg)](https://david-dm.org/ryantxu/ajax-panel?type=dev)
 
 The AJAX Panel can load external content into the dashboard.
 

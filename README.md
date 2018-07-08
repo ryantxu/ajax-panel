@@ -1,5 +1,7 @@
 ## AJAX Panel for Grafana
 
+[![CircleCI](https://circleci.com/gh/ryantxu/ajax-panel/tree/master.svg?style=svg)](https://circleci.com/gh/ryantxu/ajax-panel/tree/master)
+
 The AJAX Panel can load external content into the dashboard.
 
 ### Options
@@ -23,6 +25,11 @@ The AJAX Panel can load external content into the dashboard.
 ![Examples](https://raw.githubusercontent.com/ryantxu/ajax-panel/master/src/img/screenshot-examples.png)
 
 #### Changelog
+
+##### v0.0.6 (not released yet)
+
+* Support requests to /api (grafana internal API)
+* Adding circleci build
 
 ##### v0.0.5
 

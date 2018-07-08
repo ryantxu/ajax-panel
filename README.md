@@ -30,6 +30,7 @@ The AJAX Panel can load external content into the dashboard.
 
 * Support requests to /api (grafana internal API)
 * Adding circleci build
+* removing dist from master build (only add it on release branches)
 
 ##### v0.0.5
 

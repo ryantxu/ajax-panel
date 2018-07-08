@@ -3,7 +3,6 @@
 import {MetricsPanelCtrl} from 'app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
-import kbn from 'app/core/utils/kbn';
 import appEvents from 'app/core/app_events';
 import moment from 'moment';
 import './css/ajax-panel.css!';

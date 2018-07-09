@@ -10,7 +10,7 @@ const version = versionDev.substring(0, versionDev.lastIndexOf('-'));
 const {execSync} = require('child_process');
 
 let output = execSync('git status --untracked-files=no --porcelain').toString();
-if (false && output.length > 0) {
+if (output.length > 0) {
   console.warn('Make sure to commit all files before running this script:\n' + output);
   process.exit(1);
 }
@@ -18,27 +18,14 @@ if (false && output.length > 0) {
 console.log('Checkout and publish release branch');
 execSync('git checkout -b release-' + version);
 
-// Used to update the version number and fix .gitignore
-function searchReplaceFile(regexpFind, replace, theFileName) {
-  var file = fs.createReadStream(theFileName, 'utf8');
-  var newText = '';
+console.log('Update revision: ' + version);
 
-  file.on('data', function(chunk) {
-    newText += chunk.toString().replace(regexpFind, replace);
-  });
-
-  file.on('end', function() {
-    fs.writeFile(theFileName, newText, function(err) {
-      if (err) {
-        return console.warn(err);
-      }
-    });
-  });
-}
-
-console.log('Replace in files');
-searchReplaceFile(versionDev, version, 'package.json');
-searchReplaceFile('dist/', '', '.gitignore');
+execSync(
+  `sed -i 's/${versionDev.replace('.', '\\.')}/${version.replace(
+    '.',
+    '\\.'
+  )}/g' package.json`
+);
 
 // console.log('Test');
 // execSync('yarn test');
@@ -47,21 +34,15 @@ console.log('Building...');
 execSync('yarn build');
 
 console.log('Save the artifacts in git');
-console.log(execSync('git add dist/').toString());
-console.log(execSync('git add .gitignore').toString());
-console.log(execSync('git add package.json').toString());
-try {
-  execSync(`git commit -m "adding release artifacts: ${version}"`);
-} catch (error) {
-  // error.status;  // Might be 127 in your example.
-  // error.message; // Holds the message you typically want.
-  // error.stderr;  // Holds the stderr output. Use `.toString()`.
-  // error.stdout;  // Holds the stdout output. Use `.toString()`.
+console.log('ADD: ' + execSync('git add --verbose --force dist/').toString());
+console.log('ADD: ' + execSync('git add package.json').toString());
+console.log(
+  'COMMIT: ' + execSync(`git commit -m "adding release artifacts: ${version}"`)
+);
 
-  console.log('ERROR running commit');
-  console.log('status', error.status);
-  console.log('message', error.message);
-  console.log('stderr', error.stderr);
-  console.log('stdout', error.stdout);
-}
+const rev = execSync('git rev-parse HEAD')
+  .toString()
+  .trim();
+
 console.log('Release: ', version);
+console.log('TODO... tag? and propose repository info: ', rev);

@@ -47,7 +47,9 @@ console.log('Building...');
 execSync('yarn build');
 
 console.log('Save the artifacts in git');
-execSync('git add --all');
+execSync('git add dist/');
+execSync('git add .gitignore');
+execSync('git add package.json');
 try {
   execSync(`git commit -m "adding release artifacts: ${version}"`);
 } catch (error) {

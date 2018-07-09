@@ -26,6 +26,7 @@ module.exports = {
   //     chunks: 'all'
   //   }
   // },
+  performance: {hints: false},
   externals: [
     'lodash',
     'jquery',

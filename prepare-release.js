@@ -17,7 +17,6 @@ if (false && output.length > 0) {
 
 console.log('Checkout and publish release branch');
 execSync('git checkout -b release-' + version);
-execSync("git commit -a -m 'adding a release branch'");
 
 function searchReplaceFile(regexpFind, replace, theFileName) {
   var file = fs.createReadStream(theFileName, 'utf8');
@@ -47,6 +46,7 @@ console.log('Building...');
 execSync('yarn build');
 
 console.log('Save the artifacts in git');
-execSync("git commit -a -m 'adding artifacts'");
+execSync('git add --all');
+execSync(`git commit -m 'adding release artifacts: ${version}'`);
 
 console.log('prepare release: ', version);

@@ -9,7 +9,7 @@ if (!versionDev.endsWith('-dev')) {
 const version = versionDev.substring(0, versionDev.lastIndexOf('-'));
 const {execSync} = require('child_process');
 
-let output = execSync('git status --untracked-files=no --porcelain');
+let output = execSync('git status --untracked-files=no --porcelain').toString();
 if (false && output.length > 0) {
   console.warn('Make sure to commit all files before running this script:\n' + output);
   process.exit(1);
@@ -47,9 +47,9 @@ console.log('Building...');
 execSync('yarn build');
 
 console.log('Save the artifacts in git');
-execSync('git add dist/');
-execSync('git add .gitignore');
-execSync('git add package.json');
+console.log(execSync('git add dist/').toString());
+console.log(execSync('git add .gitignore').toString());
+console.log(execSync('git add package.json').toString());
 try {
   execSync(`git commit -m "adding release artifacts: ${version}"`);
 } catch (error) {

@@ -1,3 +1,7 @@
+//
+// This script makes a new git release branch and adds the 'dist' folder to it
+//
+
 const fs = require('fs');
 const versionDev = require('./package.json').version;
 if (!versionDev.endsWith('-dev')) {
@@ -19,7 +23,6 @@ console.log('Checkout and publish release branch');
 execSync('git checkout -b release-' + version);
 
 console.log('Update revision: ' + version);
-
 execSync(
   `sed -i 's/${versionDev.replace('.', '\\.')}/${version.replace(
     '.',

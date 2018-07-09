@@ -8,11 +8,11 @@ import moment from 'moment';
 import './style.css';
 
 export class DSInfo {
-  name: string = null;
-  baseURL: string = null;
+  name: string;
+  baseURL: string;
   isProxy: boolean = false;
   withCredentials: boolean = false;
-  basicAuth: string = null;
+  basicAuth?: string;
 
   constructor(ds) {
     this.name = ds.name;
@@ -45,26 +45,26 @@ class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
   static scrollable = true;
 
-  params_fn: Function = null;
-  header_fn: Function = null;
+  params_fn?: Function;
+  header_fn?: Function;
 
   isIframe: boolean = false;
   objectURL: any = null; // Used for images
   scopedVars: any = null; // updated each request
 
-  img: any = null; // HTMLElement
-  overlay: any = null; // HTMLElement
-  ngtemplate: any = null; // HTMLElement
+  img?: any; // HTMLElement
+  overlay?: any; // HTMLElement
+  ngtemplate?: any; // HTMLElement
 
   requestCount = 0;
   lastRequestTime = -1;
-  fn_error: any = null;
+  fn_error?: any;
 
   // Used in the editor
-  lastURL: string = null;
-  dsInfo: DSInfo = null;
-  debugParams: any = null;
-  timer: any = null;
+  lastURL?: string;
+  dsInfo?: DSInfo;
+  debugParams?: any;
+  timer?: any;
 
   static examples = [
     {
@@ -233,7 +233,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     if (this.requestCount > 0) {
       const requestID = this.requestCount;
       this.timer = this.$timeout(() => {
-        this.timer = null;
+        this.timer = undefined;
 
         if (this.requestCount != requestID) {
           return;
@@ -465,7 +465,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   onConfigChanged() {
-    this.lastURL = null;
+    this.lastURL = undefined;
     this.refresh();
   }
 
@@ -522,21 +522,21 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.onConfigChanged();
       });
     } else {
-      this.dsInfo = null;
+      this.dsInfo = undefined;
       this.onConfigChanged();
     }
   }
 
   updateFN() {
     this.fn_error = null;
-    this.params_fn = null;
+    this.params_fn = undefined;
 
     if (this.panel.params_js) {
       try {
         this.params_fn = new Function('ctrl', 'return ' + this.panel.params_js);
       } catch (ex) {
         console.warn('error parsing params_js', this.panel.params_js, ex);
-        this.params_fn = null;
+        this.params_fn = undefined;
         this.fn_error = ex;
       }
     }
@@ -545,7 +545,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         this.header_fn = new Function('ctrl', 'return ' + this.panel.header_js);
       } catch (ex) {
         console.warn('error parsing header_js', this.panel.header_js, ex);
-        this.header_fn = null;
+        this.header_fn = undefined;
         this.fn_error = ex;
       }
     }
@@ -629,7 +629,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     if (this.panel.showTime) {
       let txt: string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
       if (this.panel.showTimeValue) {
-        let when = null;
+        let when: any = undefined;
         if ('request' === this.panel.showTimeValue) {
           when = this.lastRequestTime;
         } else if ('recieve' === this.panel.showTimeValue) {
@@ -664,7 +664,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
     this.$scope.response = rsp.hasOwnProperty('data') ? rsp.data : rsp;
 
-    let contentType = null;
+    let contentType: string = '';
     if (rsp.hasOwnProperty('headers')) {
       contentType = rsp.headers('Content-Type');
     }

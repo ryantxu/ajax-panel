@@ -1,9 +1,9 @@
 ///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
 
-import {MetricsPanelCtrl} from 'app/plugins/sdk';
+import {MetricsPanelCtrl} from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
-import appEvents from 'app/core/app_events';
+import appEvents from 'grafana/app/core/app_events';
 import moment from 'moment';
 import './css/ajax-panel.css!';
 

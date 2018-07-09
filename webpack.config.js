@@ -24,6 +24,7 @@ module.exports = {
   // },
   externals: [
     'lodash',
+    'jquery',
     'moment',
     'slate',
     'prismjs',

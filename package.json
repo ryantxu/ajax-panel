@@ -27,16 +27,12 @@
     "semi": true
   },
   "dependencies": {
-    "immutable": "^3.8.2",
+    "jquery": "^3.2.1",
     "lodash": "^4.17.4",
-    "moment": "^2.22.1",
-    "papaparse": "^4.5.0",
-    "prismjs": "^1.6.0",
-    "slate": "^0.33.7",
-    "slate-plain-serializer": "^0.5.13"
+    "moment": "^2.22.1"
   },
   "devDependencies": {
-    "@types/grafana": "https://git@github.com/CorpGlory/types-grafana.git",
+    "grafana-sdk-mocks": "github:ryantxu/grafana-sdk-mocks",
     "@types/jest": "^22.2.3",
     "@types/lodash": "^4.14.74",
     "babel-core": "^6.26.3",
@@ -46,7 +42,6 @@
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
-    "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks",
     "jest": "^23.0.1",
     "ng-annotate-webpack-plugin": "^0.3.0",
     "style-loader": "^0.21.0",

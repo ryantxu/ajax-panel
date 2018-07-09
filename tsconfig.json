@@ -18,7 +18,7 @@
     "noImplicitUseStrict": false,
     "noImplicitAny": false,
     "noUnusedLocals": true,
-    "strictNullChecks": true
+    "strictNullChecks": false
   },
   "include": ["./src/**/*.ts", "./src/**/*.tsx"],
   "exclude": ["node_modules"]

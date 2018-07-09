@@ -1,7 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
+const moment = require('moment');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
+
+const packageJson = require('./package.json');
 
 module.exports = {
   node: {
@@ -47,6 +51,22 @@ module.exports = {
       {from: '../LICENSE', to: '.'},
       {from: 'partials/*', to: '.'},
       {from: 'img/*', to: '.'},
+    ]),
+    new ReplaceInFileWebpackPlugin([
+      {
+        dir: 'dist',
+        files: ['plugin.json'],
+        rules: [
+          {
+            search: '%VERSION%',
+            replace: packageJson.version,
+          },
+          {
+            search: '%TODAY%',
+            replace: moment().format('YYYY.MM.DD'),
+          },
+        ],
+      },
     ]),
   ],
   resolve: {

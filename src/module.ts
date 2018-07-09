@@ -651,7 +651,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     if (!rsp) {
       return;
     }
-    this.$scope.response = rsp.data ? rsp.data : rsp;
+    this.$scope.response = rsp.hasOwnProperty('data') ? rsp.data : rsp;
 
     let contentType = null;
     if (rsp.hasOwnProperty('headers')) {

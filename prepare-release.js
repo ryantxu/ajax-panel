@@ -18,6 +18,7 @@ if (false && output.length > 0) {
 console.log('Checkout and publish release branch');
 execSync('git checkout -b release-' + version);
 
+// Used to update the version number and fix .gitignore
 function searchReplaceFile(regexpFind, replace, theFileName) {
   var file = fs.createReadStream(theFileName, 'utf8');
   var newText = '';
@@ -47,6 +48,6 @@ execSync('yarn build');
 
 console.log('Save the artifacts in git');
 execSync('git add --all');
-//execSync(`git commit -m 'adding release artifacts: ${version}'`);
+execSync(`git commit -m "adding release artifacts: ${version}"`);
 
-console.log('TODO.. release: ', version);
+console.log('Release: ', version);

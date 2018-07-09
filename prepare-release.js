@@ -47,6 +47,6 @@ execSync('yarn build');
 
 console.log('Save the artifacts in git');
 execSync('git add --all');
-execSync(`git commit -m 'adding release artifacts: ${version}'`);
+//execSync(`git commit -m 'adding release artifacts: ${version}'`);
 
-console.log('prepare release: ', version);
+console.log('TODO.. release: ', version);

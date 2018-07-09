@@ -8,6 +8,7 @@
     "dev": "webpack --mode development",
     "watch": "webpack --mode development --watch",
     "test": "jest --config jest.config.js",
+    "release": "node release.js",
     "precommit": "pretty-quick --staged",
     "pretty": "prettier --write src/**/*.ts"
   },

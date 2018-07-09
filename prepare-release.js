@@ -48,6 +48,18 @@ execSync('yarn build');
 
 console.log('Save the artifacts in git');
 execSync('git add --all');
-execSync(`git commit -m "adding release artifacts: ${version}"`);
+try {
+  execSync(`git commit -m "adding release artifacts: ${version}"`);
+} catch (error) {
+  // error.status;  // Might be 127 in your example.
+  // error.message; // Holds the message you typically want.
+  // error.stderr;  // Holds the stderr output. Use `.toString()`.
+  // error.stdout;  // Holds the stdout output. Use `.toString()`.
 
+  console.log('ERROR running commit');
+  console.log('status', error.status);
+  console.log('message', error.message);
+  console.log('stderr', error.stderr);
+  console.log('stdout', error.stdout);
+}
 console.log('Release: ', version);

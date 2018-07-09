@@ -160,6 +160,17 @@ class AjaxCtrl extends MetricsPanelCtrl {
       },
     },
     {
+      name: 'Results from grafana api',
+      text: 'grafana settings api w/ template',
+      config: {
+        mode: RenderMode.template,
+        template:
+          '<h5>{{ response.DEFAULT.instance_name }}</h5>\n\n<pre>{{ response | json }}</pre>',
+        url: '/api/admin/settings',
+        params_js: '{}',
+      },
+    },
+    {
       name: 'Basic Auth (success)',
       text: 'send correct basic auth',
       config: {

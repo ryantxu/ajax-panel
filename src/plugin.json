@@ -2,7 +2,6 @@
   "type": "panel",
   "name": "AJAX",
   "id": "ryantxu-ajax-panel",
-
   "info": {
     "description": "AJAX panel for grafana",
     "author": {
@@ -14,17 +13,24 @@
       "large": "img/ajax_panel_logo.svg"
     },
     "links": [
-      {"name": "Project site", "url": "https://github.com/ryantxu/ajax-panel"},
+      {
+        "name": "Project site",
+        "url": "https://github.com/ryantxu/ajax-panel"
+      },
       {
         "name": "MIT License",
         "url": "https://github.com/ryantxu/ajax-panel/blob/master/LICENSE"
       }
     ],
-    "screenshots": [{"name": "Options", "path": "img/screenshot-ajax-options.png"}],
+    "screenshots": [
+      {
+        "name": "Options",
+        "path": "img/screenshot-ajax-options.png"
+      }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
-
   "dependencies": {
     "grafanaVersion": "3.x.x",
     "plugins": []

@@ -22,17 +22,16 @@ module.exports = {
   },
   externals: [
     'lodash',
+    'jquery',
     'moment',
     'slate',
     'prismjs',
     'slate-plain-serializer',
     'slate-react',
-    'react',
-    'react-dom',
     function(context, request, callback) {
-      var prefix = 'grafana/';
+      var prefix = 'app/';
       if (request.indexOf(prefix) === 0) {
-        return callback(null, request.substr(prefix.length));
+        return callback(null, request);
       }
       callback();
     },

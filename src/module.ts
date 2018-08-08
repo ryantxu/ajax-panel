@@ -597,7 +597,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         }
       }
     }
-    console.log('UPDATE template', this.panel, txt);
+    //console.log('UPDATE template', this.panel, txt);
 
     this.ngtemplate.html(txt);
     this.$compile(this.ngtemplate.contents())(this.$scope);

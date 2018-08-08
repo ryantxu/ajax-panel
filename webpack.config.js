@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const moment = require('moment');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
@@ -21,24 +20,19 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
     libraryTarget: 'amd',
   },
-  // optimization: {
-  //   splitChunks: {
-  //     chunks: 'all'
-  //   }
-  // },
-  performance: {hints: false},
   externals: [
     'lodash',
-    'jquery',
     'moment',
     'slate',
     'prismjs',
     'slate-plain-serializer',
     'slate-react',
+    'react',
+    'react-dom',
     function(context, request, callback) {
-      var prefix = 'app/';
+      var prefix = 'grafana/';
       if (request.indexOf(prefix) === 0) {
-        return callback(null, request);
+        return callback(null, request.substr(prefix.length));
       }
       callback();
     },
@@ -64,7 +58,7 @@ module.exports = {
           },
           {
             search: '%TODAY%',
-            replace: moment().format('YYYY.MM.DD'),
+            replace: new Date().toISOString().substring(0, 10),
           },
         ],
       },

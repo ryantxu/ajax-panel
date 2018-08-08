@@ -196,6 +196,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     },
   ];
 
+  /** @ngInject */
   constructor(
     $scope,
     $injector,

@@ -5,7 +5,8 @@
   "info": {
     "description": "AJAX panel for grafana",
     "author": {
-      "name": "ryantxu"
+      "name": "Ryan McKinley",
+      "url": "https://github.com/ryantxu"
     },
     "keywords": ["ajax", "panel"],
     "logos": {

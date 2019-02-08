@@ -20,6 +20,12 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
     libraryTarget: 'amd',
   },
+  // optimization: {
+  //   splitChunks: {
+  //     chunks: 'all'
+  //   }
+  // },
+  performance: {hints: false},
   externals: [
     'lodash',
     'jquery',
@@ -49,7 +55,7 @@ module.exports = {
     new ReplaceInFileWebpackPlugin([
       {
         dir: 'dist',
-        files: ['plugin.json'],
+        files: ['plugin.json', 'README.md'],
         rules: [
           {
             search: '%VERSION%',

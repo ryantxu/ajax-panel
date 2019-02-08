@@ -75,8 +75,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         method: 'GET',
         mode: RenderMode.html,
         template: '',
-        url:
-          'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
+        url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
         params_js:
           '{\n' +
           " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
@@ -118,8 +117,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       config: {
         method: 'GET',
         mode: RenderMode.template,
-        template:
-          '<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>',
+        template: '<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>',
         url: 'https://httpbin.org/anything?templateInURL=$__interval',
         header_js: "{\n  Accept: 'text/plain'\n}",
         showTime: true,
@@ -272,10 +270,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     $(window).scrollTop(0);
     appEvents.emit('dash-scroll', {animate: false, evt: 0});
 
-    this.$rootScope.appEvent('alert-success', [
-      'Loaded Example Configuraiton',
-      example.name,
-    ]);
+    this.$rootScope.appEvent('alert-success', ['Loaded Example Configuraiton', example.name]);
 
     if (example.editorTabIndex) {
       this.editorTabIndex = example.editorTabIndex;
@@ -586,8 +581,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
             txt = '<pre>{{ response }}</pre>';
             break;
           case RenderMode.json:
-            txt =
-              '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
+            txt = '<json-tree root-name="sub" object="response" start-expanded="true"></json-tree>';
             break;
           case RenderMode.image:
             txt = '';

@@ -6,40 +6,8 @@ import _ from 'lodash';
 import appEvents from 'app/core/app_events';
 import moment from 'moment';
 import './style.css';
-
-export class DSInfo {
-  name: string;
-  baseURL: string;
-  isProxy: boolean = false;
-  withCredentials: boolean = false;
-  basicAuth?: string;
-
-  constructor(ds) {
-    this.name = ds.name;
-    if (ds.url) {
-      this.baseURL = ds.url;
-    } else if (ds.urls) {
-      this.baseURL = ds.urls[0];
-    }
-    this.isProxy = this.baseURL.startsWith('/api/');
-    this.withCredentials = ds.withCredentials;
-    this.basicAuth = ds.basicAuth;
-  }
-}
-
-// <option value="html">Direct HTML</option>
-// <option value="text">Escaped Text</option>
-// <option value="image">Image</option>
-// <option value="json">JSON Tree</option>
-// <option value="template">Angular Template</option>
-export enum RenderMode {
-  html = 'html',
-  text = 'text',
-  pre = 'pre',
-  image = 'image',
-  json = 'json',
-  template = 'template',
-}
+import {DSInfo, RenderMode} from './types';
+import {examples} from './examples';
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -66,134 +34,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
   debugParams?: any;
   timer?: any;
 
-  static examples = [
-    {
-      // The first example should set all possible fields!
-      name: 'Simple',
-      text: 'loads static content from github',
-      config: {
-        method: 'GET',
-        mode: RenderMode.html,
-        template: '',
-        url: 'https://raw.githubusercontent.com/ryantxu/ajax-panel/master/static/example.txt',
-        params_js:
-          '{\n' +
-          " from:ctrl.range.from.format('x'),  // x is unix ms timestamp\n" +
-          " to:ctrl.range.to.format('x'), \n" +
-          ' height:ctrl.height,\n' +
-          ' now:Date.now(),\n' +
-          " interval: ctrl.template('$__interval'),\n" +
-          " sample: 'Not escaped: $__interval',\n" +
-          ' since:ctrl.lastRequestTime\n' +
-          '}',
-        header_js: '{}',
-        responseType: 'text',
-        withCredentials: false,
-        skipSameURL: true,
-
-        showTime: false,
-        showTimePrefix: null,
-        showTimeFormat: 'LTS',
-        showTimeValue: 'request',
-
-        templateResponse: true,
-      },
-    },
-    {
-      name: 'Echo Service',
-      text: 'Responds with the request attributes',
-      config: {
-        method: 'GET',
-        mode: RenderMode.json,
-        url: 'https://httpbin.org/anything?templateInURL=$__interval',
-        header_js: "{\n  Accept: 'text/plain'\n}",
-        showTime: true,
-      },
-    },
-    {
-      name: 'Echo Service with Template',
-      text: 'Format the response with an angular template',
-      editorTabIndex: 2,
-      config: {
-        method: 'GET',
-        mode: RenderMode.template,
-        template: '<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>',
-        url: 'https://httpbin.org/anything?templateInURL=$__interval',
-        header_js: "{\n  Accept: 'text/plain'\n}",
-        showTime: true,
-      },
-    },
-    {
-      name: 'Webcamera in Thailand',
-      text: 'Load an image dynamically',
-      config: {
-        method: 'GET',
-        url:
-          'http://tat.touch-ics.com/CCTV/cam.php?cam=31&datatype=image&langISO=EN&t=current&reloadtime=1',
-        params_js: '{\n' + ' __now:Date.now(),\n' + '}',
-        responseType: 'arraybuffer',
-        showTime: true,
-      },
-    },
-    {
-      name: 'Image',
-      text: 'Sending "Accept" header',
-      config: {
-        method: 'GET',
-        url: 'https://httpbin.org/image',
-        params_js: '{}',
-        header_js: "{\n  Accept: 'image/jpeg'\n}",
-        responseType: 'blob',
-        showTime: true,
-        showTimeValue: 'recieve',
-      },
-    },
-    {
-      name: 'Image in IFrame',
-      text: 'load an image in an iframe',
-      config: {
-        method: 'iframe',
-        url: 'https://dummyimage.com/600x300/4286f4/000&text=GRAFANA',
-        params_js: '{}',
-      },
-    },
-    {
-      name: 'Results from grafana api',
-      text: 'grafana settings api w/ template',
-      config: {
-        mode: RenderMode.template,
-        template:
-          '<h5>{{ response.DEFAULT.instance_name }}</h5>\n\n<pre>{{ response | json }}</pre>',
-        url: '/api/admin/settings',
-        params_js: '{}',
-      },
-    },
-    {
-      name: 'Basic Auth (success)',
-      text: 'send correct basic auth',
-      config: {
-        url: 'https://httpbin.org/basic-auth/user/pass',
-        withCredentials: true,
-        params_js: '{}',
-        header_js:
-          '{\n' +
-          "   Authorization: 'Basic ' + btoa('user' + ':' + 'pass')\n" +
-          "// Authorization: 'Basic dXNlcjpwYXNz'\n" +
-          '}',
-      },
-    },
-    {
-      name: 'Basic Auth (fail)',
-      text: 'send correct basic auth',
-      config: {
-        url: 'https://httpbin.org/basic-auth/userx/passx',
-        withCredentials: true,
-        params_js: '{}',
-        header_js: '{\n' + " Authorization: 'Basic ...bad..'\n" + '}',
-      },
-    },
-  ];
-
   /** @ngInject */
   constructor(
     $scope,
@@ -210,7 +50,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   ) {
     super($scope, $injector);
 
-    _.defaults(this.panel, AjaxCtrl.examples[0].config);
+    _.defaults(this.panel, examples[0].config);
 
     $scope.$on('$destroy', () => {
       if (this.objectURL) {
@@ -250,7 +90,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   // Expose the examples to Angular
   getStaticExamples() {
-    return AjaxCtrl.examples;
+    return examples;
   }
 
   loadExample(example: any, evt?: any) {
@@ -260,7 +100,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     console.log('Loading example', example);
-    const first = AjaxCtrl.examples[0].config;
+    const first = examples[0].config;
     _.forEach(_.keys(first), k => {
       delete this.panel[k];
     });

@@ -185,7 +185,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         url = url + (hasArgs ? '&' : '?') + p;
       }
     }
-    if (this.dsInfo) {
+    if (this.panel.request === 'datasource' && this.dsInfo) {
       return this.dsInfo.baseURL + url;
     }
     return url;

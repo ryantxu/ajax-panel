@@ -93,12 +93,21 @@ export const examples = [
     },
   },
   {
-    name: 'Results from grafana api',
+    name: 'Results from Grafana API',
     text: 'grafana settings api w/ template',
     config: {
       mode: RenderMode.template,
       template: '<h5>{{ response.DEFAULT.instance_name }}</h5>\n\n<pre>{{ response | json }}</pre>',
       url: '/api/admin/settings',
+      params_js: '{}',
+    },
+  },
+  {
+    name: 'Results from Grafana API',
+    text: 'formatted as JSON',
+    config: {
+      mode: RenderMode.json,
+      url: '/api/admin/stats',
       params_js: '{}',
     },
   },

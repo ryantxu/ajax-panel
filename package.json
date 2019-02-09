@@ -1,6 +1,6 @@
 {
   "name": "ryantxu-ajax-panel",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "AJAX Panel Plugin for Grafana",
   "main": "src/module.ts",
   "scripts": {
@@ -12,7 +12,13 @@
     "lint": "tslint -c tslint.json --project tsconfig.json",
     "format": "prettier-eslint --write \"src/**/*.{ts,tsx,json,css,js,jsx}\""
   },
-  "keywords": ["ajax", "grafana", "plugin", "panel", "webcamera"],
+  "keywords": [
+    "ajax",
+    "grafana",
+    "plugin",
+    "panel",
+    "webcamera"
+  ],
   "author": "ryantxu",
   "license": "MIT",
   "repository": {

@@ -41,7 +41,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     public $rootScope,
     public $q,
     public $timeout,
-    public $http,
     public $sce,
     public templateSrv,
     public datasourceSrv,
@@ -50,6 +49,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
   ) {
     super($scope, $injector);
 
+    // Migrate old settings
+    if (this.panel.useDatasource) {
+      this.panel.request = 'datasource';
+      delete this.panel.useDatasource;
+    }
     _.defaults(this.panel, examples[0].config);
 
     $scope.$on('$destroy', () => {
@@ -58,9 +62,27 @@ class AjaxCtrl extends MetricsPanelCtrl {
       }
     });
 
+    this.events.on('data-received', this.onDataReceived.bind(this));
+    this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
+    this.events.on('data-error', this.onDataError.bind(this));
+
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-initialized', this.onPanelInitalized.bind(this));
     this.events.on('render', this.notifyWhenRenderingCompleted.bind(this));
+  }
+
+  onDataSnapshotLoad(snapshotData) {
+    this.onDataReceived(snapshotData);
+  }
+
+  onDataError(err) {
+    console.log('onDataError', err);
+  }
+
+  // Having this function pust ths query sidebar on
+  onDataReceived(dataList) {
+    this.process(dataList);
+    this.loading = false;
   }
 
   // This checks that all requests have completed before saying
@@ -93,6 +115,10 @@ class AjaxCtrl extends MetricsPanelCtrl {
     return examples;
   }
 
+  isUsingMetricQuery() {
+    return this.panel.request.startsWith('query');
+  }
+
   loadExample(example: any, evt?: any) {
     if (evt) {
       evt.stopPropagation();
@@ -120,7 +146,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     this.$scope.response = null;
     this.updateFN();
     this.updateTemplate();
-    this.datasourceChanged(null);
     this.refresh();
   }
 
@@ -170,12 +195,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
    * @override
    */
   updateTimeRange(datasource?) {
-    // Keep the timeinfo even after updating the range
     const before = this.timeInfo;
-    super.updateTimeRange();
+    const v = super.updateTimeRange(datasource);
     if (this.panel.showTime && before) {
       this.timeInfo = before;
     }
+    return v;
   }
 
   /**
@@ -183,6 +208,10 @@ class AjaxCtrl extends MetricsPanelCtrl {
    * @override
    */
   issueQueries(datasource) {
+    if (this.isUsingMetricQuery()) {
+      return super.issueQueries(datasource);
+    }
+
     if (this.fn_error) {
       this.loading = false;
       this.error = this.fn_error;
@@ -239,14 +268,26 @@ class AjaxCtrl extends MetricsPanelCtrl {
       };
       options.headers = options.headers || {};
 
-      if (this.dsInfo) {
-        if (this.dsInfo.basicAuth || this.dsInfo.withCredentials) {
-          options.withCredentials = true;
-        }
-        if (this.dsInfo.basicAuth) {
-          options.headers.Authorization = this.dsInfo.basicAuth;
-        }
-        options.url = this.dsInfo.baseURL + url;
+      let helper = Promise.resolve({});
+      if (this.panel.request === 'datasource') {
+        helper = this.datasourceSrv.get(this.panel.datasource).then(ds => {
+          console.log('DDDD', ds, this);
+          if (ds) {
+            this.dsInfo = new DSInfo(ds);
+
+            // Change the URL
+            if (this.dsInfo.basicAuth || this.dsInfo.withCredentials) {
+              options.withCredentials = true;
+            }
+            if (this.dsInfo.basicAuth) {
+              options.headers.Authorization = this.dsInfo.basicAuth;
+            }
+
+            options.url = this.dsInfo.baseURL + url;
+          } else {
+            this.dsInfo = null;
+          }
+        });
       } else if (!options.url) {
         this.error = 'Missing URL';
         this.showError(this.error, null);
@@ -260,43 +301,50 @@ class AjaxCtrl extends MetricsPanelCtrl {
       // Now make the call
       this.requestCount++;
       this.loading = true;
-      this.backendSrv.datasourceRequest(options).then(
-        response => {
-          this.lastRequestTime = sent;
-          this.process(response);
-          this.loading = false;
-        },
-        err => {
-          console.log('ERR', err);
-          this.lastRequestTime = sent;
-          this.loading = false;
+      helper.then(() => {
+        this.backendSrv.datasourceRequest(options).then(
+          response => {
+            this.lastRequestTime = sent;
+            this.process(response);
+            this.loading = false;
+          },
+          err => {
+            console.log('ERR', err);
+            this.lastRequestTime = sent;
+            this.loading = false;
 
-          this.error = err; //.data.error + " ["+err.status+"]";
-          this.inspector = {error: err};
-          this.showError('Request Error', err);
-        }
-      );
+            this.error = err; //.data.error + " ["+err.status+"]";
+            this.inspector = {error: err};
+            this.showError('Request Error', err);
+          }
+        );
+      });
     }
 
     // Return empty results
     return null; //this.$q.when( [] );
   }
 
-  // Overrides the default handling
+  // Overrides the default handling (error for null result)
   handleQueryResult(result) {
-    //console.log('handleQueryResult', Date.now(), this.loading);
+    // console.log('handleQueryResult', result, Date.now(), this.loading);
+    this.loading = false;
+    if (result) {
+      if (this.isUsingMetricQuery()) {
+        return super.handleQueryResult(result);
+      }
+    }
     this.render();
   }
 
   onPanelInitalized() {
     this.updateFN();
     this.updateTemplate();
-    this.datasourceChanged(null);
     $(window).on(
       'resize',
       _.debounce(fn => {
         this.refresh();
-      }, 150)
+      }, 250)
     );
   }
 
@@ -307,60 +355,23 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   onInitEditMode() {
     this.debugParams = {};
-    this.editorTabs.splice(1, 1); // remove the 'Metrics Tab'
     this.addEditorTab(
       'Request',
       'public/plugins/' + this.pluginId + '/partials/editor.request.html',
-      1
+      2
     );
     this.addEditorTab(
       'Display',
       'public/plugins/' + this.pluginId + '/partials/editor.display.html',
-      2
+      3
     );
     this.addEditorTab(
       'Examples',
       'public/plugins/' + this.pluginId + '/partials/editor.examples.html',
-      4
+      5
     );
-    this.editorTabIndex = 1;
+    this.editorTabIndex = 2;
     this.updateFN();
-  }
-
-  getDatasourceOptions() {
-    return Promise.resolve(
-      this.datasourceSrv
-        .getMetricSources()
-        // .filter(value => {
-        //   return !value.meta.builtIn; // skip mixed and 'grafana'?
-        // })
-        .map(ds => {
-          return {value: ds.value, text: ds.name, datasource: ds};
-        })
-    );
-  }
-
-  // This saves the info we need from the datasouce
-  datasourceChanged(option) {
-    if (option && option.datasource) {
-      this.setDatasource(option.datasource);
-    }
-
-    if (this.panel.useDatasource) {
-      if (!this.panel.datasource) {
-        this.panel.datasource = 'default';
-      }
-
-      this.datasourceSrv.get(this.panel.datasource).then(ds => {
-        if (ds) {
-          this.dsInfo = new DSInfo(ds);
-        }
-        this.onConfigChanged();
-      });
-    } else {
-      this.dsInfo = undefined;
-      this.onConfigChanged();
-    }
   }
 
   updateFN() {
@@ -410,7 +421,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
         if (!this.panel.mode) {
           this.panel.mode = RenderMode.html;
         }
-        switch (this.panel.mode) {
+        let mode = this.panel.mode;
+        if (mode === RenderMode.html && this.isUsingMetricQuery()) {
+          mode = RenderMode.pre; // don't show [object object]!
+        }
+        switch (mode) {
           case RenderMode.html:
             txt = '<div ng-bind-html="response"></div>';
             break;

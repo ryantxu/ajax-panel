@@ -35,6 +35,9 @@ The AJAX Panel is a general way to load external content into a grafana dashboar
 * removing dist from master build (only add it on release branches)
 * Support empty text response (#9)
 * webpack build
+* Show query results
+* tested with grafana 6
+
 
 ##### v0.0.5
 

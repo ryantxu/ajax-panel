@@ -12,6 +12,10 @@ export class DSInfo {
     } else if (ds.urls) {
       this.baseURL = ds.urls[0];
     }
+    if (!this.baseURL) {
+      this.baseURL = '';
+    }
+
     this.isProxy = this.baseURL.startsWith('/api/');
     this.withCredentials = ds.withCredentials;
     this.basicAuth = ds.basicAuth;

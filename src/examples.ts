@@ -6,6 +6,7 @@ export const examples = [
     name: 'Simple',
     text: 'loads static content from github',
     config: {
+      request: 'http',
       method: 'GET',
       mode: RenderMode.html,
       template: '',

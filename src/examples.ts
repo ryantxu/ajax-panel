@@ -97,7 +97,7 @@ export const examples = [
     text: 'grafana settings api w/ template',
     config: {
       mode: RenderMode.template,
-      template: '<h5>{{ response.DEFAULT.instance_name }}</h5>\n\n<pre>{{ response | json }}</pre>',
+      template: '<h2>Instance: {{ response.DEFAULT.instance_name }}</h2>\n\n<div ng-repeat="(key, value) in response">\n\n        <h5>{{key}}</h5>\n\n        <pre>{{ value | json }}</pre>\n\n      </div>',
       url: '/api/admin/settings',
       params_js: '{}',
     },

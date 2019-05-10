@@ -464,8 +464,10 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     let txt = `<h1>${msg}</h1>`;
-    if (err) {
+    if (err && this.panel.showErrors) {
       txt += '<pre>' + JSON.stringify(err) + '</pre>';
+    } else {
+      txt += '<pre>Something went wrong while executing your request.</pre>';
     }
 
     this.ngtemplate.html(txt);

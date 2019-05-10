@@ -25,6 +25,7 @@ export const examples = [
       responseType: 'text',
       withCredentials: false,
       skipSameURL: true,
+      showErrors: true,
 
       showTime: false,
       showTimePrefix: null,

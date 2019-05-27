@@ -27,6 +27,7 @@ export class DSInfo {
 // <option value="image">Image</option>
 // <option value="json">JSON Tree</option>
 // <option value="template">Angular Template</option>
+// <option value="trustedHtml">Trusted HTML</option>
 export enum RenderMode {
   html = 'html',
   text = 'text',
@@ -34,4 +35,5 @@ export enum RenderMode {
   image = 'image',
   json = 'json',
   template = 'template',
+  trustedHtml = 'trustedHtml'
 }

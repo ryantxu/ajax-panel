@@ -429,6 +429,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
           case RenderMode.html:
             txt = '<div ng-bind-html="response"></div>';
             break;
+          case RenderMode.trustedHtml:
+            txt = this.$scope.response;
+            break;
           case RenderMode.text:
             txt = '{{ response }}';
             break;
@@ -449,7 +452,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
     //console.log('UPDATE template', this.panel, txt);
 
     this.ngtemplate.html(txt);
-    this.$compile(this.ngtemplate.contents())(this.$scope);
+    if (this.panel.mode != RenderMode.trustedHtml) {
+      this.$compile(this.ngtemplate.contents())(this.$scope);
+    }
     if (this.$scope.response) {
       this.render();
     }
@@ -551,7 +556,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
 
     // JSON Node needs to force refresh
-    if (this.panel.mode == RenderMode.json) {
+    if (this.panel.mode == RenderMode.json || this.panel.mode == RenderMode.trustedHtml) {
       this.updateTemplate();
     }
   }

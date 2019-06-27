@@ -1,8 +1,8 @@
 export class DSInfo {
   name: string;
   baseURL: string;
-  isProxy: boolean = false;
-  withCredentials: boolean = false;
+  isProxy = false;
+  withCredentials = false;
   basicAuth?: string;
 
   constructor(ds) {

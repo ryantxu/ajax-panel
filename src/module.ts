@@ -5,8 +5,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import appEvents from 'app/core/app_events';
 import moment from 'moment';
-import './style.light.css';
-import './style.dark.css';
+import './style.css';
 import {DSInfo, RenderMode} from './types';
 import {examples} from './examples';
 

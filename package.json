@@ -2,15 +2,12 @@
   "name": "ryantxu-ajax-panel",
   "version": "0.0.7-dev",
   "description": "AJAX Panel Plugin for Grafana",
-  "main": "src/module.ts",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
-    "dev": "webpack --mode development",
-    "watch": "webpack --mode development --watch",
-    "test": "jest --config jest.config.js",
-    "precommit": "pretty-quick --staged",
-    "lint": "tslint -c tslint.json --project tsconfig.json",
-    "format": "prettier-eslint --write \"src/**/*.{ts,tsx,json,css,js,jsx}\""
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "test:coverage": "yarn test --coverage",
+    "test:badges": "yarn test:coverage && jest-coverage-badges"
   },
   "keywords": [
     "ajax",
@@ -24,17 +21,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ryantxu/ajax-panel.git"
-  },
-  "lint-staged": {
-    "src/**/*.{ts,tsx,json,css,js,jsx}": [
-      "prettier-eslint"
-    ]
-  },
-  "prettier": {
-    "trailingComma": "es5",
-    "singleQuote": true,
-    "bracketSpacing": false,
-    "printWidth": 100
   },
   "dependencies": {
     "@babel/core": "^7.4.5",

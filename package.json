@@ -2,45 +2,40 @@
   "name": "ryantxu-ajax-panel",
   "version": "0.0.7-dev",
   "description": "AJAX Panel Plugin for Grafana",
-  "main": "src/module.ts",
   "scripts": {
-    "build": "webpack --config webpack.config.prod.js",
-    "dev": "webpack --mode development",
-    "watch": "webpack --mode development --watch",
-    "test": "jest --config jest.config.js",
-    "precommit": "pretty-quick --staged",
-    "lint": "tslint -c tslint.json --project tsconfig.json",
-    "format": "prettier-eslint --write \"src/**/*.{ts,tsx,json,css,js,jsx}\""
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "test:coverage": "yarn test --coverage",
+    "test:badges": "yarn test:coverage && jest-coverage-badges"
   },
-  "keywords": ["ajax", "grafana", "plugin", "panel", "webcamera"],
+  "keywords": [
+    "ajax",
+    "grafana",
+    "plugin",
+    "panel",
+    "webcamera"
+  ],
   "author": "ryantxu",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/ryantxu/ajax-panel.git"
   },
-  "lint-staged": {
-    "src/**/*.{ts,tsx,json,css,js,jsx}": [
-      "prettier-eslint"
-    ]
-  },
-  "prettier": {
-    "trailingComma": "es5",
-    "singleQuote": true,
-    "bracketSpacing": false,
-    "printWidth": 100
-  },
   "dependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
     "jquery": "^3.2.1",
     "lodash": "^4.17.10",
     "moment": "^2.22.1"
   },
   "devDependencies": {
+    "@grafana/toolkit": "next",
     "@types/jest": "^23.3.1",
     "@types/lodash": "^4.14.74",
     "babel-core": "^6.26.3",
     "babel-jest": "^23.0.1",
-    "babel-loader": "^7.1.4",
+    "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.1",
@@ -48,15 +43,15 @@
     "grafana-sdk-mocks": "github:ryantxu/grafana-sdk-mocks",
     "jest": "^23.0.1",
     "ng-annotate-webpack-plugin": "^0.3.0",
-    "release-it": "^10",
     "prettier": "^1.15.3",
     "prettier-eslint": "^8.8.0",
     "prettier-eslint-cli": "^4.7.0",
     "pretty-quick": "^1.10.0",
+    "release-it": "^10",
     "replace-in-file-webpack-plugin": "^1.0.6",
     "style-loader": "^0.22",
     "ts-jest": "^23",
-    "ts-loader": "^4.3.0",
+    "ts-loader": "^6.0.4",
     "typescript": "^3",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.9.1",

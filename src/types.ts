@@ -1,17 +1,18 @@
 export class DSInfo {
   name: string;
   baseURL: string;
-  isProxy: boolean = false;
-  withCredentials: boolean = false;
+  isProxy = false;
+  withCredentials = false;
   basicAuth?: string;
 
-  constructor(ds) {
+  constructor(ds: any) {
     this.name = ds.name;
     if (ds.url) {
       this.baseURL = ds.url;
     } else if (ds.urls) {
       this.baseURL = ds.urls[0];
     }
+    // @ts-ignore
     if (!this.baseURL) {
       this.baseURL = '';
     }

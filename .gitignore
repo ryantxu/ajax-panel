@@ -5,3 +5,5 @@ npm-debug.log
 
 # Remove dist on master branch
 dist/
+artifacts/
+coverage/

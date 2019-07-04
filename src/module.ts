@@ -1,9 +1,7 @@
-///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
-
-import {MetricsPanelCtrl} from 'app/plugins/sdk';
+import {MetricsPanelCtrl} from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
-import appEvents from 'app/core/app_events';
+import appEvents from 'grafana/app/core/app_events';
 import moment from 'moment';
 import './style.css';
 import {DSInfo, RenderMode} from './types';
@@ -196,7 +194,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
    */
   updateTimeRange(datasource?: any) {
     const before = this.timeInfo;
-    const v = super.updateTimeRange(datasource);
+    const fn = super.updateTimeRange as any; // WHY so tricky!
+    const v = fn(datasource);
     if (this.panel.showTime && before) {
       this.timeInfo = before;
     }

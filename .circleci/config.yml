@@ -3,29 +3,31 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8
-      
-    working_directory: ~/repo
+      - image: circleci/node:10
+
+    working_directory: ~/plugin
 
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: install yarn
           command: 'sudo npm install -g yarn --quiet'
-      - restore_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
-          name: yarn install
-          command: 'yarn install --pure-lockfile --no-progress'
+          name: install dependencies
+          command: 'yarn install --pure-lockfile'
+      - run:
+          name: Run Toolkit Build
+          command: 'npx grafana-toolkit plugin:ci-build'
+      - run:
+          name: Bundle Plugin
+          command: 'npx grafana-toolkit plugin:ci-bundle'
       - save_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
-#      - run:
-#          name: test
-#          command: 'yarn test'
-      - run:
-          name: build
-          command: 'yarn build'
       - store_artifacts:
-          path: dist
+          path: artifacts

@@ -1,13 +1,14 @@
-///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
-
-import {MetricsPanelCtrl} from 'app/plugins/sdk';
+import {MetricsPanelCtrl} from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
-import appEvents from 'app/core/app_events';
+import appEvents from 'grafana/app/core/app_events';
 import moment from 'moment';
 import './style.css';
 import {DSInfo, RenderMode} from './types';
 import {examples} from './examples';
+
+import { DataQueryResponse, DataSourceApi } from '@grafana/ui';
+
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -194,9 +195,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
   /**
    * @override
    */
-  updateTimeRange(datasource?: any) {
+  updateTimeRange(datasource?: DataSourceApi) {
     const before = this.timeInfo;
-    const v = super.updateTimeRange(datasource);
+    const v = super.updateTimeRange();
     if (this.panel.showTime && before) {
       this.timeInfo = before;
     }
@@ -207,11 +208,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
    * Rather than issue a datasource query, we will call our ajax request
    * @override
    */
-  issueQueries(datasource: any) {
+  issueQueries(datasource: DataSourceApi) {
     if (this.isUsingMetricQuery()) {
       return super.issueQueries(datasource);
     }
 
+    this.datasource = datasource;
     if (this.fnError) {
       this.loading = false;
       this.error = this.fnError;
@@ -327,8 +329,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   // Overrides the default handling (error for null result)
-  handleQueryResult(result: any) {
-    // console.log('handleQueryResult', result, Date.now(), this.loading);
+  handleQueryResult(result: DataQueryResponse) {
     this.loading = false;
     if (result) {
       if (this.isUsingMetricQuery()) {

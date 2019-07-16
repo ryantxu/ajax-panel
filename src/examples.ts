@@ -1,4 +1,4 @@
-import {RenderMode} from './types';
+import { RenderMode } from './types';
 
 export const examples = [
   {
@@ -64,8 +64,7 @@ export const examples = [
     text: 'Load an image dynamically',
     config: {
       method: 'GET',
-      url:
-        'http://tat.touch-ics.com/CCTV/cam.php?cam=31&datatype=image&langISO=EN&t=current&reloadtime=1',
+      url: 'http://tat.touch-ics.com/CCTV/cam.php?cam=31&datatype=image&langISO=EN&t=current&reloadtime=1',
       params_js: '{\n' + ' __now:Date.now(),\n' + '}',
       responseType: 'arraybuffer',
       showTime: true,
@@ -99,7 +98,8 @@ export const examples = [
     config: {
       mode: RenderMode.template,
       // tslint:disable-next-line
-      template: '<h2>Instance: {{ response.DEFAULT.instance_name }}</h2>\n\n<div ng-repeat="(key, value) in response">\n\n        <h5>{{key}}</h5>\n\n        <pre>{{ value | json }}</pre>\n\n      </div>',
+      template:
+        '<h2>Instance: {{ response.DEFAULT.instance_name }}</h2>\n\n<div ng-repeat="(key, value) in response">\n\n        <h5>{{key}}</h5>\n\n        <pre>{{ value | json }}</pre>\n\n      </div>',
       url: '/api/admin/settings',
       params_js: '{}',
     },
@@ -120,11 +120,7 @@ export const examples = [
       url: 'https://httpbin.org/basic-auth/user/pass',
       withCredentials: true,
       params_js: '{}',
-      header_js:
-        '{\n' +
-        "   Authorization: 'Basic ' + btoa('user' + ':' + 'pass')\n" +
-        "// Authorization: 'Basic dXNlcjpwYXNz'\n" +
-        '}',
+      header_js: '{\n' + "   Authorization: 'Basic ' + btoa('user' + ':' + 'pass')\n" + "// Authorization: 'Basic dXNlcjpwYXNz'\n" + '}',
     },
   },
   {

@@ -1,14 +1,13 @@
-import {MetricsPanelCtrl} from 'grafana/app/plugins/sdk';
+import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
 import appEvents from 'grafana/app/core/app_events';
 import moment from 'moment';
 import './style.css';
-import {DSInfo, RenderMode} from './types';
-import {examples} from './examples';
+import { DSInfo, RenderMode } from './types';
+import { examples } from './examples';
 
 import { DataQueryResponse, DataSourceApi } from '@grafana/ui';
-
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -135,7 +134,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, first);
 
     $(window).scrollTop(0);
-    appEvents.emit('dash-scroll', {animate: false, evt: 0});
+    appEvents.emit('dash-scroll', { animate: false, evt: 0 });
 
     this.$rootScope.appEvent('alert-success', ['Loaded Example Configuraiton', example.name]);
 
@@ -222,8 +221,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
     // make shallow copy of scoped vars,
     // and add built in variables interval and interval_ms
     const scopedVars = (this.scopedVars = Object.assign({}, this.panel.scopedVars, {
-      __interval: {text: this.interval, value: this.interval},
-      __interval_ms: {text: this.intervalMs, value: this.intervalMs},
+      __interval: { text: this.interval, value: this.interval },
+      __interval_ms: { text: this.intervalMs, value: this.intervalMs },
     }));
 
     // This lets us see the parameters in the editor
@@ -317,7 +316,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
             this.loading = false;
 
             this.error = err; //.data.error + " ["+err.status+"]";
-            this.inspector = {error: err};
+            this.inspector = { error: err };
             this.showError('Request Error', err);
           }
         );
@@ -357,21 +356,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
 
   onInitEditMode() {
     this.debugParams = {};
-    this.addEditorTab(
-      'Request',
-      'public/plugins/' + this.pluginId + '/partials/editor.request.html',
-      2
-    );
-    this.addEditorTab(
-      'Display',
-      'public/plugins/' + this.pluginId + '/partials/editor.display.html',
-      3
-    );
-    this.addEditorTab(
-      'Examples',
-      'public/plugins/' + this.pluginId + '/partials/editor.examples.html',
-      5
-    );
+    this.addEditorTab('Request', 'public/plugins/' + this.pluginId + '/partials/editor.request.html', 2);
+    this.addEditorTab('Display', 'public/plugins/' + this.pluginId + '/partials/editor.display.html', 3);
+    this.addEditorTab('Examples', 'public/plugins/' + this.pluginId + '/partials/editor.examples.html', 5);
     this.editorTabIndex = 2;
     this.updateFN();
   }
@@ -561,6 +548,15 @@ class AjaxCtrl extends MetricsPanelCtrl {
   openFullscreen() {
     // Update the image
     this.overlay.find('img').attr('src', this.objectURL);
+
+    if (this.panel.fitImageToScreen) {
+      this.overlay.find('img').css('max-width', '98vw');
+      this.overlay.find('img').css('max-height', '98vh');
+    } else {
+      this.overlay.find('img').css('max-width', '');
+      this.overlay.find('img').css('max-height', '');
+    }
+
     $('.grafana-app').append(this.overlay);
     this.overlay.on('click', () => {
       this.overlay.remove();
@@ -577,4 +573,4 @@ class AjaxCtrl extends MetricsPanelCtrl {
   }
 }
 
-export {AjaxCtrl, AjaxCtrl as PanelCtrl};
+export { AjaxCtrl, AjaxCtrl as PanelCtrl };

@@ -31,3 +31,7 @@
   z-index: 1050;
   cursor: pointer;
 }
+
+.ngtemplate {
+  height: 100%;
+}

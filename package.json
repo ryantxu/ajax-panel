@@ -23,13 +23,12 @@
   },
   "dependencies": {
     "jquery": "^3.2.1",
-    "lodash": "^4.17.10",
-    "moment": "^2.22.1",
-    "yarn.lock": "^0.0.1-security"
+    "lodash": "^4.17.15",
+    "moment": "^2.22.1"
   },
   "devDependencies": {
+    "@grafana/toolkit": "canary",
     "@grafana/data": "latest",
-    "@grafana/toolkit": "next",
     "@grafana/ui": "latest",
     "@types/grafana": "github:CorpGlory/types-grafana.git"
   }

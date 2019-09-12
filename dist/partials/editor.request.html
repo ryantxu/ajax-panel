@@ -1,0 +1,137 @@
+<div class="editor-row">
+
+	<h5 class="section-heading">Source</h5>
+	<div class="gf-form-group">
+		<div class="gf-form">
+			<div class="gf-form-select-wrapper width-20">
+				<select class="gf-form-input" 
+					ng-model="ctrl.panel.request" 
+					ng-change="ctrl.updateTemplate(); ctrl.onConfigChanged()">
+					<option value="http">HTTP</option>
+					<option value="query">Metric Query</option>
+					<option value="datasource">Datasource</option>
+				</select>
+			</div>
+		</div>
+
+		<div ng-if="ctrl.panel.request === 'datasource'">
+			<span class="small-link">
+				<span ng-show="ctrl.dsInfo.isProxy" class="label label-tag">Proxy</span>
+				<span ng-show="ctrl.dsInfo.basicAuth" class="label label-tag">Basic Auth</span>
+				<span ng-show="ctrl.dsInfo.withCredentials" class="label label-tag">Use Credentials</span>
+				<a ng-href="{{ ctrl.dsInfo.baseURL }}" target="_blank">{{ ctrl.dsInfo.baseURL }} &nbsp; <i class="fa fa-external-link"></i></a>
+			</span>
+		</div>
+	</div>
+
+	<div class="gf-form-group" ng-if="!ctrl.isUsingMetricQuery()">
+		<div class="gf-form">
+			<span class="gf-form-label width-9">{{ (ctrl.panel.request==='datasource') ? 'Path' : 'URL' }}</span>
+			<input type="text" class="input-large gf-form-input" placeholder="URL" ng-model="ctrl.panel.url" ng-change="ctrl.onConfigChanged()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<span class="gf-form-label width-9">Method</span>
+			<div class="gf-form-select-wrapper width-9">
+		    <select class="gf-form-input" ng-model="ctrl.panel.method" ng-options="t for t in ['GET', 'POST', 'iframe']" ng-change="ctrl.updateTemplate(); ctrl.onConfigChanged()"></select>
+			</div>
+		</div>
+		<div ng-if="!ctrl.isIframe">
+			<div class="gf-form" >
+				<span class="gf-form-label width-9">
+					Response
+					<info-popover mode="right-normal" position="top center">
+					  Useful when loading images<br/>
+					  or other non-text content
+					</info-popover>
+				</span>
+				<div class="gf-form-select-wrapper width-9">
+					<select class="gf-form-input" ng-model="ctrl.panel.responseType" ng-change="ctrl.onConfigChanged()">
+						<option value="text">Text</option>
+						<option value="blob">Blob</option>
+						<option value="document">Document</option>
+						<option value="json">JSON</option>
+						<option value="arraybuffer">Array Buffer  (for images)</option>
+					</select>
+				</div>
+				<span bs-tooltip="'See documentation at:<br/>https://developer.mozilla.org/'"> &nbsp; <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType" target="_blank"><i class="fa fa-question-circle"></i></a></span>
+			</div>
+			<gf-form-switch 
+				class="gf-form" 
+				label="Credentials" 
+				label-class="width-9" 
+				checked="ctrl.panel.withCredentials" 
+				on-change="ctrl.onConfigChanged()"></gf-form-switch>
+		</div>
+		<gf-form-switch 
+			class="gf-form" 
+			tooltip="Only make a request when the URL changes."
+			label="Only Changes" 
+			label-class="width-9" 
+			checked="ctrl.panel.skipSameURL" 
+			on-change="ctrl.onConfigChanged()"></gf-form-switch>
+		<gf-form-switch 
+		class="gf-form" 
+		tooltip="Show/Hide error messages."
+		label="Show Errors" 
+		label-class="width-9" 
+		checked="ctrl.panel.showErrors" 
+		on-change="ctrl.onConfigChanged()"></gf-form-switch>
+	</div>
+
+
+	<!-- Standard Parameters -->
+	<div ng-if="!ctrl.isUsingMetricQuery()">
+		<div class="gf-form-group small-link">
+			<h5 class="section-heading">Parameters (via javascript)</h5>
+			<div class="gf-form gf-form--grow">
+				<code-editor
+					content="ctrl.panel.params_js"
+					on-change="ctrl.updateFN()"
+					data-mode="javascript"
+					data-behaviours-enabled="true"
+					data-snippets-enabled="false"
+					data-max-lines="20" >
+				</code-editor>
+			</div>
+			<div style="overflow:hidden; white-space: nowrap;">
+				<a ng-href="{{ ctrl.lastURL }}" target="_blank">
+				<i class="fa fa-external-link"></i>
+				{{ ctrl.lastURL }}
+				</a>
+			</div>
+		</div>
+
+		<div class="gf-form-group" ng-if="!ctrl.isIframe">
+			<h5 class="section-heading">Headers (via javascript)</h5>
+			<div class="gf-form-inline">
+				<div class="gf-form gf-form--grow">
+					<code-editor
+						content="ctrl.panel.header_js"
+						on-change="ctrl.updateFN()"
+						data-mode="javascript"
+						data-behaviours-enabled="true"
+						data-snippets-enabled="false"
+						data-max-lines="20" >
+					</code-editor>
+				</div>
+			</div>
+		</div>
+
+		
+		<div class="gf-form-group" ng-if="ctrl.debugParams">
+			<h5 class="section-heading">Variables</h5>
+			<table class="filter-table" style="width:auto;">
+				<tr ng-repeat="(key, value) in ctrl.debugParams track by $index">
+					<td>${{key}}</td>
+					<td>{{value}}</td>
+				</tr>
+			</table>
+		</div>
+
+		<br/>
+		<span class="small">
+			Request Count: {{ ctrl.requestCount }}<br/>
+		</span>
+	</div>
+
+</div>

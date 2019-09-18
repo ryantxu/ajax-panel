@@ -101,6 +101,7 @@ export const examples = [
       template:
         // tslint:disable-next-line: max-line-length
         '<h2>Instance: {{ response.DEFAULT.instance_name }}</h2>\n\n<div ng-repeat="(key, value) in response">\n\n        <h5>{{key}}</h5>\n\n        <pre>{{ value | json }}</pre>\n\n      </div>',
+
       url: '/api/admin/settings',
       params_js: '{}',
     },

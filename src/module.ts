@@ -403,7 +403,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
           '<iframe \
           frameborder="0" \
           width="100%"  \
-          height="{{ ctrl.height }}" \
+          height="100%" \
           ng-src="{{ url }}" \
           ng-if="ctrl.panel.method === \'iframe\'"></iframe>';
       } else {
@@ -437,8 +437,14 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
     //console.log('UPDATE template', this.panel, txt);
 
-    this.ngtemplate.html(txt);
-    this.$compile(this.ngtemplate.contents())(this.$scope);
+    if (txt) {
+      this.ngtemplate.html(txt);
+      this.ngtemplate.css('display', 'block');
+      this.$compile(this.ngtemplate.contents())(this.$scope);
+    } else {
+      this.ngtemplate.css('display', 'none');
+    }
+
     if (this.$scope.response) {
       this.render();
     }

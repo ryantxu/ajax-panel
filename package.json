@@ -23,12 +23,11 @@
   },
   "dependencies": {
     "jquery": "^3.2.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.15",
     "moment": "^2.22.1"
   },
   "devDependencies": {
     "@grafana/toolkit": "next",
-    "@grafana/ui": "latest",
     "@types/grafana": "github:CorpGlory/types-grafana.git"
   }
 }

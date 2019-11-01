@@ -7,7 +7,7 @@ import './style.css';
 import { DSInfo, RenderMode } from './types';
 import { examples } from './examples';
 
-import { DataQueryResponse, DataSourceApi } from '@grafana/ui';
+import { DataQueryResponse, DataSourceApi } from '@grafana/data';
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';

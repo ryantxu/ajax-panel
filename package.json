@@ -27,7 +27,7 @@
     "moment": "^2.22.1"
   },
   "devDependencies": {
-    "@grafana/toolkit": "canary",
+    "@grafana/toolkit": "next",
     "@types/grafana": "github:CorpGlory/types-grafana.git"
   }
 }

@@ -75,3 +75,4 @@ The AJAX Panel is a general way to load external content into a grafana dashboar
 * Quick and Dirty, but it works!
 
 r-n-r
+

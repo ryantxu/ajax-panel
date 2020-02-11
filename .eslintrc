@@ -1,0 +1,10 @@
+{
+    "extends": [
+        "@grafana/eslint-config"
+    ],
+    "rules": {
+        "no-restricted-imports": [
+            0, "moment"
+        ]
+    }
+}

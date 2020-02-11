@@ -28,8 +28,6 @@
   },
   "devDependencies": {
     "@grafana/toolkit": "canary",
-    "@types/grafana": "github:CorpGlory/types-grafana.git",
-    "@typescript-eslint/eslint-plugin": "^2.19.2",
-    "@typescript-eslint/parser": "^2.19.2"
+    "@types/grafana": "github:CorpGlory/types-grafana.git"
   }
 }

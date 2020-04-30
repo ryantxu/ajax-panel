@@ -22,7 +22,7 @@
     "url": "https://github.com/ryantxu/ajax-panel.git"
   },
   "dependencies": {
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.15",
     "moment": "^2.22.1"
   },

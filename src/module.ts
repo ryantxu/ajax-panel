@@ -2,7 +2,7 @@ import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
 import appEvents from 'grafana/app/core/app_events';
-import moment from 'moment';
+import dateTime from '@grafana/data';
 import './style.css';
 import { DSInfo, RenderMode } from './types';
 import { examples } from './examples';
@@ -473,6 +473,14 @@ class AjaxCtrl extends MetricsPanelCtrl {
   }
 
   process(rsp: any) {
+    const headers = (key: any) => {
+      if (typeof rsp.headers === 'function') {
+        return key != null ? rsp.headers(key) : rsp.headers();
+      }
+
+      return key != null ? rsp.headers[key] : rsp.headers;
+    };
+
     if (this.panel.showTime) {
       let txt: string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
       if (this.panel.showTimeValue) {
@@ -483,20 +491,20 @@ class AjaxCtrl extends MetricsPanelCtrl {
           when = Date.now();
         } else if (this.panel.showTimeValue.startsWith('header-')) {
           const h = this.panel.showTimeValue.substring('header-'.length);
-          const v = rsp.headers[h];
+          const v = headers(h);
           if (v) {
             console.log('TODO, parse header', v, h);
           } else {
             const vals: any = {};
-            for (const key in rsp.headers()) {
-              vals[key] = rsp.headers[key];
+            for (const key in headers()) {
+              vals[key] = headers(key);
             }
             console.log('Header:', h, 'not found in:', vals, rsp);
           }
         }
 
         if (when) {
-          txt += moment(when).format(this.panel.showTimeFormat);
+          txt += dateTime(when).format(this.panel.showTimeFormat);
         } else {
           txt += 'missing: ' + this.panel.showTimeValue;
         }

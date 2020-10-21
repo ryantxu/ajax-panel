@@ -2,12 +2,14 @@ import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
 import appEvents from 'grafana/app/core/app_events';
-import moment from 'moment';
 import './style.css';
 import { DSInfo, RenderMode } from './types';
 import { examples } from './examples';
 
 import { DataQueryResponse, DataSourceApi } from '@grafana/data';
+
+// eslint-disable-next-line
+import moment from 'moment';
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';

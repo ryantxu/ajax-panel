@@ -21,13 +21,16 @@
     "type": "git",
     "url": "https://github.com/ryantxu/ajax-panel.git"
   },
-  "dependencies": {
-    "jquery": "^3.2.1",
-    "lodash": "^4.17.15",
-    "moment": "^2.22.1"
-  },
   "devDependencies": {
-    "@grafana/toolkit": "next",
+    "@types/jquery": "^3.5.3",
+    "@types/lodash": "^4.14.162",
+    "@grafana/toolkit": "7.3.0-beta.1",
     "@types/grafana": "github:CorpGlory/types-grafana.git"
+  },
+  "resolutions": {
+    "@grafana/data": "7.3.0-beta.1",
+    "@grafana/runtime": "7.3.0-beta.1",
+    "@grafana/toolkit": "7.3.0-beta.1",
+    "@grafana/ui": "7.3.0-beta.1"
   }
 }

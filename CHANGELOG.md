@@ -2,6 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## v1.0.0
+## v0.1.0
 
-- Initial Release
+- Comipled and with grafana 7+, image support requires 7.4+

@@ -7,6 +7,7 @@ import { DSInfo, RenderMode } from './types';
 import { examples } from './examples';
 
 import { DataQueryResponse, DataSourceApi } from '@grafana/data';
+import { getDataSourceSrv, getTemplateSrv, getBackendSrv, FetchResponse, BackendSrvRequest } from '@grafana/runtime';
 
 // eslint-disable-next-line
 import moment from 'moment';
@@ -44,9 +45,6 @@ class AjaxCtrl extends MetricsPanelCtrl {
     public $q: any,
     public $timeout: any,
     public $sce: any,
-    public templateSrv: any,
-    public datasourceSrv: any,
-    public backendSrv: any,
     public $compile: any
   ) {
     super($scope, $injector);
@@ -145,7 +143,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     } else {
       this.editorTabIndex = 1;
     }
-    this.$scope.response = null;
+    this.$scope.response = undefined;
     this.updateFN();
     this.updateTemplate();
     this.refresh();
@@ -165,20 +163,20 @@ class AjaxCtrl extends MetricsPanelCtrl {
   // This is called from Javascript
   template(v: string) {
     if (v) {
-      return this.templateSrv.replace(v, this.scopedVars);
+      return getTemplateSrv().replace(v, this.scopedVars);
     }
     return null;
   }
 
-  getHeaders(scopedVars?: any) {
+  getHeaders(scopedVars?: any): Record<string, any> | undefined {
     if (this.headerFn) {
       return this.headerFn(this);
     }
-    return null;
+    return undefined;
   }
 
   _getURL(scopedVars?: any) {
-    let url = this.templateSrv.replace(this.panel.url, scopedVars);
+    let url = getTemplateSrv().replace(this.panel.url, scopedVars);
     const params = this.getCurrentParams();
     if (params) {
       const p = $.param(params);
@@ -213,6 +211,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     if (this.isUsingMetricQuery()) {
       return super.issueQueries(datasource);
     }
+    const templateSrv = getTemplateSrv();
 
     this.datasource = datasource;
     if (this.fnError) {
@@ -233,7 +232,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
       _.each(scopedVars, (v: any, k: any) => {
         this.debugParams[k] = v.text;
       });
-      _.each(this.templateSrv.variables, (v: any) => {
+      _.each(templateSrv.getVariables(), (v: any) => {
         this.debugParams[v.name] = v.getValueForUrl();
       });
     }
@@ -255,43 +254,54 @@ class AjaxCtrl extends MetricsPanelCtrl {
         URL.revokeObjectURL(this.objectURL);
         this.objectURL = null;
       }
+
+      // Force re-render
+      this.$scope.$apply();
       return;
     } else {
-      const url = this.templateSrv.replace(this.panel.url, scopedVars);
+      const url = getTemplateSrv().replace(this.panel.url, scopedVars);
       const params = this.getCurrentParams();
 
-      const options: any = {
+      const options: BackendSrvRequest = {
         method: this.panel.method,
-        responseType: this.panel.responseType,
         url: url,
         params: params,
         headers: this.getHeaders(),
-        cache: false,
         withCredentials: this.panel.withCredentials,
       };
       options.headers = options.headers || {};
 
-      let helper = Promise.resolve({});
+      // For images and response buffers!
+      if (this.panel.responseType) {
+        (options as any).responseType = this.panel.responseType;
+      }
+
+      let helper: Promise<any> = Promise.resolve({});
       if (this.panel.request === 'datasource') {
-        helper = this.datasourceSrv.get(this.panel.datasource).then((ds: any) => {
-          console.log('DDDD', ds, this);
-          if (ds) {
-            this.dsInfo = new DSInfo(ds);
+        helper = getDataSourceSrv()
+          .get(this.panel.datasource)
+          .then((ds: DataSourceApi) => {
+            console.log('DDDD', ds, this);
+            if (ds) {
+              this.dsInfo = new DSInfo(ds);
 
-            // Change the URL
-            if (this.dsInfo.basicAuth || this.dsInfo.withCredentials) {
-              options.withCredentials = true;
-            }
-            if (this.dsInfo.basicAuth) {
-              options.headers.Authorization = this.dsInfo.basicAuth;
-            }
+              // Change the URL
+              if (this.dsInfo.basicAuth || this.dsInfo.withCredentials) {
+                options.withCredentials = true;
+              }
+              if (this.dsInfo.basicAuth) {
+                options.headers = {
+                  ...options.headers,
+                  Authorization: this.dsInfo.basicAuth,
+                };
+              }
 
-            options.url = this.dsInfo.baseURL + url;
-          } else {
-            // @ts-ignore
-            this.dsInfo = null;
-          }
-        });
+              options.url = this.dsInfo.baseURL + url;
+            } else {
+              // @ts-ignore
+              this.dsInfo = null;
+            }
+          });
       } else if (!options.url) {
         this.error = 'Missing URL';
         this.showError(this.error, null);
@@ -306,22 +316,24 @@ class AjaxCtrl extends MetricsPanelCtrl {
       this.requestCount++;
       this.loading = true;
       helper.then(() => {
-        this.backendSrv.datasourceRequest(options).then(
-          (response: any) => {
-            this.lastRequestTime = sent;
-            this.process(response);
-            this.loading = false;
-          },
-          (err: any) => {
-            console.log('ERR', err);
-            this.lastRequestTime = sent;
-            this.loading = false;
+        getBackendSrv()
+          .fetch(options)
+          .subscribe({
+            next: rsp => {
+              this.lastRequestTime = sent;
+              this.process(rsp);
+              this.loading = false;
+            },
+            error: err => {
+              console.log('ERR', err);
+              this.lastRequestTime = sent;
+              this.loading = false;
 
-            this.error = err; //.data.error + " ["+err.status+"]";
-            this.inspector = { error: err };
-            this.showError('Request Error', err);
-          }
-        );
+              this.error = err; //.data.error + " ["+err.status+"]";
+              this.inspector = { error: err };
+              this.showError('Request Error', err);
+            },
+          });
       });
     }
 
@@ -474,7 +486,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
     }
   }
 
-  process(rsp: any) {
+  process(rsp: FetchResponse<any>) {
     if (this.panel.showTime) {
       let txt: string = this.panel.showTimePrefix ? this.panel.showTimePrefix : '';
       if (this.panel.showTimeValue) {
@@ -483,18 +495,18 @@ class AjaxCtrl extends MetricsPanelCtrl {
           when = this.lastRequestTime;
         } else if ('recieve' === this.panel.showTimeValue) {
           when = Date.now();
-        } else if (this.panel.showTimeValue.startsWith('header-')) {
-          const h = this.panel.showTimeValue.substring('header-'.length);
-          const v = rsp.headers[h];
-          if (v) {
-            console.log('TODO, parse header', v, h);
-          } else {
-            const vals: any = {};
-            for (const key in rsp.headers()) {
-              vals[key] = rsp.headers[key];
-            }
-            console.log('Header:', h, 'not found in:', vals, rsp);
-          }
+          // } else if (this.panel.showTimeValue.startsWith('header-')) {
+          //   const h = this.panel.showTimeValue.substring('header-'.length);
+          //   const v = rsp.headers[h];
+          //   if (v) {
+          //     console.log('TODO, parse header', v, h);
+          //   } else {
+          //     const vals: any = {};
+          //     for (const key in rsp.headers()) {
+          //       vals[key] = rsp.headers[key];
+          //     }
+          //     console.log('Header:', h, 'not found in:', vals, rsp);
+          //   }
         }
 
         if (when) {
@@ -507,16 +519,11 @@ class AjaxCtrl extends MetricsPanelCtrl {
     } else {
       this.timeInfo = null;
     }
-
     if (!rsp) {
       return;
     }
-    this.$scope.response = rsp.hasOwnProperty('data') ? rsp.data : rsp;
 
-    let contentType = '';
-    if (rsp.hasOwnProperty('headers')) {
-      contentType = rsp.headers('Content-Type');
-    }
+    let contentType = rsp.headers.get('Content-Type');
 
     if (contentType) {
       if (contentType.startsWith('image/')) {
@@ -539,6 +546,8 @@ class AjaxCtrl extends MetricsPanelCtrl {
         return;
       }
     }
+    this.$scope.response = rsp.data;
+    console.log('GOT', rsp);
 
     // Its not an image, so remove it
     if (this.objectURL) {
@@ -551,6 +560,9 @@ class AjaxCtrl extends MetricsPanelCtrl {
     if (this.panel.mode === RenderMode.json) {
       this.updateTemplate();
     }
+
+    // Force re-render
+    this.$scope.$apply();
   }
 
   openFullscreen() {

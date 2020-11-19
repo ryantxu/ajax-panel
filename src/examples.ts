@@ -41,6 +41,7 @@ export const examples = [
     config: {
       method: 'GET',
       mode: RenderMode.json,
+      responseType: 'json',
       url: 'https://httpbin.org/anything?templateInURL=$__interval',
       header_js: "{\n  Accept: 'text/plain'\n}",
       showTime: true,
@@ -53,6 +54,7 @@ export const examples = [
     config: {
       method: 'GET',
       mode: RenderMode.template,
+      responseType: 'json',
       template: '<h5>Origin: {{ response.origin }}</h5>\n\n<pre>{{ response | json }}</pre>',
       url: 'https://httpbin.org/anything?templateInURL=$__interval',
       header_js: "{\n  Accept: 'text/plain'\n}",
@@ -97,6 +99,7 @@ export const examples = [
     text: 'grafana settings api w/ template',
     config: {
       mode: RenderMode.template,
+      responseType: 'json',
       template:
         '<h2>Instance: {{ response.DEFAULT.instance_name }}</h2>\n\n' +
         '<div ng-repeat="(key, value) in response">\n\n        ' +
@@ -113,6 +116,7 @@ export const examples = [
     config: {
       mode: RenderMode.json,
       url: '/api/admin/stats',
+      responseType: 'json',
       params_js: '{}',
     },
   },
@@ -122,6 +126,7 @@ export const examples = [
     config: {
       url: 'https://httpbin.org/basic-auth/user/pass',
       withCredentials: true,
+      responseType: 'json',
       params_js: '{}',
       header_js:
         '{\n' +
@@ -136,6 +141,7 @@ export const examples = [
     config: {
       url: 'https://httpbin.org/basic-auth/userx/passx',
       withCredentials: true,
+      responseType: 'json',
       params_js: '{}',
       header_js: '{\n' + " Authorization: 'Basic ...bad..'\n" + '}',
     },

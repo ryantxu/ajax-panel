@@ -1,0 +1,42 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "community",
+  "signedByOrg": "grafana",
+  "signedByOrgName": "Grafana Labs",
+  "plugin": "ryantxu-ajax-panel",
+  "version": "0.1.0",
+  "time": 1605803581383,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "partials/editor.examples.html": "b3ddcb480fbd3156604cac0b33fadb3fceb717fd0f204afa854b36c9c3b7cd4a",
+    "partials/module.html": "b9d448a9238d9290cd1937eb49fb32a38f38c54dcaa2f4cd6d056221e4d9757b",
+    "partials/editor.request.html": "a2431bac24fb8513084eea896a1e584556971887b253695655ac061257e71888",
+    "partials/editor.display.html": "86689f2ba79be1a09173cc06f7748112e18f835d4e080f875cb0e7580698bac7",
+    "CHANGELOG.md": "49732f6652388e3fdeb1e427f6d4460abd02351518727e44c6d8b7582d5fd454",
+    "index.html": "2fa2c4168c5bb7b8502989f437e4a1a71e663702b0ec9c01530215c8c026dcaf",
+    "README.md": "3163a671faf33043e379d19dc787bcd766f1d1abea17c5518af73abb3056a074",
+    "module.js.map": "98c148259f3630c67ba01094a65c1c37ba9445b11a950cc4e199998b8b533dd3",
+    "img/screenshot.png": "a41601f39971fcaddfa26e09df21f8c2d11fa4fe197ed2837022527d0c04a7c2",
+    "img/ajax_panel_logo.svg": "ea7bbbf0025c6e884e11ae7656a0dc27cc7b02a679665bfc2cdd702303beb38a",
+    "img/screenshot-ajax-options.png": "823eae14b71ffb425e2da68d95315d06d876c59c9bb0973ef29c805f75e3cf87",
+    "img/screenshot-examples.png": "86a5db8970f08c470b1416594cfeacdd7be493b5073ec9005f6f633800f1bd5e",
+    "LICENSE": "b443ef4184f17a052b408bd4da8eb16ea7561cb38a9ae34f5aed1afdf94d0269",
+    "module.js": "861fa68b01c69717c4b1e57921fc7048983dd3de77981698522fc60781b021c3",
+    "plugin.json": "791e1c35a9346d731983e7b89986b51adc1f78f78895275f7339dd1f071a6815",
+    "module.js.LICENSE.txt": "0d8f66cd4afb566cb5b7e1540c68f43b939d3eba12ace290f18abc4f4cb53ed0"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.1
+Comment: https://openpgpjs.org
+
+wqAEARMKAAYFAl+2nj0ACgkQfk0ManCIZueA3wIFHkc164wySy40S6DroNO8
+JOj/NmWymhkchXFxgDUwnvQ1tbYAdtUCYtHPsAuBX8YnlLyGFuFHOkyFE0yK
+Rv8W3R8CAwa3yUH1coo/RW/6XpVXq2MCJW74h0Sp8Xo8ar0Ho/JYKlgGm7T2
+5Xj4G4XBvTfhJI7dRHtAwsMxE4BSWEVLJNCD
+=vyMC
+-----END PGP SIGNATURE-----

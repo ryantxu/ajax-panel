@@ -1,0 +1,80 @@
+<div class="editor-row">
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Display</h5>
+		<div class="gf-form">
+			<span class="gf-form-label width-5">Mode</span>
+
+			
+			<div ng-if="ctrl.isIframe">
+				<select class="gf-form-input" value="iframe">
+				   <option value="iframe">iframe</option>	
+				</select>
+			</div>
+
+			<div ng-if="!ctrl.isIframe" class="gf-form-select-wrapper width-12">
+				<select class="gf-form-input" ng-model="ctrl.panel.mode" ng-change="ctrl.updateTemplate()">
+				   <option value="html">Direct HTML</option>
+				   <option value="text">Escaped Text</option>	
+				   <option value="pre">Preformatted Text</option>		
+				   <option value="json">JSON Tree</option>	
+				   <option value="template">Angular Template</option>	
+				</select>
+			</div>
+		</div>
+	</div>
+		
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Time</h5>
+		<gf-form-switch class="gf-form" label="Show Time" label-class="width-7" 
+			checked="ctrl.panel.showTime" 
+			on-change="ctrl.onConfigChanged()"></gf-form-switch>
+		<div ng-if="ctrl.panel.showTime">
+			<div class="gf-form">
+				<span class="gf-form-label width-7">Prefix</span>
+				<input type="text" class="gf-form-input  width-10" placeholder="prefix" 
+					ng-model="ctrl.panel.showTimePrefix" ng-change="ctrl.onConfigChanged()" ng-model-onblur />
+			</div>
+			<div class="gf-form">
+				<span class="gf-form-label width-7">Value</span>
+				<div class="gf-form-select-wrapper width-10">
+					<select class="gf-form-input" ng-model="ctrl.panel.showTimeValue" ng-change="ctrl.onConfigChanged()">
+						<option value="request">Request Time</option>
+						<option value="recieve">Recieve Time</option>
+						<!--
+						<option value="header-Date">Date Header</option>
+						<option value="header-Last-Modified">Last-Modified</option>
+						<option value="header-Expires">Expires</option>
+						-->
+						<option value="">None</option>
+					</select>
+				</div>
+			</div>
+			<div class="gf-form" ng-if="ctrl.panel.showTimeValue">
+				<span class="gf-form-label width-7">Format</span>
+				<input type="text" class="gf-form-input  width-10" placeholder="MomentJS" ng-model="ctrl.panel.showTimeFormat" ng-change="ctrl.onConfigChanged()" ng-model-onblur />
+				<span bs-tooltip="'See documentation at:<br/>http://momentjs.com'">&nbsp;<a href="https://momentjs.com/docs/#/displaying/" target="_blank"><i class="fa fa-question-circle"></i></a></span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="editor-row" ng-if="ctrl.panel.mode === 'template'">
+	<h5 class="section-heading">Angular Template</h5>
+	
+	<div class="gf-form">
+		<div class="gf-form gf-form--grow">
+			<code-editor
+				content="ctrl.panel.template"
+				on-change="ctrl.updateTemplate()"
+				data-mode="html"
+				data-behaviours-enabled="true"
+				data-snippets-enabled="false"
+				data-max-lines="20"
+				code-editor-focus="true" >
+			</code-editor>
+		</div>
+	</div>
+	<span>
+	  A dynamic angular template with the AJAX response bound to the variable: <code ng-non-bindable>{{ response }}</code>
+	</span>
+</div>

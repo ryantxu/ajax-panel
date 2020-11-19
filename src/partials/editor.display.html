@@ -11,7 +11,13 @@
 				</select>
 			</div>
 
-			<div ng-if="!ctrl.isIframe" class="gf-form-select-wrapper width-12">
+			<div ng-if="ctrl.img" class="gf-form-select-wrapper width-12">
+				<select class="gf-form-input" value="image">
+					<option value="image">Image</option>
+				</select>
+			</div> 
+
+			<div ng-if="!ctrl.isIframe && !ctrl.img" class="gf-form-select-wrapper width-12">
 				<select class="gf-form-input" ng-model="ctrl.panel.mode" ng-change="ctrl.updateTemplate()">
 				   <option value="html">Direct HTML</option>
 				   <option value="text">Escaped Text</option>	
@@ -56,6 +62,14 @@
 			</div>
 		</div>
 	</div>
+</div>
+
+<div class="editor-row" ng-if="ctrl.panel.mode === 'image'">
+	<h5 class="section-heading">Image</h5>
+
+		<gf-form-switch class="gf-form" label="Fit to screen" label-class="width-12"
+			checked="ctrl.panel.fitImageToScreen"
+			on-change="ctrl.onConfigChanged()"></gf-form-switch>
 </div>
 
 <div class="editor-row" ng-if="ctrl.panel.mode === 'template'">

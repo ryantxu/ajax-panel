@@ -556,6 +556,15 @@ class AjaxCtrl extends MetricsPanelCtrl {
   openFullscreen() {
     // Update the image
     this.overlay.find('img').attr('src', this.objectURL);
+
+    if (this.panel.fitImageToScreen) {
+      this.overlay.find('img').css('max-width', '98vw');
+      this.overlay.find('img').css('max-height', '98vh');
+    } else {
+      this.overlay.find('img').css('max-width', '');
+      this.overlay.find('img').css('max-height', '');
+    }
+
     $('.grafana-app').append(this.overlay);
     this.overlay.on('click', () => {
       this.overlay.remove();

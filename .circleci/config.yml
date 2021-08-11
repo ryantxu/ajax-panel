@@ -34,7 +34,7 @@ workflows:
 executors:
   default_exec: # declares a reusable executor
     docker:
-      - image: grafana/grafana-plugin-ci:latest
+      - image: grafana/grafana-plugin-ci:1.2.1-alpine
 
 jobs:
   build:

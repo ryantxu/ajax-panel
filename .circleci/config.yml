@@ -53,7 +53,7 @@ jobs:
             rm -rf ~/project/node_modules/@grafana/data/node_modules
             node --version
             yarn --version
-            sudo apt-get install tree
+            apk install tree
       - save_cache:
           name: save node_modules
           paths:

@@ -53,6 +53,7 @@ jobs:
             rm -rf ~/project/node_modules/@grafana/data/node_modules
             node --version
             yarn --version
+            sudo apt-get install tree
       - save_cache:
           name: save node_modules
           paths:
@@ -75,6 +76,7 @@ jobs:
           name: Package distribution
           command: |
             npx grafana-toolkit --version
+            tree .
             ./node_modules/.bin/grafana-toolkit plugin:ci-package
       - persist_to_workspace:
           root: .

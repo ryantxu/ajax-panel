@@ -6,11 +6,8 @@ import './style.css';
 import { DSInfo, RenderMode } from './types';
 import { examples } from './examples';
 
-import { DataQueryResponse, DataSourceApi } from '@grafana/data';
+import { DataQueryResponse, DataSourceApi, dateTime } from '@grafana/data';
 import { getDataSourceSrv, getTemplateSrv, getBackendSrv, FetchResponse, BackendSrvRequest } from '@grafana/runtime';
-
-// eslint-disable-next-line
-import moment from 'moment';
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -510,7 +507,7 @@ class AjaxCtrl extends MetricsPanelCtrl {
         }
 
         if (when) {
-          txt += moment(when).format(this.panel.showTimeFormat);
+          txt += dateTime(when).format(this.panel.showTimeFormat);
         } else {
           txt += 'missing: ' + this.panel.showTimeValue;
         }

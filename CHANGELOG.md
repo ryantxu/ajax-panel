@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+##### v0.2.0
+
+- Comipled for grafana 7+ and 8
+
 ##### v0.1.0
 
 - Comipled and with grafana 7+, 

@@ -319,12 +319,12 @@ class AjaxCtrl extends MetricsPanelCtrl {
         getBackendSrv()
           .fetch(options)
           .subscribe({
-            next: rsp => {
+            next: (rsp) => {
               this.lastRequestTime = sent;
               this.process(rsp);
               this.loading = false;
             },
-            error: err => {
+            error: (err) => {
               console.log('ERR', err);
               this.lastRequestTime = sent;
               this.loading = false;

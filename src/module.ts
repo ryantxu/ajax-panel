@@ -2,12 +2,11 @@ import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import $ from 'jquery';
 import _ from 'lodash';
 import appEvents from 'grafana/app/core/app_events';
-import dateTime from '@grafana/data';
 import './style.css';
 import { DSInfo, RenderMode } from './types';
 import { examples } from './examples';
 
-import { DataQueryResponse, DataSourceApi } from '@grafana/data';
+import { DataQueryResponse, DataSourceApi, dateTime } from '@grafana/data';
 
 class AjaxCtrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
